@@ -8,6 +8,7 @@ const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;
+    core_status: boolean;
 }
 
 export default class Home extends Component<IProps> {

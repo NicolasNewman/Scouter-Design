@@ -1,16 +1,23 @@
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import Home from '../components/Home';
-import CounterActions from '../actions/counter';
+import CoreActions from '../actions/core';
 
 function mapStateToProps(state, ownProps) {
+    console.log(state);
     return {
-        dataStore: ownProps.dataStore
+        dataStore: ownProps.dataStore,
+        core_status: state.core.status
     };
 }
 
 function mapDispatchToProps(dispatch: Dispatch) {
-    return bindActionCreators(CounterActions, dispatch);
+    return bindActionCreators(
+        {
+            ...CoreActions
+        },
+        dispatch
+    );
 }
 
 export default connect(
