@@ -1,14 +1,5 @@
-# electron-boilerplate
+# Scouter Design
 
-A boilerplate for Electron containing React, Less, TypeScript, and antd
+## About
 
-## Getting Started
-
-To clone this repository, select the green "use this template" button. Once on your local machine, run the following commands:
-
-```sh
-npm install
-
-# If you are not using VSCode
-sudo rm -rf .vscode/
-```
+Scouter Design is an interactive gui designer that aids in the customization of Scouter's forms.
