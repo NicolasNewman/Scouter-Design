@@ -8,7 +8,6 @@ const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;
-    core_status: boolean;
 }
 
 export default class Home extends Component<IProps> {
@@ -25,20 +24,7 @@ export default class Home extends Component<IProps> {
     render() {
         return (
             <div className="home">
-                <Tabs defaultActiveKey="general" onChange={this.tabChanged}>
-                    <TabPane tab="General" key="general">
-                        <p>General Tab</p>
-                    </TabPane>
-                    <TabPane tab="Events" key="events">
-                        <p>Event Tab</p>
-                    </TabPane>
-                    <TabPane tab="States" key="states">
-                        <p>State Tab</p>
-                    </TabPane>
-                    <TabPane tab="Form" key="form">
-                        <p>Form Tab</p>
-                    </TabPane>
-                </Tabs>
+                <p>Home</p>
             </div>
         );
     }
