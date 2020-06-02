@@ -1,5 +1,6 @@
 import { bindActionCreators, Dispatch } from 'redux';
 import { connect } from 'react-redux';
+import { withRouter } from 'react-router';
 import Home from '../components/Home';
 import CoreActions from '../actions/core';
 
@@ -19,7 +20,9 @@ function mapDispatchToProps(dispatch: Dispatch) {
     );
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Home);
+export default withRouter(
+    connect(
+        mapStateToProps,
+        mapDispatchToProps
+    )(Home)
+);
