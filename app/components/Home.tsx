@@ -1,10 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { RouteComponentProps } from 'react-router';
-import { Tabs } from 'antd';
 import DataStore from 'app/classes/DataStore';
-
-const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;

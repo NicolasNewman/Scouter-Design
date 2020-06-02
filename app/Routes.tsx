@@ -34,7 +34,7 @@ export default class Routes extends Component {
                                 sizes.designerWindow.width,
                                 sizes.designerWindow.height
                             );
-                            <DesignerPage dataStore={this.dataStore} />;
+                            return <DesignerPage dataStore={this.dataStore} />;
                         }}
                     />
                 </Switch>
