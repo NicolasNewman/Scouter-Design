@@ -4,6 +4,8 @@ import { RouteComponentProps } from 'react-router';
 import { Tabs } from 'antd';
 import DataStore from 'app/classes/DataStore';
 
+import Event from './Designer/Event';
+
 const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
@@ -31,7 +33,7 @@ export default class Home extends Component<IProps> {
                         key="general"
                         disabled={!this.props.core_status}
                     >
-                        <p>General Tab</p>
+                        <Event />
                     </TabPane>
                     <TabPane
                         tab="Events"
