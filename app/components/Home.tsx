@@ -23,6 +23,7 @@ export default class Home extends Component<IProps> {
     render() {
         return (
             <div className="home vh-100 f fp-col fp-ycenter fp-xcenter">
+                <h1>Scouter Design</h1>
                 <Button
                     className="home__button my-1 w-7"
                     type="primary"
