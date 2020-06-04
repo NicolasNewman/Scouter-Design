@@ -22,20 +22,20 @@ export default class Home extends Component<IProps> {
 
     render() {
         return (
-            <div className="home">
+            <div className="home vh-100 f fp-col fp-ycenter fp-xcenter">
                 <Button
-                    className="home__button"
-                    type="default"
+                    className="home__button my-1 w-7"
+                    type="primary"
                     onClick={this.toPage.bind(this, routes.DESIGNER)}
                 >
-                    <p>New Project</p>
+                    New Project
                 </Button>
                 <Button
-                    className="home__button"
-                    type="default"
+                    className="home__button my-1 w-7"
+                    type="primary"
                     onClick={this.toPage.bind(this, routes.DESIGNER)}
                 >
-                    <p>Open Project</p>
+                    Open Project
                 </Button>
             </div>
         );
