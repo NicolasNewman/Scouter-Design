@@ -1,7 +1,7 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
 import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
-import { Select, Checkbox } from 'antd';
+import { Select, Checkbox, Button } from 'antd';
 // import { Table, Select, Checkbox } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
@@ -9,6 +9,9 @@ import { EventType } from '../../types/types';
 
 const { Option } = Select;
 
+/**
+ * Interface that defines the data needed for a single row in the table
+ */
 interface Item {
     key: string;
     name: string;
@@ -24,7 +27,7 @@ interface Item {
 
 const originData: Item[] = [
     {
-        key: 'a',
+        key: '0',
         name: 'a',
         type: 'robot_event',
         accuracy: true,
@@ -42,6 +45,9 @@ interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
     children: React.ReactNode;
 }
 
+/**
+ * Functional component for a table cell that is editable
+ */
 const EditableCell: React.FC<EditableCellProps> = ({
     editing,
     dataIndex,
@@ -54,6 +60,8 @@ const EditableCell: React.FC<EditableCellProps> = ({
 }) => {
     const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
 
+    // If the editing flag is true, display a text field
+    // Else, show the cell's contents
     return (
         <td {...restProps}>
             {editing ? (
@@ -82,6 +90,10 @@ interface IState {
     data: Item[];
     editingKey: string;
 }
+
+/**
+ * Component for the custom table
+ */
 export default class EventTable extends Component<IProps, IState> {
     props: IProps;
     state: IState;
@@ -99,14 +111,11 @@ export default class EventTable extends Component<IProps, IState> {
             {
                 title: 'name',
                 dataIndex: 'name',
-                // width: '25%',
                 editable: true
             },
             {
                 title: 'type',
                 dataIndex: 'type',
-                // width: '25%',
-                // editable: true,
                 render: (val, record: Item, index) => {
                     return (
                         <Select
@@ -130,8 +139,6 @@ export default class EventTable extends Component<IProps, IState> {
             {
                 title: 'accuracy',
                 dataIndex: 'accuracy',
-                // width: '25%',
-                // editable: true,
                 render: (val, record: Item, index) => {
                     return (
                         <Checkbox
@@ -150,7 +157,6 @@ export default class EventTable extends Component<IProps, IState> {
             {
                 title: 'score',
                 dataIndex: 'score',
-                // width: '25%',
                 editable: true
             },
             {
@@ -161,7 +167,6 @@ export default class EventTable extends Component<IProps, IState> {
                     return editable ? (
                         <span>
                             <a
-                                href="javascript:;"
                                 onClick={() => this.save(record.key)}
                                 style={{ marginRight: 8 }}
                             >
@@ -248,9 +253,46 @@ export default class EventTable extends Component<IProps, IState> {
         }
     };
 
+    /**
+     * Adds a new row to the table
+     */
+    add = () => {
+        const newRow: Item = {
+            key: this.getNextKey(),
+            accuracy: false,
+            type: 'robot_event',
+            score: 0,
+            name: 'new event'
+        };
+        this.setState({
+            data: [...this.state.data, newRow]
+        });
+    };
+
+    /**
+     * Determines what the next key should be from the Item[] in state.data
+     */
+    getNextKey = () => {
+        const keys = this.state.data
+            .map(obj => parseInt(obj.key)) // extract keys from Item[]
+            .filter(Boolean) // filter out falsey values from parseInt failing
+            .sort((a, b) => a - b); // re-arrange by ascending order
+        const n = keys.length;
+        keys.forEach((key, indx, arr) => {
+            // determine if there is a gap between two concurrent numbers ([1, 2, 5] => 3)
+            if (indx < n - 1 && arr[key + 1] - key > 1) {
+                return `${key + 1}`;
+            }
+        });
+        return `${keys[n - 1] + 1}`;
+    };
+
     render() {
         return (
             <Form ref={this.form}>
+                <Button className="mb-1 ml-1" onClick={this.add} type="primary">
+                    Add Event
+                </Button>
                 <Table
                     components={{
                         body: {
@@ -261,99 +303,10 @@ export default class EventTable extends Component<IProps, IState> {
                     dataSource={this.state.data}
                     columns={this.cols}
                     rowClassName="editable-row"
-                    pagination={{
-                        onChange: this.cancel
-                    }}
+                    pagination={false}
+                    scroll={{ y: 325 }}
                 />
             </Form>
         );
     }
 }
-
-// export default class Event extends Component<IProps> {
-//     props: IProps;
-//     tableColModel: ColumnProps<IRowModel>[];
-
-//     constructor(props) {
-//         super(props);
-//         this.tableColModel = [
-//             {
-//                 title: 'Name',
-//                 dataIndex: 'name'
-//             },
-//             {
-//                 title: 'Type',
-//                 dataIndex: 'type',
-//                 render: (val, record, index) => {
-//                     console.log('table type:');
-//                     console.log(val);
-//                     console.log(record);
-//                     console.log(index);
-//                     return (
-//                         <Select className="w-8">
-//                             <Option value="robot_event">Robot Event</Option>
-//                             <Option value="team_event">Team Event</Option>
-//                             <Option value="foul_event">Foul Event</Option>
-//                         </Select>
-//                     );
-//                 }
-//             },
-//             {
-//                 title: 'Accuracy',
-//                 dataIndex: 'accuracy',
-//                 render: (val, record, index) => {
-//                     console.log('table accuracy:');
-//                     console.log(val);
-//                     console.log(record);
-//                     console.log(index);
-//                     return (
-//                         <Checkbox
-//                             onChange={e =>
-//                                 this.accuracyCheckboxChanged(e, record.name)
-//                             }
-//                         ></Checkbox>
-//                     );
-//                 }
-//             },
-//             {
-//                 title: 'Score',
-//                 dataIndex: 'score',
-//                 render: (val, record, index) => {
-//                     return (
-//                         <span>
-//                             <Checkbox
-//                                 className="mr-1"
-//                                 onChange={e =>
-//                                     this.scoreCheckboxChanged(e, record.name)
-//                                 }
-//                             ></Checkbox>
-//                             {val}
-//                         </span>
-//                     );
-//                 }
-//             }
-//         ];
-//     }
-
-//     accuracyCheckboxChanged = (e, name: string) => {
-//         console.log(name);
-//         console.log(e.target.checked);
-//     };
-
-//     scoreCheckboxChanged = (e, name: string) => {
-//         console.log(name);
-//         console.log(e.target.checked);
-//     };
-
-//     render() {
-//         return (
-//             <div>
-//                 <Table
-//                     pagination={false}
-//                     columns={this.tableColModel}
-//                     dataSource={tableData}
-//                 />
-//             </div>
-//         );
-//     }
-// }
