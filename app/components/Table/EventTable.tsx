@@ -5,13 +5,14 @@ import { Select, Checkbox } from 'antd';
 // import { Table, Select, Checkbox } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
+import { EventType } from '../../types/types';
 
-// const { Option } = Select;
+const { Option } = Select;
 
 interface Item {
     key: string;
     name: string;
-    type: string;
+    type: EventType;
     accuracy: boolean;
     score: number;
     editable?: boolean;
@@ -25,7 +26,7 @@ const originData: Item[] = [
     {
         key: 'a',
         name: 'a',
-        type: '2',
+        type: 'robot_event',
         accuracy: true,
         score: 5
     }
@@ -105,7 +106,26 @@ export default class EventTable extends Component<IProps, IState> {
                 title: 'type',
                 dataIndex: 'type',
                 // width: '25%',
-                editable: true
+                // editable: true,
+                render: (val, record: Item, index) => {
+                    return (
+                        <Select
+                            className="w-8"
+                            onChange={(val: EventType) => {
+                                const cpy = this.state.data.map(obj => ({
+                                    ...obj
+                                }));
+                                cpy[index].type = val;
+                                this.setState({ data: cpy });
+                            }}
+                            defaultValue={record.type}
+                        >
+                            <Option value="robot_event">Robot Event</Option>
+                            <Option value="team_event">Team Event</Option>
+                            <Option value="foul_event">Foul Event</Option>
+                        </Select>
+                    );
+                }
             },
             {
                 title: 'accuracy',
@@ -113,10 +133,6 @@ export default class EventTable extends Component<IProps, IState> {
                 // width: '25%',
                 // editable: true,
                 render: (val, record: Item, index) => {
-                    console.log('table accuracy:');
-                    console.log(val);
-                    console.log(record);
-                    console.log(index);
                     return (
                         <Checkbox
                             defaultChecked={record.accuracy}
