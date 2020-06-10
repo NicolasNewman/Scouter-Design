@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
 import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
+import { Select, Checkbox } from 'antd';
 // import { Table, Select, Checkbox } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
@@ -20,7 +21,15 @@ interface Item {
     editing?: (record: Item) => boolean;
 }
 
-const originData: Item[] = [];
+const originData: Item[] = [
+    {
+        key: 'a',
+        name: 'a',
+        type: '2',
+        accuracy: true,
+        score: 5
+    }
+];
 
 interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
     editing: boolean;
@@ -89,30 +98,48 @@ export default class EventTable extends Component<IProps, IState> {
             {
                 title: 'name',
                 dataIndex: 'name',
-                width: '25%',
+                // width: '25%',
                 editable: true
             },
             {
                 title: 'type',
                 dataIndex: 'type',
-                width: '25%',
+                // width: '25%',
                 editable: true
             },
             {
                 title: 'accuracy',
                 dataIndex: 'accuracy',
-                width: '25%',
-                editable: true
+                // width: '25%',
+                // editable: true,
+                render: (val, record: Item, index) => {
+                    console.log('table accuracy:');
+                    console.log(val);
+                    console.log(record);
+                    console.log(index);
+                    return (
+                        <Checkbox
+                            defaultChecked={record.accuracy}
+                            onChange={event => {
+                                const cpy = this.state.data.map(obj => ({
+                                    ...obj
+                                }));
+                                cpy[index].accuracy = event.target.checked;
+                                this.setState({ data: cpy });
+                            }}
+                        ></Checkbox>
+                    );
+                }
             },
             {
                 title: 'score',
                 dataIndex: 'score',
-                width: '25%',
+                // width: '25%',
                 editable: true
             },
             {
                 title: 'operation',
-                dataIndeX: 'operation',
+                dataIndex: 'operation',
                 render: (_: any, record: Item) => {
                     const editable = this.isEditing(record);
                     return editable ? (
@@ -133,7 +160,7 @@ export default class EventTable extends Component<IProps, IState> {
                         </span>
                     ) : (
                         <a
-                            disabled={this.state.editingKey !== ''}
+                            hidden={this.state.editingKey !== ''}
                             onClick={() => this.edit(record)}
                         >
                             Edit
