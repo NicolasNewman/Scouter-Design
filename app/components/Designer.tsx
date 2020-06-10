@@ -5,6 +5,7 @@ import { Tabs } from 'antd';
 import DataStore from 'app/classes/DataStore';
 
 import Event from './Designer/Event';
+import EventTable from './Table/EventTable';
 
 const { TabPane } = Tabs;
 
@@ -33,7 +34,7 @@ export default class Home extends Component<IProps> {
                         key="general"
                         disabled={!this.props.core_status}
                     >
-                        <Event />
+                        <EventTable />
                     </TabPane>
                     <TabPane
                         tab="Events"
