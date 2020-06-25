@@ -176,7 +176,13 @@ export default class EventTable extends Component<IProps, IState> {
                                 title="Sure to cancel?"
                                 onConfirm={this.cancel}
                             >
-                                <a>Cancel</a>
+                                <a style={{ marginRight: 8 }}>Cancel</a>
+                            </Popconfirm>
+                            <Popconfirm
+                                title="Sure to delete?"
+                                onConfirm={() => this.delete(record)}
+                            >
+                                <a>Delete</a>
                             </Popconfirm>
                         </span>
                     ) : (
@@ -223,6 +229,12 @@ export default class EventTable extends Component<IProps, IState> {
 
     cancel = () => {
         this.setState({ editingKey: '' });
+    };
+
+    delete = (record: Item) => {
+        let copy = [...this.state.data];
+        copy = copy.filter(item => item.key != record.key);
+        this.setState({ data: copy, editingKey: '' });
     };
 
     save = async (key: React.Key) => {
@@ -273,17 +285,20 @@ export default class EventTable extends Component<IProps, IState> {
      * Determines what the next key should be from the Item[] in state.data
      */
     getNextKey = () => {
+        console.log('Getting next key:');
+        console.log(this.state.data);
         const keys = this.state.data
             .map(obj => parseInt(obj.key)) // extract keys from Item[]
-            .filter(Boolean) // filter out falsey values from parseInt failing
+            .filter(x => !isNaN(x)) // filter out falsey values from parseInt failing
             .sort((a, b) => a - b); // re-arrange by ascending order
+
         const n = keys.length;
-        keys.forEach((key, indx, arr) => {
-            // determine if there is a gap between two concurrent numbers ([1, 2, 5] => 3)
-            if (indx < n - 1 && arr[key + 1] - key > 1) {
-                return `${key + 1}`;
+        for (let i = 0; i < n - 1; i++) {
+            if (keys[i + 1] - keys[i] > 1) {
+                // determine if there is a gap in the sequence
+                return `${keys[i] + 1}`;
             }
-        });
+        }
         return `${keys[n - 1] + 1}`;
     };
 
