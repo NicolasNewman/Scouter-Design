@@ -110,7 +110,11 @@ export default class Event extends Component<IProps> {
     render() {
         return (
             <div>
-                <Table columns={this.tableColModel} dataSource={tableData} />
+                <Table
+                    pagination={false}
+                    columns={this.tableColModel}
+                    dataSource={tableData}
+                />
             </div>
         );
     }
