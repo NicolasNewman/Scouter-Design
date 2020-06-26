@@ -6,8 +6,7 @@ import CoreActions from '../actions/core';
 function mapStateToProps(state, ownProps) {
     console.log(state);
     return {
-        dataStore: ownProps.dataStore,
-        core_status: state.core.status
+        dataStore: ownProps.dataStore
     };
 }
 
@@ -20,7 +19,4 @@ function mapDispatchToProps(dispatch: Dispatch) {
     );
 }
 
-export default connect(
-    mapStateToProps,
-    mapDispatchToProps
-)(Designer);
+export default connect(mapStateToProps, mapDispatchToProps)(Designer);

@@ -5,7 +5,7 @@ import { Select, Checkbox, Button, Modal, message } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
 import { EventType } from '../../types/types';
-import { formatEventName } from '../../utils/helper';
+import { formatStateName } from '../../utils/helper';
 
 const { Option } = Select;
 
@@ -15,9 +15,6 @@ const { Option } = Select;
 interface Item {
     key: string;
     name: string;
-    type: EventType;
-    accuracy: boolean;
-    score: number;
     editable?: boolean;
     inputType?: 'number' | 'text';
     dataIndex?: string;
@@ -28,10 +25,7 @@ interface Item {
 const originData: Item[] = [
     {
         key: '0',
-        name: 'a',
-        type: 'robot_event',
-        accuracy: true,
-        score: 5
+        name: 'a'
     }
 ];
 
@@ -95,7 +89,7 @@ interface IState {
 /**
  * Component for the custom table
  */
-export default class EventTable extends Component<IProps, IState> {
+export default class StateTable extends Component<IProps, IState> {
     props: IProps;
     state: IState;
     form: React.RefObject<FormInstance>;
@@ -115,53 +109,6 @@ export default class EventTable extends Component<IProps, IState> {
             {
                 title: 'name',
                 dataIndex: 'name',
-                editable: true
-            },
-            {
-                title: 'type',
-                dataIndex: 'type',
-                render: (val, record: Item, index) => {
-                    return (
-                        <Select
-                            className="w-8"
-                            onChange={(val: EventType) => {
-                                const cpy = this.state.data.map(obj => ({
-                                    ...obj
-                                }));
-                                cpy[index].type = val;
-                                this.setState({ data: cpy });
-                            }}
-                            defaultValue={record.type}
-                        >
-                            <Option value="robot_event">Robot Event</Option>
-                            <Option value="team_event">Team Event</Option>
-                            <Option value="foul_event">Foul Event</Option>
-                        </Select>
-                    );
-                }
-            },
-            {
-                title: 'accuracy',
-                dataIndex: 'accuracy',
-                render: (val, record: Item, index) => {
-                    return (
-                        <Checkbox
-                            defaultChecked={record.accuracy}
-                            onChange={event => {
-                                const cpy = this.state.data.map(obj => ({
-                                    ...obj
-                                }));
-                                cpy[index].accuracy = event.target.checked;
-                                this.setState({ data: cpy });
-                            }}
-                        ></Checkbox>
-                    );
-                    this.setState({ modalVisible: false });
-                }
-            },
-            {
-                title: 'score',
-                dataIndex: 'score',
                 editable: true
             },
             {
@@ -274,10 +221,10 @@ export default class EventTable extends Component<IProps, IState> {
      * Adds a new row to the table
      */
     add = () => {
-        const name = formatEventName(this.input.current.state.value);
+        const name = formatStateName(this.input.current.state.value);
         if (!this.isAllowedName(name)) {
             message.error({
-                content: `"${name}" is not a valid event name. An event name can only contain alphanumeric characters and "_"`,
+                content: `"${name}" is not a valid state name. An state name can only contain alphanumeric characters and "_"`,
                 style: {
                     marginTop: '2.5%'
                 },
@@ -286,9 +233,6 @@ export default class EventTable extends Component<IProps, IState> {
         } else {
             const newRow: Item = {
                 key: this.getNextKey(),
-                accuracy: false,
-                type: 'robot_event',
-                score: 0,
                 name
             };
 
@@ -329,14 +273,14 @@ export default class EventTable extends Component<IProps, IState> {
         return (
             <div>
                 <Modal
-                    title="Event name?"
+                    title="State name?"
                     visible={this.state.modalVisible}
                     onOk={this.add}
                     onCancel={() => this.setState({ modalVisible: false })}
                 >
                     <Input
-                        addonBefore="EVENT_"
-                        placeholder="Event name"
+                        addonBefore="STATE_"
+                        placeholder="State name"
                         ref={this.input}
                     ></Input>
                 </Modal>
@@ -346,7 +290,7 @@ export default class EventTable extends Component<IProps, IState> {
                         onClick={() => this.setState({ modalVisible: true })}
                         type="primary"
                     >
-                        Add Event
+                        Add State
                     </Button>
                     <Table
                         components={{

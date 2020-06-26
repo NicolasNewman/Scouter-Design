@@ -6,12 +6,12 @@ import DataStore from 'app/classes/DataStore';
 
 import Event from './Designer/Event';
 import EventTable from './Table/EventTable';
+import StateTable from './Table/StateTable';
 
 const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;
-    core_status: boolean;
 }
 
 export default class Home extends Component<IProps> {
@@ -29,32 +29,16 @@ export default class Home extends Component<IProps> {
         return (
             <div className="home">
                 <Tabs defaultActiveKey="general" onChange={this.tabChanged}>
-                    <TabPane
-                        tab="General"
-                        key="general"
-                        disabled={!this.props.core_status}
-                    >
+                    <TabPane tab="General" key="general">
+                        <p>General Tab</p>
+                    </TabPane>
+                    <TabPane tab="Events" key="events">
                         <EventTable />
                     </TabPane>
-                    <TabPane
-                        tab="Events"
-                        key="events"
-                        disabled={!this.props.core_status}
-                    >
-                        <p>Event Tab</p>
+                    <TabPane tab="States" key="states">
+                        <StateTable />
                     </TabPane>
-                    <TabPane
-                        tab="States"
-                        key="states"
-                        disabled={!this.props.core_status}
-                    >
-                        <p>State Tab</p>
-                    </TabPane>
-                    <TabPane
-                        tab="Form"
-                        key="form"
-                        disabled={!this.props.core_status}
-                    >
+                    <TabPane tab="Form" key="form">
                         <p>Form Tab</p>
                     </TabPane>
                 </Tabs>
