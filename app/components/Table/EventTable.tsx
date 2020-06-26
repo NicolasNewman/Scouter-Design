@@ -1,10 +1,11 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
 import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
-import { Select, Checkbox, Button, Modal } from 'antd';
+import { Select, Checkbox, Button, Modal, message } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
 import { EventType } from '../../types/types';
+import { formatEventName } from '../../utils/helper';
 
 const { Option } = Select;
 
@@ -273,30 +274,35 @@ export default class EventTable extends Component<IProps, IState> {
      * Adds a new row to the table
      */
     add = () => {
-        console.log('a');
+        const name = formatEventName(this.input.current.state.value);
+        if (!this.isAllowedName(name)) {
+            message.error({
+                content: `"${name}" is not a valid event name. An event name can only contain alphanumeric characters and "_"`,
+                style: {
+                    marginTop: '2.5%'
+                },
+                duration: 5
+            });
+        } else {
+            const newRow: Item = {
+                key: this.getNextKey(),
+                accuracy: false,
+                type: 'robot_event',
+                score: 0,
+                name: formatEventName(this.input.current.state.value)
+            };
 
-        const newRow: Item = {
-            key: this.getNextKey(),
-            accuracy: false,
-            type: 'robot_event',
-            score: 0,
-            name: this.input.current.state.value
-        };
-        console.log('b');
-
-        this.setState({
-            data: [...this.state.data, newRow],
-            modalVisible: false
-        });
-        console.log('c');
+            this.setState({
+                data: [...this.state.data, newRow],
+                modalVisible: false
+            });
+        }
     };
 
     /**
      * Determines what the next key should be from the Item[] in state.data
      */
     getNextKey = () => {
-        console.log('Getting next key:');
-        console.log(this.state.data);
         const keys = this.state.data
             .map(obj => parseInt(obj.key)) // extract keys from Item[]
             .filter(x => !isNaN(x)) // filter out falsey values from parseInt failing
@@ -304,12 +310,19 @@ export default class EventTable extends Component<IProps, IState> {
 
         const n = keys.length;
         for (let i = 0; i < n - 1; i++) {
+            // determine if there is a gap in the sequence
             if (keys[i + 1] - keys[i] > 1) {
-                // determine if there is a gap in the sequence
                 return `${keys[i] + 1}`;
             }
         }
         return `${keys[n - 1] + 1}`;
+    };
+
+    isAllowedName = (name: string): boolean => {
+        const usedNames = this.state.data.map(item => item.name); // extract the names in use from the data obj
+        const c1 = usedNames.includes(name); // check if the name is already in use
+        const c2 = /[!-@]|[[-^]|[`-~]/.test(name); // make sure lowercase, digit, and gramerical characters are not in the string (regex that utilises ASCII table ordering)
+        return !(c1 || c2);
     };
 
     render() {
