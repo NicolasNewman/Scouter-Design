@@ -1,8 +1,7 @@
 import * as React from 'react';
 import { Component, useState } from 'react';
 import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
-import { Select, Checkbox, Button } from 'antd';
-// import { Table, Select, Checkbox } from 'antd';
+import { Select, Checkbox, Button, Modal } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
 import { EventType } from '../../types/types';
@@ -89,6 +88,7 @@ interface IProps {}
 interface IState {
     data: Item[];
     editingKey: string;
+    modalVisible: boolean;
 }
 
 /**
@@ -98,15 +98,18 @@ export default class EventTable extends Component<IProps, IState> {
     props: IProps;
     state: IState;
     form: React.RefObject<FormInstance>;
+    input: React.RefObject<Input>;
     cols: ColumnProps<Item>[];
 
     constructor(props) {
         super(props);
         this.state = {
             data: originData,
-            editingKey: ''
+            editingKey: '',
+            modalVisible: false
         };
         this.form = React.createRef();
+        this.input = React.createRef();
         this.cols = [
             {
                 title: 'name',
@@ -152,6 +155,7 @@ export default class EventTable extends Component<IProps, IState> {
                             }}
                         ></Checkbox>
                     );
+                    this.setState({ modalVisible: false });
                 }
             },
             {
@@ -233,7 +237,7 @@ export default class EventTable extends Component<IProps, IState> {
 
     delete = (record: Item) => {
         let copy = [...this.state.data];
-        copy = copy.filter(item => item.key != record.key);
+        copy = copy.filter(item => item.key !== record.key);
         this.setState({ data: copy, editingKey: '' });
     };
 
@@ -269,16 +273,22 @@ export default class EventTable extends Component<IProps, IState> {
      * Adds a new row to the table
      */
     add = () => {
+        console.log('a');
+
         const newRow: Item = {
             key: this.getNextKey(),
             accuracy: false,
             type: 'robot_event',
             score: 0,
-            name: 'new event'
+            name: this.input.current.state.value
         };
+        console.log('b');
+
         this.setState({
-            data: [...this.state.data, newRow]
+            data: [...this.state.data, newRow],
+            modalVisible: false
         });
+        console.log('c');
     };
 
     /**
@@ -304,24 +314,42 @@ export default class EventTable extends Component<IProps, IState> {
 
     render() {
         return (
-            <Form ref={this.form}>
-                <Button className="mb-1 ml-1" onClick={this.add} type="primary">
-                    Add Event
-                </Button>
-                <Table
-                    components={{
-                        body: {
-                            cell: EditableCell
-                        }
-                    }}
-                    bordered
-                    dataSource={this.state.data}
-                    columns={this.cols}
-                    rowClassName="editable-row"
-                    pagination={false}
-                    scroll={{ y: 325 }}
-                />
-            </Form>
+            <div>
+                <Modal
+                    title="Event name?"
+                    visible={this.state.modalVisible}
+                    onOk={this.add}
+                    onCancel={() => this.setState({ modalVisible: false })}
+                >
+                    <Input
+                        addonBefore="EVENT_"
+                        placeholder="Event name"
+                        ref={this.input}
+                    ></Input>
+                </Modal>
+                <Form ref={this.form}>
+                    <Button
+                        className="mb-1 ml-1"
+                        onClick={() => this.setState({ modalVisible: true })}
+                        type="primary"
+                    >
+                        Add Event
+                    </Button>
+                    <Table
+                        components={{
+                            body: {
+                                cell: EditableCell
+                            }
+                        }}
+                        bordered
+                        dataSource={this.state.data}
+                        columns={this.cols}
+                        rowClassName="editable-row"
+                        pagination={false}
+                        scroll={{ y: 325 }}
+                    />
+                </Form>
+            </div>
         );
     }
 }
