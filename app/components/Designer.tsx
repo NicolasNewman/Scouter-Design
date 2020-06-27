@@ -8,10 +8,25 @@ import Event from './Designer/Event';
 import EventTable from './Table/EventTable';
 import StateTable from './Table/StateTable';
 
+import {
+    EventData,
+    EventDataArray,
+    StateData,
+    StateDataArray
+} from '../types/types';
+
 const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;
+    states: StateDataArray;
+    events: EventDataArray;
+    addEventItem: (event: EventData) => void;
+    removeEventItem: (event: EventData) => void;
+    overwriteEventItem: (events: EventDataArray) => void;
+    addStateItem: (state: StateData) => void;
+    removeStateItem: (state: StateData) => void;
+    overwriteStateItem: (states: StateDataArray) => void;
 }
 
 export default class Home extends Component<IProps> {
@@ -33,7 +48,11 @@ export default class Home extends Component<IProps> {
                         <p>General Tab</p>
                     </TabPane>
                     <TabPane tab="Events" key="events">
-                        <EventTable />
+                        <EventTable
+                            addEventItem={this.props.addEventItem}
+                            removeEventItem={this.props.removeEventItem}
+                            overwriteEventItem={this.props.overwriteEventItem}
+                        />
                     </TabPane>
                     <TabPane tab="States" key="states">
                         <StateTable />

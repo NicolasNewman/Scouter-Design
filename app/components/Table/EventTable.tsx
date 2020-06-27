@@ -4,7 +4,7 @@ import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
 import { Select, Checkbox, Button, Modal, message } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
-import { EventType } from '../../types/types';
+import { EventType, EventDataArray, EventData } from '../../types/types';
 import { formatEventName } from '../../utils/helper';
 
 const { Option } = Select;
@@ -84,7 +84,11 @@ const EditableCell: React.FC<EditableCellProps> = ({
     );
 };
 
-interface IProps {}
+interface IProps {
+    addEventItem: (event: EventData) => void;
+    removeEventItem: (event: EventData) => void;
+    overwriteEventItem: (events: EventDataArray) => void;
+}
 
 interface IState {
     data: Item[];
@@ -291,7 +295,12 @@ export default class EventTable extends Component<IProps, IState> {
                 score: 0,
                 name
             };
-
+            this.props.addEventItem({
+                name,
+                accuracy: false,
+                type: 'robot_event',
+                score: 0
+            });
             this.setState({
                 data: [...this.state.data, newRow],
                 modalVisible: false
