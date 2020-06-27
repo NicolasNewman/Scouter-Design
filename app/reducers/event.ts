@@ -12,6 +12,11 @@ export default function event(
             return [...state, action.event];
         case EventActionTypeKeys.REMOVE_EVENT_ITEM:
             return [];
+        case EventActionTypeKeys.UPDATE_EVENT_ITEM:
+            const filteredData = state.filter(data => {
+                return !(data.name === action.name);
+            });
+            return [...filteredData, action.newData];
         case EventActionTypeKeys.OVERWRITE_EVENT:
             return action.events;
         default:

@@ -19,13 +19,19 @@ const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;
-    states: StateDataArray;
+
+    // redux - event
     events: EventDataArray;
     addEventItem: (event: EventData) => void;
     removeEventItem: (event: EventData) => void;
+    updateEventItem: (name: string, newData: EventData) => void;
     overwriteEventItem: (events: EventDataArray) => void;
+
+    // redux - state
+    states: StateDataArray;
     addStateItem: (state: StateData) => void;
     removeStateItem: (state: StateData) => void;
+    updateStateItem: (name: string, newData: StateData) => void;
     overwriteStateItem: (states: StateDataArray) => void;
 }
 
@@ -51,6 +57,7 @@ export default class Home extends Component<IProps> {
                         <EventTable
                             addEventItem={this.props.addEventItem}
                             removeEventItem={this.props.removeEventItem}
+                            updateEventItem={this.props.updateEventItem}
                             overwriteEventItem={this.props.overwriteEventItem}
                         />
                     </TabPane>

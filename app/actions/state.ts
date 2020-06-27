@@ -3,6 +3,7 @@ import { StateData, StateDataArray } from '../types/types';
 export enum StateActionTypeKeys {
     ADD_STATE_ITEM = 'ADD_STATE_ITEM',
     REMOVE_STATE_ITEM = 'REMOVE_STATE_ITEM',
+    UPDATE_STATE_ITEM = 'UPDATE_STATE_ITEM',
     OVERWRITE_STATE = 'OVERWRITE_STATE'
 }
 
@@ -16,6 +17,12 @@ interface RemoveStateItemAction {
     state: StateData;
 }
 
+interface UpdateStateItemAction {
+    type: StateActionTypeKeys.UPDATE_STATE_ITEM;
+    name: string;
+    newData: StateData;
+}
+
 interface OverwriteStateItemAction {
     type: StateActionTypeKeys.OVERWRITE_STATE;
     states: StateDataArray;
@@ -24,6 +31,7 @@ interface OverwriteStateItemAction {
 export type StateActionTypes =
     | AddStateItemAction
     | RemoveStateItemAction
+    | UpdateStateItemAction
     | OverwriteStateItemAction;
 
 export function addStateItem(state: StateData) {
@@ -40,6 +48,14 @@ export function removeStateItem(state: StateData) {
     };
 }
 
+export function updateStateItem(name: string, newData: StateData) {
+    return {
+        type: StateActionTypeKeys.UPDATE_STATE_ITEM,
+        name,
+        newData
+    };
+}
+
 export function overwriteStateItem(states: StateDataArray) {
     return {
         type: StateActionTypeKeys.OVERWRITE_STATE,
@@ -47,4 +63,9 @@ export function overwriteStateItem(states: StateDataArray) {
     };
 }
 
-export default { addStateItem, removeStateItem, overwriteStateItem };
+export default {
+    addStateItem,
+    removeStateItem,
+    updateStateItem,
+    overwriteStateItem
+};

@@ -12,6 +12,11 @@ export default function state(
             return [...state, action.state];
         case StateActionTypeKeys.REMOVE_STATE_ITEM:
             return [];
+        case StateActionTypeKeys.UPDATE_STATE_ITEM:
+            const filteredData = state.filter(data => {
+                return !(data.name === action.name);
+            });
+            return [...filteredData, action.newData];
         case StateActionTypeKeys.OVERWRITE_STATE:
             return action.states;
         default:
