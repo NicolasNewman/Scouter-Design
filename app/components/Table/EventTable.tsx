@@ -81,24 +81,6 @@ export default class EventTable extends Component<IProps, IState> {
             {
                 title: 'name',
                 dataIndex: 'name'
-                // editable: true
-                // render: (val, record: Item, index) => {
-                //     return (
-                //         <Input
-                //             disabled={!(this.state.editingKey === record.key)}
-                //             onChange={(
-                //                 event: React.ChangeEvent<HTMLInputElement>
-                //             ) => {
-                //                 const cpy = this.state.data.map(obj => ({
-                //                     ...obj
-                //                 }));
-                //                 cpy[index].name = event.target.value;
-                //                 this.setState({ data: cpy });
-                //             }}
-                //             defaultValue={record.name}
-                //         />
-                //     );
-                // }
             },
             {
                 title: 'type',
@@ -221,28 +203,22 @@ export default class EventTable extends Component<IProps, IState> {
     };
 
     edit = (record: Item) => {
-        // this.form.current.setFieldsValue({
-        //     name: '',
-        //     type: '',
-        //     accuracy: false,
-        //     score: 0,
-        //     ...record
-        // });
-        this.backup = this.state.data.map(obj => ({
-            ...obj
-        }));
+        // save a backup in the event that the user cancels
+        this.backup = [...this.state.data];
         this.setState({ editingKey: record.key });
     };
 
     cancel = () => {
-        console.log(this.state.data);
-        console.log(this.backup);
         this.setState({ editingKey: '', data: this.backup });
     };
 
     delete = (record: Item) => {
         let copy = [...this.state.data];
         copy = copy.filter(item => item.key !== record.key);
+
+        let toDelete = this.state.data.find(item => item.name == record.name);
+        this.props.removeEventItem(this.itemToEventData(toDelete));
+
         this.setState({ data: copy, editingKey: '' });
     };
 
@@ -351,11 +327,6 @@ export default class EventTable extends Component<IProps, IState> {
                         Add Event
                     </Button>
                     <Table
-                        // components={{
-                        //     body: {
-                        //         cell: EditableCell
-                        //     }
-                        // }}
                         bordered
                         dataSource={this.state.data}
                         columns={this.cols}
