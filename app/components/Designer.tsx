@@ -55,6 +55,7 @@ export default class Home extends Component<IProps> {
                     </TabPane>
                     <TabPane tab="Events" key="events">
                         <EventTable
+                            events={this.props.events}
                             addEventItem={this.props.addEventItem}
                             removeEventItem={this.props.removeEventItem}
                             updateEventItem={this.props.updateEventItem}

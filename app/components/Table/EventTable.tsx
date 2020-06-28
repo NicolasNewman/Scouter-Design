@@ -35,58 +35,11 @@ const originData: Item[] = [
     }
 ];
 
-interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
-    editing: boolean;
-    dataIndex: string;
-    title: any;
-    inputType: 'number' | 'text';
-    record: Item;
-    index: number;
-    children: React.ReactNode;
-}
-
-/**
- * Functional component for a table cell that is editable
- */
-const EditableCell: React.FC<EditableCellProps> = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-}) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-
-    // If the editing flag is true, display a text field
-    // Else, show the cell's contents
-    return (
-        <td {...restProps}>
-            {editing ? (
-                <Form.Item
-                    name={dataIndex}
-                    style={{ margin: 0 }}
-                    rules={[
-                        {
-                            required: true,
-                            message: `Please Input ${title}!`
-                        }
-                    ]}
-                >
-                    {inputNode}
-                </Form.Item>
-            ) : (
-                children
-            )}
-        </td>
-    );
-};
-
 interface IProps {
+    events: EventDataArray;
     addEventItem: (event: EventData) => void;
     removeEventItem: (event: EventData) => void;
+    updateEventItem: (name: string, newData: EventData) => void;
     overwriteEventItem: (events: EventDataArray) => void;
 }
 
@@ -105,11 +58,20 @@ export default class EventTable extends Component<IProps, IState> {
     form: React.RefObject<FormInstance>;
     input: React.RefObject<Input>;
     cols: ColumnProps<Item>[];
+    backup: Item[];
 
     constructor(props) {
         super(props);
         this.state = {
-            data: originData,
+            data: this.props.events.map((event, i) => {
+                return {
+                    key: i.toString(),
+                    name: event.name,
+                    type: event.type,
+                    accuracy: event.accuracy,
+                    score: event.score
+                } as Item;
+            }),
             editingKey: '',
             modalVisible: false
         };
@@ -118,8 +80,25 @@ export default class EventTable extends Component<IProps, IState> {
         this.cols = [
             {
                 title: 'name',
-                dataIndex: 'name',
-                editable: true
+                dataIndex: 'name'
+                // editable: true
+                // render: (val, record: Item, index) => {
+                //     return (
+                //         <Input
+                //             disabled={!(this.state.editingKey === record.key)}
+                //             onChange={(
+                //                 event: React.ChangeEvent<HTMLInputElement>
+                //             ) => {
+                //                 const cpy = this.state.data.map(obj => ({
+                //                     ...obj
+                //                 }));
+                //                 cpy[index].name = event.target.value;
+                //                 this.setState({ data: cpy });
+                //             }}
+                //             defaultValue={record.name}
+                //         />
+                //     );
+                // }
             },
             {
                 title: 'type',
@@ -128,6 +107,7 @@ export default class EventTable extends Component<IProps, IState> {
                     return (
                         <Select
                             className="w-8"
+                            disabled={!(this.state.editingKey === record.key)}
                             onChange={(val: EventType) => {
                                 const cpy = this.state.data.map(obj => ({
                                     ...obj
@@ -136,6 +116,7 @@ export default class EventTable extends Component<IProps, IState> {
                                 this.setState({ data: cpy });
                             }}
                             defaultValue={record.type}
+                            value={this.state.data[index].type}
                         >
                             <Option value="robot_event">Robot Event</Option>
                             <Option value="team_event">Team Event</Option>
@@ -151,6 +132,7 @@ export default class EventTable extends Component<IProps, IState> {
                     return (
                         <Checkbox
                             defaultChecked={record.accuracy}
+                            disabled={!(this.state.editingKey === record.key)}
                             onChange={event => {
                                 const cpy = this.state.data.map(obj => ({
                                     ...obj
@@ -158,6 +140,7 @@ export default class EventTable extends Component<IProps, IState> {
                                 cpy[index].accuracy = event.target.checked;
                                 this.setState({ data: cpy });
                             }}
+                            checked={this.state.data[index].accuracy}
                         ></Checkbox>
                     );
                     this.setState({ modalVisible: false });
@@ -166,7 +149,23 @@ export default class EventTable extends Component<IProps, IState> {
             {
                 title: 'score',
                 dataIndex: 'score',
-                editable: true
+                // editable: true
+                render: (val, record: Item, index) => {
+                    return (
+                        <InputNumber
+                            disabled={!(this.state.editingKey === record.key)}
+                            onChange={(score: number) => {
+                                const cpy = this.state.data.map(obj => ({
+                                    ...obj
+                                }));
+                                cpy[index].score = score;
+                                this.setState({ data: cpy });
+                            }}
+                            defaultValue={record.score}
+                            value={this.state.data[index].score}
+                        />
+                    );
+                }
             },
             {
                 title: 'operation',
@@ -204,40 +203,41 @@ export default class EventTable extends Component<IProps, IState> {
                     );
                 }
             }
-        ].map(col => {
-            if (!col.editable) {
-                return col;
-            }
-            return {
-                ...col,
-                onCell: (record: Item) => ({
-                    record,
-                    inputType: col.dataIndex === 'score' ? 'number' : 'text',
-                    dataIndex: col.dataIndex,
-                    title: col.title,
-                    editing: this.isEditing(record)
-                })
-            };
-        });
+        ];
     }
+
+    showNameError = (name: string) => {
+        message.error({
+            content: `"${name}" is not a valid event name. An event name can only contain alphanumeric characters and "_"`,
+            style: {
+                marginTop: '2.5%'
+            },
+            duration: 5
+        });
+    };
 
     isEditing = (record: Item) => {
         return record.key === this.state.editingKey;
     };
 
     edit = (record: Item) => {
-        this.form.current.setFieldsValue({
-            name: '',
-            type: '',
-            accuracy: false,
-            score: 0,
-            ...record
-        });
+        // this.form.current.setFieldsValue({
+        //     name: '',
+        //     type: '',
+        //     accuracy: false,
+        //     score: 0,
+        //     ...record
+        // });
+        this.backup = this.state.data.map(obj => ({
+            ...obj
+        }));
         this.setState({ editingKey: record.key });
     };
 
     cancel = () => {
-        this.setState({ editingKey: '' });
+        console.log(this.state.data);
+        console.log(this.backup);
+        this.setState({ editingKey: '', data: this.backup });
     };
 
     delete = (record: Item) => {
@@ -247,46 +247,20 @@ export default class EventTable extends Component<IProps, IState> {
     };
 
     save = async (key: React.Key) => {
-        try {
-            const row = (await this.form.current.validateFields()) as Item;
+        const index = this.state.data.findIndex(item => key === item.key);
+        const item = this.state.data[index];
 
-            const newData = [...this.state.data];
-            const index = newData.findIndex(item => key === item.key);
-            if (index > -1) {
-                const item = newData[index];
-                newData.splice(index, 1, {
-                    ...item,
-                    ...row
-                });
-                this.setState({
-                    data: newData,
-                    editingKey: ''
-                });
-            } else {
-                newData.push(row);
-                this.setState({
-                    data: newData,
-                    editingKey: ''
-                });
-            }
-        } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
-        }
+        this.props.updateEventItem(item.name, this.itemToEventData(item));
+        this.setState({ editingKey: '' });
     };
 
     /**
      * Adds a new row to the table
      */
     add = () => {
-        const name = formatEventName(this.input.current.state.value);
+        const name = formatEventName(this.input.current.state.value); // format the event name to be uppercase and with EVENT_ prefix
         if (!this.isAllowedName(name)) {
-            message.error({
-                content: `"${name}" is not a valid event name. An event name can only contain alphanumeric characters and "_"`,
-                style: {
-                    marginTop: '2.5%'
-                },
-                duration: 5
-            });
+            this.showNameError(name);
         } else {
             const newRow: Item = {
                 key: this.getNextKey(),
@@ -295,12 +269,7 @@ export default class EventTable extends Component<IProps, IState> {
                 score: 0,
                 name
             };
-            this.props.addEventItem({
-                name,
-                accuracy: false,
-                type: 'robot_event',
-                score: 0
-            });
+            this.props.addEventItem(this.itemToEventData(newRow));
             this.setState({
                 data: [...this.state.data, newRow],
                 modalVisible: false
@@ -312,6 +281,8 @@ export default class EventTable extends Component<IProps, IState> {
      * Determines what the next key should be from the Item[] in state.data
      */
     getNextKey = () => {
+        if (this.state.data.length == 0) return '0';
+
         const keys = this.state.data
             .map(obj => parseInt(obj.key)) // extract keys from Item[]
             .filter(x => !isNaN(x)) // filter out falsey values from parseInt failing
@@ -327,11 +298,33 @@ export default class EventTable extends Component<IProps, IState> {
         return `${keys[n - 1] + 1}`;
     };
 
+    /**
+     * Verifies if the passed name is a valid event name
+     *
+     * A valid name contains no digits, spaces, or special characters (with the exception of "_")
+     *
+     * A valid name must also begin with EVENT_
+     * @param name - the name to verify
+     */
     isAllowedName = (name: string): boolean => {
         const usedNames = this.state.data.map(item => item.name); // extract the names in use from the data obj
         const c1 = usedNames.includes(name); // check if the name is already in use
         const c2 = /[!-@]|[[-^]|[`-~]/.test(name); // make sure lowercase, digit, and gramerical characters are not in the string (regex that utilises ASCII table ordering)
-        return !(c1 || c2);
+        const c3 = !name.startsWith('EVENT_');
+        return !(c1 || c2 || c3);
+    };
+
+    /**
+     * Converts a Item object (used by the table) to an EventData object (used by the redux state manager)
+     * @param item - the item to convert
+     */
+    itemToEventData = (item: Item): EventData => {
+        return {
+            name: item.name,
+            accuracy: item.accuracy,
+            score: item.score,
+            type: item.type
+        };
     };
 
     render() {
@@ -358,11 +351,11 @@ export default class EventTable extends Component<IProps, IState> {
                         Add Event
                     </Button>
                     <Table
-                        components={{
-                            body: {
-                                cell: EditableCell
-                            }
-                        }}
+                        // components={{
+                        //     body: {
+                        //         cell: EditableCell
+                        //     }
+                        // }}
                         bordered
                         dataSource={this.state.data}
                         columns={this.cols}
