@@ -6,7 +6,7 @@ export const formatEventName = (name: string): string => {
     console.log(name);
     console.log(typeof name);
     let formated = name.replace(/ /g, '_').toUpperCase();
-    return `EVENT_${formated}`;
+    return formated.substr(0, 5) === 'EVENT' ? formated : `EVENT_${formated}`;
 };
 
 /**
@@ -15,5 +15,5 @@ export const formatEventName = (name: string): string => {
  */
 export const formatStateName = (name: string): string => {
     let formated = name.replace(/ /g, '_').toUpperCase();
-    return `STATE_${formated}`;
+    return formated.substr(0, 5) === 'STATE' ? formated : `STATE_${formated}`;
 };
