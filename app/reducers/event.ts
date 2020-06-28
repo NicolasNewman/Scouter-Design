@@ -11,7 +11,9 @@ export default function event(
         case EventActionTypeKeys.ADD_EVENT_ITEM:
             return [...state, action.event];
         case EventActionTypeKeys.REMOVE_EVENT_ITEM:
-            return [];
+            return state.filter(data => {
+                return !(data.name === action.event.name);
+            });
         case EventActionTypeKeys.UPDATE_EVENT_ITEM:
             const filteredData = state.filter(data => {
                 return !(data.name === action.name);

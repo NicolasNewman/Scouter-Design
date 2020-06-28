@@ -11,7 +11,9 @@ export default function state(
         case StateActionTypeKeys.ADD_STATE_ITEM:
             return [...state, action.state];
         case StateActionTypeKeys.REMOVE_STATE_ITEM:
-            return [];
+            return state.filter(data => {
+                return !(data.name === action.event.name);
+            });
         case StateActionTypeKeys.UPDATE_STATE_ITEM:
             const filteredData = state.filter(data => {
                 return !(data.name === action.name);
