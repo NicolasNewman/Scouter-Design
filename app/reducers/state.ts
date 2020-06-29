@@ -12,7 +12,7 @@ export default function state(
             return [...state, action.state];
         case StateActionTypeKeys.REMOVE_STATE_ITEM:
             return state.filter(data => {
-                return !(data.name === action.event.name);
+                return !(data.name === action.state.name);
             });
         case StateActionTypeKeys.UPDATE_STATE_ITEM:
             const filteredData = state.filter(data => {
