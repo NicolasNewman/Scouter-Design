@@ -63,7 +63,13 @@ export default class Home extends Component<IProps> {
                         />
                     </TabPane>
                     <TabPane tab="States" key="states">
-                        <StateTable />
+                        <StateTable
+                            states={this.props.states}
+                            addStateItem={this.props.addStateItem}
+                            removeStateItem={this.props.removeStateItem}
+                            updateStateItem={this.props.updateStateItem}
+                            overwriteStateItem={this.props.overwriteStateItem}
+                        />
                     </TabPane>
                     <TabPane tab="Form" key="form">
                         <p>Form Tab</p>

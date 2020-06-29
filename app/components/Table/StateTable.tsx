@@ -4,7 +4,7 @@ import { Table, Input, InputNumber, Popconfirm, Form } from 'antd';
 import { Select, Checkbox, Button, Modal, message } from 'antd';
 import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
-import { EventType } from '../../types/types';
+import { StateDataArray, StateData } from '../../types/types';
 import { formatStateName } from '../../utils/helper';
 
 const { Option } = Select;
@@ -29,56 +29,13 @@ const originData: Item[] = [
     }
 ];
 
-interface EditableCellProps extends React.HTMLAttributes<HTMLElement> {
-    editing: boolean;
-    dataIndex: string;
-    title: any;
-    inputType: 'number' | 'text';
-    record: Item;
-    index: number;
-    children: React.ReactNode;
+interface IProps {
+    states: StateDataArray;
+    addStateItem: (state: StateData) => void;
+    removeStateItem: (state: StateData) => void;
+    updateStateItem: (name: string, newData: StateData) => void;
+    overwriteStateItem: (states: StateDataArray) => void;
 }
-
-/**
- * Functional component for a table cell that is editable
- */
-const EditableCell: React.FC<EditableCellProps> = ({
-    editing,
-    dataIndex,
-    title,
-    inputType,
-    record,
-    index,
-    children,
-    ...restProps
-}) => {
-    const inputNode = inputType === 'number' ? <InputNumber /> : <Input />;
-
-    // If the editing flag is true, display a text field
-    // Else, show the cell's contents
-    return (
-        <td {...restProps}>
-            {editing ? (
-                <Form.Item
-                    name={dataIndex}
-                    style={{ margin: 0 }}
-                    rules={[
-                        {
-                            required: true,
-                            message: `Please Input ${title}!`
-                        }
-                    ]}
-                >
-                    {inputNode}
-                </Form.Item>
-            ) : (
-                children
-            )}
-        </td>
-    );
-};
-
-interface IProps {}
 
 interface IState {
     data: Item[];
@@ -95,11 +52,17 @@ export default class StateTable extends Component<IProps, IState> {
     form: React.RefObject<FormInstance>;
     input: React.RefObject<Input>;
     cols: ColumnProps<Item>[];
+    backup: Item[];
 
     constructor(props) {
         super(props);
         this.state = {
-            data: originData,
+            data: this.props.states.map((state, i) => {
+                return {
+                    key: i.toString(),
+                    name: state.name
+                } as Item;
+            }),
             editingKey: '',
             modalVisible: false
         };
@@ -108,8 +71,7 @@ export default class StateTable extends Component<IProps, IState> {
         this.cols = [
             {
                 title: 'name',
-                dataIndex: 'name',
-                editable: true
+                dataIndex: 'name'
             },
             {
                 title: 'operation',
@@ -147,74 +109,50 @@ export default class StateTable extends Component<IProps, IState> {
                     );
                 }
             }
-        ].map(col => {
-            if (!col.editable) {
-                return col;
-            }
-            return {
-                ...col,
-                onCell: (record: Item) => ({
-                    record,
-                    inputType: col.dataIndex === 'score' ? 'number' : 'text',
-                    dataIndex: col.dataIndex,
-                    title: col.title,
-                    editing: this.isEditing(record)
-                })
-            };
-        });
+        ];
     }
+
+    showNameError = (name: string) => {
+        message.error({
+            content: `"${name}" is not a valid event name. An event name can only contain alphanumeric characters and "_"`,
+            style: {
+                marginTop: '2.5%'
+            },
+            duration: 5
+        });
+    };
 
     isEditing = (record: Item) => {
         return record.key === this.state.editingKey;
     };
 
     edit = (record: Item) => {
-        this.form.current.setFieldsValue({
-            name: '',
-            type: '',
-            accuracy: false,
-            score: 0,
-            ...record
-        });
+        this.backup = [...this.state.data];
         this.setState({ editingKey: record.key });
     };
 
     cancel = () => {
-        this.setState({ editingKey: '' });
+        this.setState({ editingKey: '', data: this.backup });
     };
 
     delete = (record: Item) => {
         let copy = [...this.state.data];
         copy = copy.filter(item => item.key !== record.key);
+
+        const toDelete = this.state.data.find(
+            item => item.name === record.name
+        );
+        this.props.removeStateItem(this.itemToStateData(toDelete));
+
         this.setState({ data: copy, editingKey: '' });
     };
 
     save = async (key: React.Key) => {
-        try {
-            const row = (await this.form.current.validateFields()) as Item;
+        const index = this.state.data.findIndex(item => key === item.key);
+        const item = this.state.data[index];
 
-            const newData = [...this.state.data];
-            const index = newData.findIndex(item => key === item.key);
-            if (index > -1) {
-                const item = newData[index];
-                newData.splice(index, 1, {
-                    ...item,
-                    ...row
-                });
-                this.setState({
-                    data: newData,
-                    editingKey: ''
-                });
-            } else {
-                newData.push(row);
-                this.setState({
-                    data: newData,
-                    editingKey: ''
-                });
-            }
-        } catch (errInfo) {
-            console.log('Validate Failed:', errInfo);
-        }
+        this.props.updateStateItem(item.name, this.itemToStateData(item));
+        this.setState({ editingKey: '' });
     };
 
     /**
@@ -223,19 +161,13 @@ export default class StateTable extends Component<IProps, IState> {
     add = () => {
         const name = formatStateName(this.input.current.state.value);
         if (!this.isAllowedName(name)) {
-            message.error({
-                content: `"${name}" is not a valid state name. An state name can only contain alphanumeric characters and "_"`,
-                style: {
-                    marginTop: '2.5%'
-                },
-                duration: 5
-            });
+            this.showNameError(name);
         } else {
             const newRow: Item = {
                 key: this.getNextKey(),
                 name
             };
-
+            this.props.addStateItem(this.itemToStateData(newRow));
             this.setState({
                 data: [...this.state.data, newRow],
                 modalVisible: false
@@ -247,6 +179,8 @@ export default class StateTable extends Component<IProps, IState> {
      * Determines what the next key should be from the Item[] in state.data
      */
     getNextKey = () => {
+        if (this.state.data.length === 0) return '0';
+
         const keys = this.state.data
             .map(obj => parseInt(obj.key)) // extract keys from Item[]
             .filter(x => !isNaN(x)) // filter out falsey values from parseInt failing
@@ -262,11 +196,30 @@ export default class StateTable extends Component<IProps, IState> {
         return `${keys[n - 1] + 1}`;
     };
 
+    /**
+     * Verifies if the passed name is a valid state name
+     *
+     * A valid name contains no digits, spaces, or special characters (with the exception of "_")
+     *
+     * A valid name must also begin with STATE_
+     * @param name - the name to verify
+     */
     isAllowedName = (name: string): boolean => {
         const usedNames = this.state.data.map(item => item.name); // extract the names in use from the data obj
         const c1 = usedNames.includes(name); // check if the name is already in use
         const c2 = /[!-@]|[[-^]|[`-~]/.test(name); // make sure lowercase, digit, and gramerical characters are not in the string (regex that utilises ASCII table ordering)
-        return !(c1 || c2);
+        const c3 = !name.startsWith('STATE_');
+        return !(c1 || c2 || c3);
+    };
+
+    /**
+     * Converts a Item object (used by the table) to a StateData object (used by the redux state manager)
+     * @param item - the item to convert
+     */
+    itemToStateData = (item: Item): StateData => {
+        return {
+            name: item.name
+        };
     };
 
     render() {
@@ -293,11 +246,6 @@ export default class StateTable extends Component<IProps, IState> {
                         Add State
                     </Button>
                     <Table
-                        components={{
-                            body: {
-                                cell: EditableCell
-                            }
-                        }}
                         bordered
                         dataSource={this.state.data}
                         columns={this.cols}
