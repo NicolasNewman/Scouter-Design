@@ -1,11 +1,13 @@
 import { CoreTypeKeys, CoreTypes } from '../actions/core';
+import { FileMode } from '../types/types';
 
 interface IInitialState {
-    status: boolean;
+    file: string;
+    mode?: FileMode;
 }
 
 const initialState: IInitialState = {
-    status: false
+    file: ''
 };
 
 export default function file(
@@ -13,9 +15,10 @@ export default function file(
     action: CoreTypes
 ) {
     switch (action.type) {
-        case CoreTypeKeys.SET_PROJECT_STATUS:
+        case CoreTypeKeys.SET_PROJECT_FILE:
             return {
-                status: action.status
+                file: action.file,
+                mode: action.mode
             };
         default:
             return state;

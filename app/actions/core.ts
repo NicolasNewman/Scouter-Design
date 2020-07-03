@@ -1,19 +1,23 @@
+import { FileMode } from '../types/types';
+
 export enum CoreTypeKeys {
-    SET_PROJECT_STATUS = 'SET_PROJECT_STATUS'
+    SET_PROJECT_FILE = 'SET_PROJECT_FILE'
 }
 
 interface SetProjectStatusAction {
-    type: CoreTypeKeys.SET_PROJECT_STATUS;
-    status: boolean;
+    type: CoreTypeKeys.SET_PROJECT_FILE;
+    file: string;
+    mode: FileMode;
 }
 
 export type CoreTypes = SetProjectStatusAction;
 
-export function setProjectStatus(status: boolean) {
+export function setProjectFile(file: string, mode: FileMode) {
     return {
-        type: CoreTypeKeys.SET_PROJECT_STATUS,
-        status
+        type: CoreTypeKeys.SET_PROJECT_FILE,
+        file,
+        mode
     };
 }
 
-export default { setProjectStatus };
+export default { setProjectFile };
