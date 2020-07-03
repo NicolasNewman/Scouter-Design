@@ -4,9 +4,13 @@ import { RouteComponentProps } from 'react-router';
 import DataStore from 'app/classes/DataStore';
 import { Button } from 'antd';
 import routes from '../constants/routes';
+import { EXTENSION } from '../constants/constants';
+import { remote } from 'electron';
+import { FileMode } from '../types/types';
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;
+    setProjectFile: (file: string, mode: FileMode) => void;
 }
 
 export default class Home extends Component<IProps> {
@@ -16,7 +20,7 @@ export default class Home extends Component<IProps> {
         super(props);
     }
 
-    toPage(route: string, e) {
+    toPage(route: string) {
         this.props.history.push(route);
     }
 
@@ -27,14 +31,38 @@ export default class Home extends Component<IProps> {
                 <Button
                     className="home__button my-1 w-7"
                     type="primary"
-                    onClick={this.toPage.bind(this, routes.DESIGNER)}
+                    onClick={() => {
+                        remote.dialog.showSaveDialog(
+                            {
+                                title: 'Test'
+                            },
+                            filename => {
+                                // this.props.ipcInterface.newFile(filename);
+                                if (filename) {
+                                    let fName = filename;
+                                    if (!fName.endsWith(EXTENSION)) {
+                                        fName = fName + EXTENSION;
+                                    }
+                                    this.props.setProjectFile(fName, 'w');
+                                    this.toPage(routes.DESIGNER);
+                                }
+                            }
+                        );
+                    }}
                 >
                     New Project
                 </Button>
                 <Button
                     className="home__button my-1 w-7"
                     type="primary"
-                    onClick={this.toPage.bind(this, routes.DESIGNER)}
+                    onClick={() => {
+                        remote.dialog.showOpenDialog({}, paths => {
+                            if (paths) {
+                                this.props.setProjectFile(paths[0], 'r');
+                                this.toPage(routes.DESIGNER);
+                            }
+                        });
+                    }}
                 >
                     Open Project
                 </Button>

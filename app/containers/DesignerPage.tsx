@@ -9,7 +9,9 @@ function mapStateToProps(state, ownProps) {
     return {
         dataStore: ownProps.dataStore,
         events: state.event,
-        states: state.state
+        states: state.state,
+        file: state.core.file,
+        mode: state.core.mode
     };
 }
 

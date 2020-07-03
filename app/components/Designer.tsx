@@ -12,13 +12,21 @@ import {
     EventData,
     EventDataArray,
     StateData,
-    StateDataArray
+    StateDataArray,
+    FileMode
 } from '../types/types';
+
+import WorkspaceParser from '../classes/WorkspaceParser';
+import IpcInterface from '../classes/IpcInterface';
 
 const { TabPane } = Tabs;
 
 interface IProps extends RouteComponentProps<any> {
     dataStore: DataStore;
+
+    // redux - core
+    file: string;
+    mode: FileMode;
 
     // redux - event
     events: EventDataArray;
@@ -37,9 +45,14 @@ interface IProps extends RouteComponentProps<any> {
 
 export default class Home extends Component<IProps> {
     props: IProps;
+    parser: WorkspaceParser;
+    ipcInterface: IpcInterface;
 
     constructor(props) {
         super(props);
+        console.log(props);
+        this.parser = new WorkspaceParser(this.props.file, this.props.mode);
+        this.ipcInterface = new IpcInterface(this.parser);
     }
 
     tabChanged = key => {
