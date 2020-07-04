@@ -1,0 +1,45 @@
+.input-grid {
+    // border: 1px solid #c5c5c5;
+    // height: 45vh;
+    // width: 65%;
+    width: 100%;
+    margin: 0 auto;
+    max-width: 900px;
+
+    &__title {
+        grid-area: title;
+        border-bottom: 1px solid #aaa;
+        height: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+
+        & > p {
+            font-weight: 700;
+            margin: 0;
+        }
+    }
+
+    &__child {
+        border: 1px solid #aaa;
+        margin: 1rem;
+        justify-items: center;
+        align-items: center;
+        // padding: 0.25rem;
+        background-color: #e8eaeb;
+        border-radius: 5px;
+
+        & > div {
+            margin: 7px 0;
+            width: 100%;
+            text-align: center;
+            & > button {
+                background-color: @first-blue;
+                border-color: @first-lighter-blue;
+                color: #fff;
+                min-width: fit-content;
+                width: 80%;
+            }
+        }
+    }
+}

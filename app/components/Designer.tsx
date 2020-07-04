@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import { Tabs } from 'antd';
 import DataStore from 'app/classes/DataStore';
 
-import Event from './Designer/Event';
+import GroupCreator from './Designer/GroupCreator';
 import EventTable from './Table/EventTable';
 import StateTable from './Table/StateTable';
 
@@ -82,6 +82,12 @@ export default class Home extends Component<IProps> {
                             removeStateItem={this.props.removeStateItem}
                             updateStateItem={this.props.updateStateItem}
                             overwriteStateItem={this.props.overwriteStateItem}
+                        />
+                    </TabPane>
+                    <TabPane tab="Groups" key="groups">
+                        <GroupCreator
+                            events={this.props.events}
+                            states={this.props.states}
                         />
                     </TabPane>
                     <TabPane tab="Form" key="form">

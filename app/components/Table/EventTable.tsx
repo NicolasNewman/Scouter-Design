@@ -216,7 +216,9 @@ export default class EventTable extends Component<IProps, IState> {
         let copy = [...this.state.data];
         copy = copy.filter(item => item.key !== record.key);
 
-        const toDelete = this.state.data.find(item => item.name == record.name);
+        const toDelete = this.state.data.find(
+            item => item.name === record.name
+        );
         this.props.removeEventItem(this.itemToEventData(toDelete));
 
         this.setState({ data: copy, editingKey: '' });

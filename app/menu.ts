@@ -225,6 +225,13 @@ export default class MenuBuilder {
                         click: () => {
                             this.mainWindow.close();
                         }
+                    },
+                    {
+                        label: '&Save',
+                        accelerator: 'Ctrl+S',
+                        click: () => {
+                            this.mainWindow.webContents.send('save');
+                        }
                     }
                 ]
             },
