@@ -29,11 +29,54 @@ export default class Button {
     getJSX() {
         switch (this.buttonType) {
             case 'event':
-                return ``;
+                return `
+                <RobotEventButton
+                    gridAreaName="${this.gridAreaName}"
+                    constants={this.constantProps}
+                    label="${this.label}"
+                    type={EScorableRobotEvents.HANG}
+                    disabled={
+                        this.state.globalDisabled ||
+                    t   his.state.endgameButtonsDisabled
+                    }
+                    phase={
+                        this.state.phase === "NONE" ? "AUTO" : this.state.phase
+                    }
+                />,
+                `;
             case 'state':
-                return ``;
+                return `
+                <StateButton
+                    gridAreaName="${this.gridAreaName}"
+                    constants={this.constantProps}
+                    label="${this.label}"
+                    type={ERobotStates.WHEEL}
+                    disabled={
+                        this.state.globalDisabled ||
+                        (this.state.teleopButtonsDisabled &&
+                        this.state.endgameButtonsDisabled)
+                    }
+                    phase={
+                        this.state.phase === "NONE" ? "AUTO" : this.state.phase
+                    }
+                />,
+                `;
             case 'accuracy':
-                return ``;
+                return `
+                <AccuracyEventButton
+                    gridAreaName="${this.gridAreaName}"
+                    constants={this.constantProps}
+                    label="${this.label}"
+                    type={EScorableRobotEvents.POWERCELLS_OUTER}
+                    disabled={this.state.globalDisabled}
+                    phase={
+                        this.state.phase === "NONE" ? "AUTO" : this.state.phase
+                    }
+                />,
+                `;
+            default:
+                // TODO throw error
+                break;
         }
     }
 }

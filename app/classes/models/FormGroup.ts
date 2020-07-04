@@ -49,6 +49,13 @@ export default class FormGroup {
                 <div className="input-grid__title">
                     <p>${this.name}</p>
                 </div>,
+                ${(() => {
+                    const template = '';
+                    this.formButtons.forEach(button => {
+                        template += button.getJSX();
+                    });
+                    return template;
+                })()}
                 <AccuracyEventButton
                     gridAreaName="outer"
                     constants={this.constantProps}
