@@ -1,3 +1,5 @@
+import FormButton from './FormButton';
+
 export type GroupOptions = {
     cols?: string;
     rows?: string;
@@ -12,6 +14,7 @@ export default class FormGroup {
     private templateArea: string;
     private gridAreaName: string;
     private name: string;
+    private formButtons: Array<FormButton>;
 
     constructor(options: GroupOptions) {
         this.cols = options.cols;
@@ -19,6 +22,7 @@ export default class FormGroup {
         this.templateArea = options.templareArea;
         this.gridAreaName = options.gridAreaName;
         this.name = options.name;
+        this.formButtons = [];
     }
 
     setName = (name: string) => (this.name = name);
@@ -28,6 +32,10 @@ export default class FormGroup {
         (this.templateArea = templateArea);
     setGridAreaName = (gridAreaName: string) =>
         (this.gridAreaName = gridAreaName);
+
+    addButton(button: FormButton) {
+        this.formButtons.push(button);
+    }
 
     getJSX() {
         return `
