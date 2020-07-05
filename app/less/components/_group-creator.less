@@ -11,6 +11,20 @@
     &__groups {
         background-color: @body-background-dark;
         width: 25%;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+
+        & p {
+            text-align: center;
+        }
+
+        &--modify {
+            & button {
+                margin: 0 50%;
+                transform: translateX(-50%);
+            }
+        }
     }
 
     &__builder {
