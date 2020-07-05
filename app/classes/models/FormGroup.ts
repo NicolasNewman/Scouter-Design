@@ -1,3 +1,4 @@
+import * as React from 'react';
 import FormButton from './FormButton';
 
 type GroupOptions = {
@@ -6,6 +7,11 @@ type GroupOptions = {
     templareArea?: string;
     gridAreaName?: string;
     name: string;
+};
+
+type RenderButton = {
+    label: string;
+    gridAreaName: string;
 };
 
 /**
@@ -26,16 +32,22 @@ export default class FormGroup {
     private name: string;
     // list of each button within the group
     private formButtons: Array<FormButton>;
+    // list of each button used for rendering
+    private renderButtons: Array<RenderButton>;
 
     constructor(options: GroupOptions) {
+        this.formButtons = [];
+        this.renderButtons = [];
         this.colCount = options.colCount ? options.colCount : 2;
         this.updateCols();
         this.rowCount = options.rowCount ? options.rowCount : 3;
         this.updateRows();
         this.templateArea = options.templareArea;
+        if (!this.templateArea) {
+            this.updateTemplateArea();
+        }
         this.gridAreaName = options.gridAreaName;
         this.name = options.name;
-        this.formButtons = [];
     }
 
     private updateCols = () => {
@@ -48,6 +60,7 @@ export default class FormGroup {
             }
         }
         this.cols = cols;
+        this.updateTemplateArea();
     };
 
     private updateRows = () => {
@@ -61,7 +74,47 @@ export default class FormGroup {
             }
         }
         this.rows = rows;
+        this.updateTemplateArea();
     };
+
+    private updateTemplateArea = () => {
+        let templateArea = '';
+        let row = "'";
+        for (let j = 0; j < this.colCount; j++) {
+            row += 'title ';
+        }
+        row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
+        templateArea += row;
+
+        for (let i = 1; i < this.rowCount; i++) {
+            row = "'";
+            for (let j = 0; j < this.colCount; j++) {
+                row += `${i}${j} `;
+                this.addRenderButtons(`${i}${j}`);
+            }
+            row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
+            templateArea += row;
+        }
+        this.templateArea = templateArea;
+        // this.removeUnusedRenderButtons();
+    };
+
+    private addRenderButtons = (index: string) => {
+        const detected = this.renderButtons.find(
+            button => button.gridAreaName === index
+        );
+        if (!detected) {
+            this.renderButtons.push({ label: '+', gridAreaName: index });
+        }
+    };
+
+    // private removeUnusedRenderButtons = () => {
+    //     this.renderButtons.filter(button => {
+    //         const i = parseInt(button.gridAreaName.charAt(0));
+    //         const j = parseInt(button.gridAreaName.charAt(1));
+    //         return this.rowCount - i > 0 && this.colCount - j > 0;
+    //     });
+    // };
 
     toString = () => {
         return `
@@ -69,12 +122,14 @@ export default class FormGroup {
         gridAreaName: ${this.gridAreaName}
         dimensions: ${this.rowCount}x${this.colCount}
         row template: "${this.rows}"
-        col template: "${this.cols}"`;
+        col template: "${this.cols}"
+        template area: \n${this.templateArea}`;
     };
 
     setCols = (cols: string) => {
         this.cols = cols;
         this.colCount = this.cols.replace(/[^ ]/g, '').length + 1;
+        this.updateTemplateArea();
     };
     setColCount = (colCount: number) => {
         this.colCount = colCount;
@@ -87,11 +142,13 @@ export default class FormGroup {
             }
         }
         this.cols = cols;
+        this.updateTemplateArea();
     };
 
     setRows = (rows: string) => {
         this.rows = rows;
         this.rowCount = this.rows.replace(/[^ ]/g, '').length + 1;
+        this.updateTemplateArea();
     };
     setRowCount = (rowCount: number) => {
         this.rowCount = rowCount;
@@ -105,6 +162,7 @@ export default class FormGroup {
             }
         }
         this.rows = rows;
+        this.updateTemplateArea();
     };
 
     setTemplateArea = (templateArea: string) =>
@@ -115,9 +173,15 @@ export default class FormGroup {
 
     getName = () => this.name;
     getGridAreaName = () => this.gridAreaName;
+    getTemplateArea = () => this.templateArea;
 
     getRowCount = () => this.rowCount;
     getColCount = () => this.colCount;
+
+    getRow = () => this.rows;
+    getCol = () => this.cols;
+
+    getRenderButtons = () => this.renderButtons;
 
     addButton(button: FormButton) {
         this.formButtons.push(button);

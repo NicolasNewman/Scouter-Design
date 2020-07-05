@@ -4,7 +4,8 @@ import { EventDataArray, StateDataArray } from 'app/types/types';
 import { Button, Select, Modal, Input, InputNumber } from 'antd';
 import FormGroup from '../../classes/models/FormGroup';
 import { toCamelCase } from '../../utils/helper';
-import Grid from '../Grid';
+import Grid from '../Grid/Grid';
+import RenderButton from '../Grid/RenderButton';
 
 interface IProps {
     // redux - event
@@ -80,6 +81,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                         </Button>
                         <Select
                             className="w-7"
+                            // Function that handles when the selected group is changed
                             onChange={val => {
                                 const targetGroup = this.props.groups.find(
                                     group => group.getName() === val
@@ -123,19 +125,18 @@ export default class GroupCreator extends Component<IProps, IState> {
                             <InputNumber
                                 ref={this.rowRef}
                                 min={2}
-                                // defaultValue={this.state.targetRows}
                                 className="w-3 mr-1"
                             />
                             <span>Cols: </span>
                             <InputNumber
                                 ref={this.colRef}
                                 min={1}
-                                // defaultValue={this.state.targetCols}
                                 className="w-3"
                             />
                         </div>
                         <div className="mt-1">
                             <Button
+                                // Function to handle updating a groups data
                                 onClick={e => {
                                     const rows = this.rowRef.current.state
                                         .value;
@@ -146,8 +147,11 @@ export default class GroupCreator extends Component<IProps, IState> {
                                     console.log(
                                         this.state.targetGroup.toString()
                                     );
-                                    console.log(this.input);
-                                    console.log(this.colRef);
+
+                                    this.props.updateGroup(
+                                        this.state.targetGroup.getGridAreaName(),
+                                        this.state.targetGroup
+                                    );
                                 }}
                                 type="primary"
                             >
@@ -157,23 +161,32 @@ export default class GroupCreator extends Component<IProps, IState> {
                     </div>
                 </div>
                 <div className="group-creator__builder">
-                    <Grid
-                        gridAreaName="state"
-                        className="input-grid__child"
-                        cols="1fr 1fr"
-                        rows="10% 30% 30% 30%"
-                        templateArea="
-                            'title      title   '
-                            'gather     shooting'
-                            'wheel      climbing'
-                            'defending  defended'"
-                        gridElements={[
-                            <div className="input-grid__title">
-                                <p>States</p>
-                            </div>
-                        ]}
-                    />
-                    ,
+                    {this.state.targetGroup !== null ? (
+                        <Grid
+                            gridAreaName="TODO"
+                            className="input-grid__child"
+                            cols={this.colRef.current.state}
+                            rows={this.rowRef.current.state}
+                            templateArea={this.state.targetGroup.getTemplateArea()}
+                            gridElements={[
+                                <div className="input-grid__title">
+                                    <p>{this.state.targetGroup.getName()}</p>
+                                </div>,
+                                ...this.state.targetGroup
+                                    .getRenderButtons()
+                                    .map(obj => (
+                                        <RenderButton
+                                            label={obj.label}
+                                            gridAreaName={obj.gridAreaName}
+                                            disabled={false}
+                                        />
+                                    ))
+                                // <RenderButton label="+" gridAreaName="11" />
+                            ]}
+                        />
+                    ) : (
+                        <span></span>
+                    )}
                 </div>
                 <div className="group-creator__editor">C</div>
             </div>

@@ -10,7 +10,7 @@ type ButtonOptions = {
 /**
  * Models for a button on Scouter's scouting form
  */
-export default class Button {
+export default class FormButton {
     // the type of button that should be generated
     private buttonType: ButtonType;
     // the identifier used by the parent grid for placement
