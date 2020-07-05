@@ -15,6 +15,7 @@ import {
     StateDataArray,
     FileMode
 } from '../types/types';
+import FormGroup from '../classes/models/FormGroup';
 
 import WorkspaceParser from '../classes/WorkspaceParser';
 import IpcInterface from '../classes/IpcInterface';
@@ -41,6 +42,13 @@ interface IProps extends RouteComponentProps<any> {
     removeStateItem: (state: StateData) => void;
     updateStateItem: (name: string, newData: StateData) => void;
     overwriteStateItem: (states: StateDataArray) => void;
+
+    // redux - group
+    groups: Array<FormGroup>;
+    addGroup: (group: FormGroup) => void;
+    removeGroup: (group: FormGroup) => void;
+    updateGroup: (key: string, newGroup: FormGroup) => void;
+    overwriteGroup: (groups: Array<FormGroup>) => void;
 }
 
 export default class Home extends Component<IProps> {
@@ -88,6 +96,11 @@ export default class Home extends Component<IProps> {
                         <GroupCreator
                             events={this.props.events}
                             states={this.props.states}
+                            groups={this.props.groups}
+                            addGroup={this.props.addGroup}
+                            removeGroup={this.props.removeGroup}
+                            updateGroup={this.props.updateGroup}
+                            overwriteGroup={this.props.overwriteGroup}
                         />
                     </TabPane>
                     <TabPane tab="Form" key="form">
