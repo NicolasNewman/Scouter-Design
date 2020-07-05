@@ -25,6 +25,7 @@ interface IProps {
 interface IState {
     modalVisible: boolean;
     targetGroup: FormGroup;
+    targetButton: string;
 }
 
 export default class GroupCreator extends Component<IProps, IState> {
@@ -37,7 +38,8 @@ export default class GroupCreator extends Component<IProps, IState> {
         super(props);
         this.state = {
             modalVisible: false,
-            targetGroup: null
+            targetGroup: null,
+            targetButton: null
         };
         this.input = React.createRef();
         this.rowRef = React.createRef();
@@ -93,8 +95,8 @@ export default class GroupCreator extends Component<IProps, IState> {
                                 const rowCount = targetGroup.getRowCount();
                                 const colCount = targetGroup.getColCount();
                                 this.rowRef.current.setState({
-                                    inputValue: `${rowCount}`,
-                                    value: rowCount
+                                    inputValue: `${rowCount - 1}`,
+                                    value: rowCount - 1
                                 });
                                 this.colRef.current.setState({
                                     inputValue: `${colCount}`,
@@ -124,7 +126,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                             <span>Rows: </span>
                             <InputNumber
                                 ref={this.rowRef}
-                                min={2}
+                                min={1}
                                 className="w-3 mr-1"
                             />
                             <span>Cols: </span>
@@ -138,8 +140,8 @@ export default class GroupCreator extends Component<IProps, IState> {
                             <Button
                                 // Function to handle updating a groups data
                                 onClick={e => {
-                                    const rows = this.rowRef.current.state
-                                        .value;
+                                    const rows =
+                                        this.rowRef.current.state.value + 1;
                                     const cols = this.colRef.current.state
                                         .value;
                                     this.state.targetGroup.setRowCount(rows);
@@ -181,7 +183,6 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             disabled={false}
                                         />
                                     ))
-                                // <RenderButton label="+" gridAreaName="11" />
                             ]}
                         />
                     ) : (

@@ -48,6 +48,8 @@ export default class FormGroup {
         }
         this.gridAreaName = options.gridAreaName;
         this.name = options.name;
+        console.log(this.toString());
+        console.log(this.renderButtons);
     }
 
     private updateCols = () => {
@@ -89,14 +91,14 @@ export default class FormGroup {
         for (let i = 1; i < this.rowCount; i++) {
             row = "'";
             for (let j = 0; j < this.colCount; j++) {
-                row += `${i}${j} `;
-                this.addRenderButtons(`${i}${j}`);
+                row += `r${i}c${j} `;
+                this.addRenderButtons(`r${i}c${j}`);
             }
             row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
             templateArea += row;
         }
         this.templateArea = templateArea;
-        // this.removeUnusedRenderButtons();
+        this.removeUnusedRenderButtons();
     };
 
     private addRenderButtons = (index: string) => {
@@ -108,13 +110,13 @@ export default class FormGroup {
         }
     };
 
-    // private removeUnusedRenderButtons = () => {
-    //     this.renderButtons.filter(button => {
-    //         const i = parseInt(button.gridAreaName.charAt(0));
-    //         const j = parseInt(button.gridAreaName.charAt(1));
-    //         return this.rowCount - i > 0 && this.colCount - j > 0;
-    //     });
-    // };
+    private removeUnusedRenderButtons = () => {
+        this.renderButtons = this.renderButtons.filter(button => {
+            const i = parseInt(button.gridAreaName.charAt(1));
+            const j = parseInt(button.gridAreaName.charAt(3));
+            return this.rowCount - i > 0 && this.colCount - j > 0;
+        });
+    };
 
     toString = () => {
         return `
