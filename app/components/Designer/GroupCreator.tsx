@@ -1,8 +1,9 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { EventDataArray, StateDataArray } from 'app/types/types';
-import { Button, Select } from 'antd';
+import { Button, Select, Modal, Input } from 'antd';
 import FormGroup from '../../classes/models/FormGroup';
+import { toCamelCase } from '../../utils/helper';
 
 interface IProps {
     // redux - event
@@ -19,21 +20,52 @@ interface IProps {
     overwriteGroup: (groups: Array<FormGroup>) => void;
 }
 
-interface IState {}
+interface IState {
+    modalVisible: boolean;
+}
 
 export default class GroupCreator extends Component<IProps, IState> {
     props: IProps;
+    input: React.RefObject<Input>;
 
     constructor(props) {
         super(props);
+        this.state = {
+            modalVisible: false
+        };
+        this.input = React.createRef();
     }
+
+    addGroup = () => {
+        const name = this.input.current.state.value;
+        const camalized = toCamelCase(name);
+        const group = new FormGroup({ name, gridAreaName: camalized });
+        this.props.addGroup(group);
+        this.setState({
+            modalVisible: false
+        });
+    };
 
     render() {
         return (
             <div className="group-creator">
+                <Modal
+                    title="Group name?"
+                    visible={this.state.modalVisible}
+                    onOk={this.addGroup}
+                    onCancel={() => this.setState({ modalVisible: false })}
+                >
+                    <Input placeholder="Group name" ref={this.input}></Input>
+                </Modal>
                 <div className="group-creator__groups">
                     <div className="">
-                        <Button className="mr-1" type="primary">
+                        <Button
+                            className="mr-1"
+                            type="primary"
+                            onClick={() =>
+                                this.setState({ modalVisible: true })
+                            }
+                        >
                             +
                         </Button>
                         <Button className="mr-1" type="primary" danger>
