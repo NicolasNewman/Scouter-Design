@@ -3,9 +3,7 @@
  * @param name - the original name of the event
  */
 export const formatEventName = (name: string): string => {
-    console.log(name);
-    console.log(typeof name);
-    let formated = name.replace(/ /g, '_').toUpperCase();
+    let formated = name.replace(/ /g, '_').toUpperCase(); // replace all spaces with _ and convert to upper case
     return formated.substr(0, 5) === 'EVENT' ? formated : `EVENT_${formated}`;
 };
 
@@ -14,7 +12,7 @@ export const formatEventName = (name: string): string => {
  * @param name - the original name of the state
  */
 export const formatStateName = (name: string): string => {
-    let formated = name.replace(/ /g, '_').toUpperCase();
+    let formated = name.replace(/ /g, '_').toUpperCase(); // replace all spaces with _ and convert to upper case
     return formated.substr(0, 5) === 'STATE' ? formated : `STATE_${formated}`;
 };
 
