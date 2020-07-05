@@ -33,6 +33,9 @@ export default class FormGroup {
     setGridAreaName = (gridAreaName: string) =>
         (this.gridAreaName = gridAreaName);
 
+    getName = () => this.name;
+    getGridAreaName = () => this.gridAreaName;
+
     addButton(button: FormButton) {
         this.formButtons.push(button);
     }
@@ -50,7 +53,7 @@ export default class FormGroup {
                     <p>${this.name}</p>
                 </div>,
                 ${(() => {
-                    const template = '';
+                    let template = '';
                     this.formButtons.forEach(button => {
                         template += button.getJSX();
                     });
