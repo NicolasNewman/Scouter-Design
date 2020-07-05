@@ -1,16 +1,23 @@
-export type ButtonType = 'event' | 'state' | 'accuracy';
+type ButtonType = 'event' | 'state' | 'accuracy';
 
-export type ButtonOptions = {
+type ButtonOptions = {
     buttonType: ButtonType;
     gridAreaName?: string;
     label?: string;
     type?: string;
 };
 
+/**
+ * Models for a button on Scouter's scouting form
+ */
 export default class Button {
+    // the type of button that should be generated
     private buttonType: ButtonType;
+    // the identifier used by the parent grid for placement
     private gridAreaName: string;
+    // the text that the button displays
     private label: string;
+    // the type of the button (used by Scouter's backend to keep track of which signal corresponds to which data record)
     private type: string;
 
     constructor(options: ButtonOptions) {
@@ -26,6 +33,9 @@ export default class Button {
     setLabel = (label: string) => (this.label = label);
     setType = (type: string) => (this.type = type);
 
+    /**
+     * Converts the button into the code needed to be rendered within Scouter
+     */
     getJSX() {
         switch (this.buttonType) {
             case 'event':

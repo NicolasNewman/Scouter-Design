@@ -1,6 +1,6 @@
 import FormButton from './FormButton';
 
-export type GroupOptions = {
+type GroupOptions = {
     cols?: string;
     rows?: string;
     templareArea?: string;
@@ -8,12 +8,21 @@ export type GroupOptions = {
     name: string;
 };
 
+/**
+ * Models for a group of buttons on Scouter's scouting form
+ */
 export default class FormGroup {
+    // how many columns of buttons are in the group
     private cols: string;
+    // how many rows of buttons are in the group
     private rows: string;
+    // the order to arrange each button within the group
     private templateArea: string;
+    // the identifier used by the parent grid for placement
     private gridAreaName: string;
+    // the name displayed on the top of the group within Scouter
     private name: string;
+    // list of each button within the group
     private formButtons: Array<FormButton>;
 
     constructor(options: GroupOptions) {
@@ -40,7 +49,10 @@ export default class FormGroup {
         this.formButtons.push(button);
     }
 
-    getJSX() {
+    /**
+     * Converts the group model and its buttons into the code needed to be rendered within Scouter
+     */
+    getJSX(): string {
         return `
         <Grid
             gridAreaName="${this.gridAreaName}"
@@ -53,50 +65,11 @@ export default class FormGroup {
                     <p>${this.name}</p>
                 </div>,
                 ${(() => {
-                    let template = '';
-                    this.formButtons.forEach(button => {
-                        template += button.getJSX();
-                    });
-                    return template;
+                    // insert each button's corresponding JSX into the group's grid
+                    return this.formButtons
+                        .map(button => button.getJSX())
+                        .join('');
                 })()}
-                <AccuracyEventButton
-                    gridAreaName="outer"
-                    constants={this.constantProps}
-                    // label="Outer"
-                    label="Top"
-                    type={EScorableRobotEvents.POWERCELLS_OUTER}
-                    disabled={this.state.globalDisabled}
-                    phase={
-                        this.state.phase === "NONE" ? "AUTO" : this.state.phase
-                    }
-                />,
-                <RobotEventButton
-                    gridAreaName="hang"
-                    constants={this.constantProps}
-                    label="Hang"
-                    type={EScorableRobotEvents.HANG}
-                    disabled={
-                        this.state.globalDisabled ||
-                    t   his.state.endgameButtonsDisabled
-                    }
-                    phase={
-                        this.state.phase === "NONE" ? "AUTO" : this.state.phase
-                    }
-                />,
-                <StateButton
-                    gridAreaName="wheel"
-                    constants={this.constantProps}
-                    label="Wheel"
-                    type={ERobotStates.WHEEL}
-                    disabled={
-                        this.state.globalDisabled ||
-                        (this.state.teleopButtonsDisabled &&
-                        this.state.endgameButtonsDisabled)
-                    }
-                    phase={
-                        this.state.phase === "NONE" ? "AUTO" : this.state.phase
-                    }
-                />,
             ]}
         />,`;
     }
