@@ -1,11 +1,14 @@
 import * as React from 'react';
 import { Component } from 'react';
 import { EventDataArray, StateDataArray } from 'app/types/types';
-import { Button, Select, Modal, Input, InputNumber } from 'antd';
+import { Button, Select, Modal, Input, InputNumber, Checkbox } from 'antd';
+import CheckboxGroup from 'antd/lib/checkbox/Group';
 import FormGroup from '../../classes/models/FormGroup';
 import { toCamelCase } from '../../utils/helper';
 import Grid from '../Grid/Grid';
 import RenderButton from '../Grid/RenderButton';
+import { EventData, StateData } from '../../types/types';
+import * as deepEqual from 'fast-deep-equal';
 
 interface IProps {
     // redux - event
@@ -30,20 +33,59 @@ interface IState {
 
 export default class GroupCreator extends Component<IProps, IState> {
     props: IProps;
+    typeOptions: Array<EventData | StateData>;
+
     input: React.RefObject<Input>;
+
     rowRef: React.RefObject<any>;
     colRef: React.RefObject<any>;
 
+    typeRef: React.RefObject<Select>;
+    disabledRef: React.RefObject<CheckboxGroup>;
+
     constructor(props) {
         super(props);
+        console.log(this.props);
         this.state = {
             modalVisible: false,
             targetGroup: null,
             targetButton: null
         };
+        this.typeOptions = [];
+
         this.input = React.createRef();
+
         this.rowRef = React.createRef();
         this.colRef = React.createRef();
+
+        this.typeRef = React.createRef();
+        this.disabledRef = React.createRef();
+    }
+
+    componentDidMount() {
+        this.typeOptions = [];
+        this.props.events.forEach(event => {
+            this.typeOptions.push(event);
+        });
+        this.props.states.forEach(state => {
+            this.typeOptions.push(state);
+        });
+    }
+
+    shouldComponentUpdate(nextProps: IProps) {
+        const conA = deepEqual(this.props.events, nextProps.events);
+        const conB = deepEqual(this.props.states, this.props.events);
+        if (!(conA && conB)) {
+            this.typeOptions = [];
+            nextProps.events.forEach(event => {
+                this.typeOptions.push(event);
+            });
+            nextProps.states.forEach(state => {
+                this.typeOptions.push(state);
+            });
+        }
+
+        return true;
     }
 
     addGroup = () => {
@@ -198,7 +240,56 @@ export default class GroupCreator extends Component<IProps, IState> {
                 </div>
                 <div className="group-creator__editor">
                     {this.state.targetButton !== null ? (
-                        <div></div> : (<span></span>)
+                        <React.Fragment>
+                            <div>
+                                <span>Type:</span>
+                                <Select
+                                    className="w-9 ml-1"
+                                    ref={this.typeRef}
+                                    options={this.typeOptions.map(option => {
+                                        return {
+                                            key: option.name,
+                                            value: option.name
+                                        };
+                                    })}
+                                />
+                            </div>
+                            <div className="mt-1">
+                                <span>Active during: </span>
+                                <Checkbox.Group
+                                    ref={this.disabledRef}
+                                    options={[
+                                        {
+                                            label: 'auto',
+                                            value: 'autoButtonsDisabled'
+                                        },
+                                        {
+                                            label: 'teleop',
+                                            value: 'teleopButtonsDisabled'
+                                        },
+                                        {
+                                            label: 'endgame',
+                                            value: 'endgameButtonsDisabled'
+                                        }
+                                    ]}
+                                />
+                            </div>
+                            <div className="mt-1">
+                                <Button
+                                    type="primary"
+                                    onClick={() => {
+                                        console.log(this.typeRef.current);
+                                        const selectedOptions = this.disabledRef
+                                            .current.state.value;
+                                        console.log(selectedOptions);
+                                    }}
+                                >
+                                    Update
+                                </Button>
+                            </div>
+                        </React.Fragment>
+                    ) : (
+                        <span></span>
                     )}
                 </div>
             </div>

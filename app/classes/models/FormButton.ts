@@ -5,6 +5,7 @@ type ButtonOptions = {
     gridAreaName?: string;
     label?: string;
     type?: string;
+    disabled?: string;
 };
 
 /**
@@ -19,6 +20,8 @@ export default class FormButton {
     private label: string;
     // the type of the button (used by Scouter's backend to keep track of which signal corresponds to which data record)
     private type: string;
+    // the condition that determines when this button should be disabled
+    private disabled: string;
 
     constructor(options: ButtonOptions) {
         this.buttonType = options.buttonType;
@@ -32,6 +35,7 @@ export default class FormButton {
         (this.gridAreaName = gridAreaName);
     setLabel = (label: string) => (this.label = label);
     setType = (type: string) => (this.type = type);
+    setDisabled = (condition: string) => (this.disabled = condition);
 
     /**
      * Converts the button into the code needed to be rendered within Scouter
@@ -47,7 +51,7 @@ export default class FormButton {
                     type={EScorableRobotEvents.HANG}
                     disabled={
                         this.state.globalDisabled ||
-                    t   his.state.endgameButtonsDisabled
+                        (${this.disabled})
                     }
                     phase={
                         this.state.phase === "NONE" ? "AUTO" : this.state.phase
@@ -63,8 +67,7 @@ export default class FormButton {
                     type={ERobotStates.WHEEL}
                     disabled={
                         this.state.globalDisabled ||
-                        (this.state.teleopButtonsDisabled &&
-                        this.state.endgameButtonsDisabled)
+                        (${this.disabled})
                     }
                     phase={
                         this.state.phase === "NONE" ? "AUTO" : this.state.phase
@@ -78,7 +81,10 @@ export default class FormButton {
                     constants={this.constantProps}
                     label="${this.label}"
                     type={EScorableRobotEvents.POWERCELLS_OUTER}
-                    disabled={this.state.globalDisabled}
+                    disabled={
+                        this.state.globalDisabled ||
+                        (${this.disabled})
+                    }
                     phase={
                         this.state.phase === "NONE" ? "AUTO" : this.state.phase
                     }
