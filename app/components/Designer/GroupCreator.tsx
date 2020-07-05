@@ -181,6 +181,13 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             label={obj.label}
                                             gridAreaName={obj.gridAreaName}
                                             disabled={false}
+                                            clicked={() => {
+                                                console.log(obj.gridAreaName);
+                                                this.setState({
+                                                    targetButton:
+                                                        obj.gridAreaName
+                                                });
+                                            }}
                                         />
                                     ))
                             ]}
@@ -189,7 +196,11 @@ export default class GroupCreator extends Component<IProps, IState> {
                         <span></span>
                     )}
                 </div>
-                <div className="group-creator__editor">C</div>
+                <div className="group-creator__editor">
+                    {this.state.targetButton !== null ? (
+                        <div></div> : (<span></span>)
+                    )}
+                </div>
             </div>
         );
     }

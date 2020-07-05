@@ -7,6 +7,7 @@ import { IGridElementProps } from './Grid';
 
 interface IProps extends IGridElementProps {
     label: string;
+    clicked?: () => void;
     color?: string;
     disabled?: boolean;
 }
@@ -17,8 +18,6 @@ export default class RenderButton extends Component<IProps> {
     constructor(props: IProps) {
         super(props);
     }
-
-    clicked = () => {};
 
     render() {
         return (
@@ -32,7 +31,7 @@ export default class RenderButton extends Component<IProps> {
                         backgroundColor: this.props.color,
                         borderColor: this.props.color
                     }}
-                    onClick={this.clicked}
+                    onClick={this.props.clicked}
                     disabled={this.props.disabled}
                 >
                     {this.props.label}
