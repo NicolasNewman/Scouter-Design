@@ -1,7 +1,9 @@
 import { GroupActionTypeKeys, GroupActionTypes } from '../actions/group';
 import FormGroup from '../classes/models/FormGroup';
 
-const initialState: Array<FormGroup> = [];
+const initialState: Array<FormGroup> = [
+    new FormGroup({ name: 'Goal Events', gridAreaName: 'goalEvents' })
+];
 
 export default function group(
     state: Array<FormGroup> = initialState,
