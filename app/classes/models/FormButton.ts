@@ -39,6 +39,7 @@ export default class FormButton {
     setDisabled = (condition: string) => (this.disabled = condition);
 
     getGridAreaName = () => this.gridAreaName;
+    getLabel = () => this.label;
 
     /**
      * Converts the button into the code needed to be rendered within Scouter

@@ -232,6 +232,23 @@ export default class GroupCreator extends Component<IProps, IState> {
                                                     targetButton:
                                                         obj.gridAreaName
                                                 });
+                                                if (this.labelRef.current) {
+                                                    this.labelRef.current.setState(
+                                                        { value: obj.label }
+                                                    );
+                                                }
+                                                if (obj.checkbox) {
+                                                    this.disabledRef.current.setState(
+                                                        { value: obj.checkbox }
+                                                    );
+                                                } else {
+                                                    this.disabledRef.current.setState(
+                                                        { value: [] }
+                                                    );
+                                                }
+                                                if (obj.type) {
+                                                    // TODO
+                                                }
                                             }}
                                         />
                                     ))
@@ -339,6 +356,22 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             buttonType: btnType,
                                             type
                                         });
+
+                                        this.state.targetGroup.insertButton(
+                                            btn
+                                        );
+                                        this.state.targetGroup.updateRenderButton(
+                                            this.state.targetButton,
+                                            this.labelRef.current.state.value,
+                                            this.disabledRef.current.state
+                                                .value,
+                                            this.state.typeVal
+                                        );
+
+                                        this.props.updateGroup(
+                                            this.state.targetGroup.getGridAreaName(),
+                                            this.state.targetGroup
+                                        );
 
                                         console.log(btn.getJSX());
                                     }}

@@ -1,5 +1,6 @@
 import * as React from 'react';
 import FormButton from './FormButton';
+import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
 type GroupOptions = {
     colCount?: number;
@@ -12,6 +13,8 @@ type GroupOptions = {
 type RenderButton = {
     label: string;
     gridAreaName: string;
+    checkbox?: Array<CheckboxValueType>;
+    type?: string;
 };
 
 /**
@@ -133,6 +136,7 @@ export default class FormGroup {
         this.colCount = this.cols.replace(/[^ ]/g, '').length + 1;
         this.updateTemplateArea();
     };
+
     setColCount = (colCount: number) => {
         this.colCount = colCount;
         let cols = '';
@@ -152,6 +156,7 @@ export default class FormGroup {
         this.rowCount = this.rows.replace(/[^ ]/g, '').length + 1;
         this.updateTemplateArea();
     };
+
     setRowCount = (rowCount: number) => {
         this.rowCount = rowCount;
         let rows = '10% ';
@@ -185,17 +190,30 @@ export default class FormGroup {
 
     getRenderButtons = () => this.renderButtons;
 
-    addButton(button: FormButton) {
-        this.formButtons.push(button);
+    insertButton(insert: FormButton) {
+        const filtered = this.formButtons.filter(
+            button => button.getGridAreaName() !== insert.getGridAreaName()
+        );
+        const updated = [...filtered, insert];
+        this.formButtons = updated;
+
+        // this.updateRenderButton(insert);
     }
 
-    updateButton(toUpdate: FormButton) {
-        const filtered = this.formButtons.filter(
-            button => button.getGridAreaName() !== toUpdate.getGridAreaName()
+    updateRenderButton = (
+        gridAreaName: string,
+        label: string,
+        checkbox: Array<CheckboxValueType>,
+        type: string
+    ) => {
+        const filtered = this.renderButtons.filter(
+            btn => btn.gridAreaName !== gridAreaName
         );
-        const updated = [...filtered, toUpdate];
-        this.formButtons = updated;
-    }
+        this.renderButtons = [
+            ...filtered,
+            { gridAreaName, label, checkbox, type }
+        ];
+    };
 
     /**
      * Converts the group model and its buttons into the code needed to be rendered within Scouter
