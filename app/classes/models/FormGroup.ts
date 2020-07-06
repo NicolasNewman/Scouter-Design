@@ -15,6 +15,7 @@ type RenderButton = {
     gridAreaName: string;
     checkbox?: Array<CheckboxValueType>;
     type?: string;
+    accuracy?: boolean;
 };
 
 /**
@@ -229,14 +230,15 @@ export default class FormGroup {
         gridAreaName: string,
         label: string,
         checkbox: Array<CheckboxValueType>,
-        type: string
+        type: string,
+        accuracy: boolean
     ) => {
         const filtered = this.renderButtons.filter(
             btn => btn.gridAreaName !== gridAreaName
         );
         this.renderButtons = [
             ...filtered,
-            { gridAreaName, label, checkbox, type }
+            { gridAreaName, label, checkbox, type, accuracy }
         ];
     };
 

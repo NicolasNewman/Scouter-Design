@@ -234,6 +234,11 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             label={obj.label}
                                             gridAreaName={obj.gridAreaName}
                                             disabled={false}
+                                            accuracy={
+                                                obj.accuracy
+                                                    ? obj.accuracy
+                                                    : false
+                                            }
                                             clicked={() => {
                                                 // handle a group's preview button being pressed
                                                 this.setState({
@@ -388,7 +393,10 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             this.labelRef.current.state.value,
                                             this.disabledRef.current.state
                                                 .value,
-                                            this.state.typeVal
+                                            this.state.typeVal,
+                                            btnType === 'accuracy'
+                                                ? true
+                                                : false
                                         );
 
                                         this.props.updateGroup(
