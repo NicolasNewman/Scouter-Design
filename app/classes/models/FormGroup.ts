@@ -55,6 +55,9 @@ export default class FormGroup {
         console.log(this.renderButtons);
     }
 
+    /**
+     * Update the cols variable to match the number specified by colCount
+     */
     private updateCols = () => {
         let cols = '';
         for (let i = 0; i < this.colCount; i++) {
@@ -68,6 +71,11 @@ export default class FormGroup {
         this.updateTemplateArea();
     };
 
+    /**
+     * Update the rows variable to match the number specified by rowCount
+     *
+     * 10% should be reserved for the group header and the remaining is evenly split
+     */
     private updateRows = () => {
         let rows = '10% ';
         let percentage = `${90.0 / (this.rowCount - 1)}%`;
@@ -82,6 +90,11 @@ export default class FormGroup {
         this.updateTemplateArea();
     };
 
+    /**
+     * Generate the group's grid template area based on the number of rows and columns
+     *
+     * Used to determine where each button should be placed on the grid
+     */
     private updateTemplateArea = () => {
         let templateArea = '';
         let row = "'";
@@ -95,7 +108,7 @@ export default class FormGroup {
             row = "'";
             for (let j = 0; j < this.colCount; j++) {
                 row += `r${i}c${j} `;
-                this.addRenderButtons(`r${i}c${j}`);
+                this.addRenderButton(`r${i}c${j}`);
             }
             row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
             templateArea += row;
@@ -104,7 +117,11 @@ export default class FormGroup {
         this.removeUnusedRenderButtons();
     };
 
-    private addRenderButtons = (index: string) => {
+    /**
+     *
+     * @param index - the locational index for the group's button, in the format r#c#
+     */
+    private addRenderButton = (index: string) => {
         const detected = this.renderButtons.find(
             button => button.gridAreaName === index
         );
@@ -113,6 +130,9 @@ export default class FormGroup {
         }
     };
 
+    /**
+     * Removes render buttons that fall outside the range of colCount and rowCount
+     */
     private removeUnusedRenderButtons = () => {
         this.renderButtons = this.renderButtons.filter(button => {
             const i = parseInt(button.gridAreaName.charAt(1));
@@ -133,7 +153,7 @@ export default class FormGroup {
 
     setCols = (cols: string) => {
         this.cols = cols;
-        this.colCount = this.cols.replace(/[^ ]/g, '').length + 1;
+        this.colCount = this.cols.replace(/[^ ]/g, '').length + 1; // the number of columns can be computed by # of spaces + 1 (1fr 1fr 1fr = 2 + 1)
         this.updateTemplateArea();
     };
 
@@ -153,13 +173,14 @@ export default class FormGroup {
 
     setRows = (rows: string) => {
         this.rows = rows;
-        this.rowCount = this.rows.replace(/[^ ]/g, '').length + 1;
+        this.rowCount = this.rows.replace(/[^ ]/g, '').length + 1; // the number of rows can be computed by # of spaces + 1 (10% 90% = 1 + 1)
         this.updateTemplateArea();
     };
 
     setRowCount = (rowCount: number) => {
         this.rowCount = rowCount;
         let rows = '10% ';
+        // computes how the remaining 90% should be evenly divided (rowCount - 1 b/c the 10% of the header is included)
         let percentage = `${90.0 / (rowCount - 1)}%`;
         for (let i = 1; i < rowCount; i++) {
             if (i < rowCount - 1) {
@@ -190,6 +211,10 @@ export default class FormGroup {
 
     getRenderButtons = () => this.renderButtons;
 
+    /**
+     * Inserts a FormButton into the group's array. If the button already exists, it will be updated
+     * @param insert - the FormButton to insert into the array
+     */
     insertButton(insert: FormButton) {
         const filtered = this.formButtons.filter(
             button => button.getGridAreaName() !== insert.getGridAreaName()

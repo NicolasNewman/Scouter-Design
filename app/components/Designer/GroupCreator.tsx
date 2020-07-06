@@ -35,9 +35,12 @@ interface IState {
 
 export default class GroupCreator extends Component<IProps, IState> {
     props: IProps;
+    /** list containing all of the events and states the user has defined */
     typeOptions: Array<EventData | StateData>;
 
+    /** reference to the modal input for creating a new group */
     input: React.RefObject<Input>;
+    /** reference to the input for a group button's label */
     labelRef: React.RefObject<Input>;
 
     rowRef: React.RefObject<any>;
@@ -47,7 +50,6 @@ export default class GroupCreator extends Component<IProps, IState> {
 
     constructor(props) {
         super(props);
-        console.log(this.props);
         this.state = {
             modalVisible: false,
             targetGroup: null,
@@ -66,6 +68,7 @@ export default class GroupCreator extends Component<IProps, IState> {
     }
 
     componentDidMount() {
+        // regenerate the type list in the event that it changed
         this.typeOptions = [];
         this.props.events.forEach(event => {
             this.typeOptions.push(event);
@@ -76,6 +79,7 @@ export default class GroupCreator extends Component<IProps, IState> {
     }
 
     shouldComponentUpdate(nextProps: IProps) {
+        // makes sure the component re-renders if the events or states change
         const conA = deepEqual(this.props.events, nextProps.events);
         const conB = deepEqual(this.props.states, this.props.events);
         if (!(conA && conB)) {
@@ -118,6 +122,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                             className="mr-1"
                             type="primary"
                             onClick={() =>
+                                // handle the add group button being pressed
                                 this.setState({ modalVisible: true })
                             }
                         >
@@ -139,6 +144,7 @@ export default class GroupCreator extends Component<IProps, IState> {
 
                                 const rowCount = targetGroup.getRowCount();
                                 const colCount = targetGroup.getColCount();
+                                // subtract 1 b/c the group header is included
                                 this.rowRef.current.setState({
                                     inputValue: `${rowCount - 1}`,
                                     value: rowCount - 1
@@ -183,8 +189,9 @@ export default class GroupCreator extends Component<IProps, IState> {
                         </div>
                         <div className="mt-1">
                             <Button
-                                // Function to handle updating a groups data
+                                // Function to handle updating a group's data
                                 onClick={e => {
+                                    // add 1 to include the group header
                                     const rows =
                                         this.rowRef.current.state.value + 1;
                                     const cols = this.colRef.current.state
@@ -219,6 +226,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                 <div className="input-grid__title">
                                     <p>{this.state.targetGroup.getName()}</p>
                                 </div>,
+                                // generate each button to display in the group preview
                                 ...this.state.targetGroup
                                     .getRenderButtons()
                                     .map(obj => (
@@ -227,11 +235,13 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             gridAreaName={obj.gridAreaName}
                                             disabled={false}
                                             clicked={() => {
-                                                console.log(obj.gridAreaName);
+                                                // handle a group's preview button being pressed
                                                 this.setState({
                                                     targetButton:
                                                         obj.gridAreaName
                                                 });
+
+                                                // restore the values if a slot has already been modified
                                                 if (this.labelRef.current) {
                                                     this.labelRef.current.setState(
                                                         { value: obj.label }
@@ -311,11 +321,15 @@ export default class GroupCreator extends Component<IProps, IState> {
                                 <Button
                                     type="primary"
                                     onClick={() => {
+                                        // internally update or create a FormButton based on the given data
+
+                                        // get the EventData or StateData equivilent from the type label
                                         const typeMatch = this.typeOptions.find(
                                             type =>
                                                 type.name === this.state.typeVal
                                         );
 
+                                        // determine the type of button that should be generated for Scouter
                                         let btnType: ButtonType = 'state';
                                         if (isEventData(typeMatch)) {
                                             if (typeMatch.accuracy) {
@@ -325,6 +339,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             }
                                         }
 
+                                        // determine the correct type that the event / state should belong to (types come from Scouter/global)
                                         let type = '';
                                         if (isEventData(typeMatch)) {
                                             if (
@@ -348,6 +363,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             }
                                         }
 
+                                        // create a new button with the found information
                                         const btn = new FormButton({
                                             gridAreaName: this.state
                                                 .targetButton,
@@ -365,6 +381,8 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         this.state.targetGroup.insertButton(
                                             btn
                                         );
+
+                                        // update the corresponding render button so the data can be recovered after selecting a new button
                                         this.state.targetGroup.updateRenderButton(
                                             this.state.targetButton,
                                             this.labelRef.current.state.value,
