@@ -241,13 +241,17 @@ export default class GroupCreator extends Component<IProps, IState> {
                                                     this.disabledRef.current.setState(
                                                         { value: obj.checkbox }
                                                     );
-                                                } else {
+                                                } else if (
+                                                    this.disabledRef.current
+                                                ) {
                                                     this.disabledRef.current.setState(
                                                         { value: [] }
                                                     );
                                                 }
                                                 if (obj.type) {
-                                                    // TODO
+                                                    this.setState({
+                                                        typeVal: obj.type
+                                                    });
                                                 }
                                             }}
                                         />
@@ -276,6 +280,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             value: option.name
                                         };
                                     })}
+                                    value={this.state.typeVal}
                                 />
                             </div>
                             <div className="mt-1">
