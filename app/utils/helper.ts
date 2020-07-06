@@ -1,3 +1,5 @@
+import { EventData, StateData } from '../types/types';
+
 /**
  * Formats an event name to ensure it can be properly read by Scouter
  * @param name - the original name of the event
@@ -29,4 +31,32 @@ export const toCamelCase = str => {
         if (+match === 0) return ''; // or if (/\s+/.test(match)) for white spaces
         return index === 0 ? match.toLowerCase() : match.toUpperCase();
     });
+};
+
+/**
+ * Takes an array of strings representing bool variable names and ands them together
+ *
+ * ex: ['var1', 'var2', 'var3'] -> 'var1 && var2 && var3'
+ *
+ * @param strings - array of strings to operate on
+ */
+export const andBoolStrings = (strings: Array<string>) => {
+    console.log(strings);
+    let and = '';
+    for (let i = 0; i < strings.length - 1; i++) {
+        and += strings[i] + ' && ';
+        console.log(and);
+    }
+    console.log(and);
+    and += strings[strings.length - 1];
+    console.log(and);
+    return and;
+};
+
+/**
+ * Returns true if the passed data is of type EventData, false if of type StateData
+ * @param data
+ */
+export const isEventData = (data: EventData | StateData): data is EventData => {
+    return (data as EventData).type !== undefined;
 };

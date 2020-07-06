@@ -4,10 +4,11 @@ import { EventDataArray, StateDataArray } from 'app/types/types';
 import { Button, Select, Modal, Input, InputNumber, Checkbox } from 'antd';
 import CheckboxGroup from 'antd/lib/checkbox/Group';
 import FormGroup from '../../classes/models/FormGroup';
-import { toCamelCase } from '../../utils/helper';
+import FormButton from '../../classes/models/FormButton';
+import { toCamelCase, andBoolStrings, isEventData } from '../../utils/helper';
 import Grid from '../Grid/Grid';
 import RenderButton from '../Grid/RenderButton';
-import { EventData, StateData } from '../../types/types';
+import { EventData, StateData, ButtonType } from '../../types/types';
 import * as deepEqual from 'fast-deep-equal';
 
 interface IProps {
@@ -29,6 +30,7 @@ interface IState {
     modalVisible: boolean;
     targetGroup: FormGroup;
     targetButton: string;
+    typeVal: string;
 }
 
 export default class GroupCreator extends Component<IProps, IState> {
@@ -36,11 +38,11 @@ export default class GroupCreator extends Component<IProps, IState> {
     typeOptions: Array<EventData | StateData>;
 
     input: React.RefObject<Input>;
+    labelRef: React.RefObject<Input>;
 
     rowRef: React.RefObject<any>;
     colRef: React.RefObject<any>;
 
-    typeRef: React.RefObject<Select>;
     disabledRef: React.RefObject<CheckboxGroup>;
 
     constructor(props) {
@@ -49,16 +51,17 @@ export default class GroupCreator extends Component<IProps, IState> {
         this.state = {
             modalVisible: false,
             targetGroup: null,
-            targetButton: null
+            targetButton: null,
+            typeVal: ''
         };
         this.typeOptions = [];
 
         this.input = React.createRef();
+        this.labelRef = React.createRef();
 
         this.rowRef = React.createRef();
         this.colRef = React.createRef();
 
-        this.typeRef = React.createRef();
         this.disabledRef = React.createRef();
     }
 
@@ -245,7 +248,11 @@ export default class GroupCreator extends Component<IProps, IState> {
                                 <span>Type:</span>
                                 <Select
                                     className="w-9 ml-1"
-                                    ref={this.typeRef}
+                                    onChange={val => {
+                                        this.setState({
+                                            typeVal: val.toString()
+                                        });
+                                    }}
                                     options={this.typeOptions.map(option => {
                                         return {
                                             key: option.name,
@@ -275,13 +282,65 @@ export default class GroupCreator extends Component<IProps, IState> {
                                 />
                             </div>
                             <div className="mt-1">
+                                <span>Label: </span>
+                                <Input ref={this.labelRef} />
+                            </div>
+                            <div className="mt-1">
                                 <Button
                                     type="primary"
                                     onClick={() => {
-                                        console.log(this.typeRef.current);
-                                        const selectedOptions = this.disabledRef
-                                            .current.state.value;
-                                        console.log(selectedOptions);
+                                        const typeMatch = this.typeOptions.find(
+                                            type =>
+                                                type.name === this.state.typeVal
+                                        );
+
+                                        let btnType: ButtonType = 'state';
+                                        if (isEventData(typeMatch)) {
+                                            if (typeMatch.accuracy) {
+                                                btnType = 'accuracy';
+                                            } else {
+                                                btnType = 'event';
+                                            }
+                                        }
+
+                                        let type = '';
+                                        if (isEventData(typeMatch)) {
+                                            if (
+                                                typeMatch.type === 'robot_event'
+                                            ) {
+                                                if (typeMatch.score > 0) {
+                                                    type = `EScorableRobotEvents.${this.state.typeVal}`;
+                                                } else {
+                                                    type = `ERobotEvents.${this.state.typeVal}`;
+                                                }
+                                            } else if (
+                                                typeMatch.type === 'team_event'
+                                            ) {
+                                                if (typeMatch.score > 0) {
+                                                    type = `EScorableTeamEvents.${this.state.typeVal}`;
+                                                } else {
+                                                    type = `ETeamEvents.${this.state.typeVal}`;
+                                                }
+                                            } else {
+                                                type = `EFoulEvents.${this.state.typeVal}`;
+                                            }
+                                        }
+
+                                        const btn = new FormButton({
+                                            gridAreaName: this.state
+                                                .targetButton,
+                                            label: this.labelRef.current.state
+                                                .value,
+                                            disabled: andBoolStrings(
+                                                this.disabledRef.current.state.value.map(
+                                                    value => value.toString()
+                                                )
+                                            ),
+                                            buttonType: btnType,
+                                            type
+                                        });
+
+                                        console.log(btn.getJSX());
                                     }}
                                 >
                                     Update

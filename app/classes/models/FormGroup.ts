@@ -189,6 +189,14 @@ export default class FormGroup {
         this.formButtons.push(button);
     }
 
+    updateButton(toUpdate: FormButton) {
+        const filtered = this.formButtons.filter(
+            button => button.getGridAreaName() !== toUpdate.getGridAreaName()
+        );
+        const updated = [...filtered, toUpdate];
+        this.formButtons = updated;
+    }
+
     /**
      * Converts the group model and its buttons into the code needed to be rendered within Scouter
      */

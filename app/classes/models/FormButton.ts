@@ -1,4 +1,4 @@
-type ButtonType = 'event' | 'state' | 'accuracy';
+import { ButtonType } from '../../types/types';
 
 type ButtonOptions = {
     buttonType: ButtonType;
@@ -28,6 +28,7 @@ export default class FormButton {
         this.gridAreaName = options.gridAreaName;
         this.label = options.label;
         this.type = options.type;
+        this.disabled = options.disabled;
     }
 
     setButtonType = (buttonType: ButtonType) => (this.buttonType = buttonType);
@@ -36,6 +37,8 @@ export default class FormButton {
     setLabel = (label: string) => (this.label = label);
     setType = (type: string) => (this.type = type);
     setDisabled = (condition: string) => (this.disabled = condition);
+
+    getGridAreaName = () => this.gridAreaName;
 
     /**
      * Converts the button into the code needed to be rendered within Scouter
@@ -48,7 +51,7 @@ export default class FormButton {
                     gridAreaName="${this.gridAreaName}"
                     constants={this.constantProps}
                     label="${this.label}"
-                    type={EScorableRobotEvents.HANG}
+                    type={${this.type}}
                     disabled={
                         this.state.globalDisabled ||
                         (${this.disabled})
@@ -64,7 +67,7 @@ export default class FormButton {
                     gridAreaName="${this.gridAreaName}"
                     constants={this.constantProps}
                     label="${this.label}"
-                    type={ERobotStates.WHEEL}
+                    type={${this.type}}
                     disabled={
                         this.state.globalDisabled ||
                         (${this.disabled})
@@ -80,7 +83,7 @@ export default class FormButton {
                     gridAreaName="${this.gridAreaName}"
                     constants={this.constantProps}
                     label="${this.label}"
-                    type={EScorableRobotEvents.POWERCELLS_OUTER}
+                    type={${this.type}}
                     disabled={
                         this.state.globalDisabled ||
                         (${this.disabled})

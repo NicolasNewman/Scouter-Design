@@ -25,3 +25,4 @@ export type StateDataArray = Array<StateData>;
  *     Misc types
  * ====================*/
 export type FileMode = 'r' | 'w';
+export type ButtonType = 'event' | 'state' | 'accuracy';
