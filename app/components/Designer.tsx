@@ -60,6 +60,9 @@ export default class Home extends Component<IProps> {
         super(props);
         console.log(props);
         this.parser = new WorkspaceParser(this.props.file, this.props.mode);
+        if (this.props.mode === 'r') {
+            this.parser.getReader().load();
+        }
         this.ipcInterface = new IpcInterface(this.parser);
     }
 

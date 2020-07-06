@@ -2,11 +2,14 @@ import * as React from 'react';
 import FormButton from './FormButton';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 
-type GroupOptions = {
+export type GroupOptions = {
+    renderButtons?: Array<RenderButton>;
+    formButtons?: Array<FormButton>;
     colCount?: number;
     rowCount?: number;
     templareArea?: string;
     gridAreaName?: string;
+
     name: string;
 };
 
@@ -40,8 +43,8 @@ export default class FormGroup {
     private renderButtons: Array<RenderButton>;
 
     constructor(options: GroupOptions) {
-        this.formButtons = [];
-        this.renderButtons = [];
+        this.formButtons = options.formButtons ? options.formButtons : [];
+        this.renderButtons = options.renderButtons ? options.renderButtons : [];
         this.colCount = options.colCount ? options.colCount : 2;
         this.updateCols();
         this.rowCount = options.rowCount ? options.rowCount : 3;
@@ -54,6 +57,22 @@ export default class FormGroup {
         this.name = options.name;
         console.log(this.toString());
         console.log(this.renderButtons);
+    }
+
+    toJSON() {
+        return {
+            formButtons: this.formButtons,
+            renderButtons: this.renderButtons,
+            colCount: this.colCount,
+            rowCount: this.rowCount,
+            templateArea: this.templateArea,
+            gridAreaName: this.gridAreaName,
+            name: this.name
+        } as GroupOptions;
+    }
+
+    static fromJSON(options: GroupOptions): FormGroup {
+        return new FormGroup(options);
     }
 
     /**

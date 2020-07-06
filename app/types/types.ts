@@ -1,3 +1,5 @@
+import { GroupOptions } from '../classes/models/FormGroup';
+
 /* ====================
  *     Event types
  * ====================*/
@@ -26,3 +28,9 @@ export type StateDataArray = Array<StateData>;
  * ====================*/
 export type FileMode = 'r' | 'w';
 export type ButtonType = 'event' | 'state' | 'accuracy';
+
+export type WorkspaceType = {
+    event: EventDataArray;
+    state: StateDataArray;
+    group: Array<GroupOptions>;
+};

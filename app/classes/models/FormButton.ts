@@ -1,6 +1,6 @@
 import { ButtonType } from '../../types/types';
 
-type ButtonOptions = {
+export type ButtonOptions = {
     buttonType: ButtonType;
     gridAreaName?: string;
     label?: string;
@@ -29,6 +29,20 @@ export default class FormButton {
         this.label = options.label;
         this.type = options.type;
         this.disabled = options.disabled;
+    }
+
+    toJSON() {
+        return {
+            buttonType: this.buttonType,
+            gridAreaName: this.gridAreaName,
+            label: this.label,
+            type: this.type,
+            disabled: this.disabled
+        } as ButtonOptions;
+    }
+
+    static fromJSON(options: ButtonOptions) {
+        return new FormButton(options);
     }
 
     setButtonType = (buttonType: ButtonType) => (this.buttonType = buttonType);
