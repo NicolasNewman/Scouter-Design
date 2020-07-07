@@ -33,6 +33,11 @@ export default class Group extends Component<IProps, IState> {
                         cols={this.props.group.getCol()}
                         rows={this.props.group.getRow()}
                         templateArea={this.props.group.getTemplateArea()}
+                        style={
+                            this.props.canDrag
+                                ? { cursor: 'grab' }
+                                : { cursor: 'no-drop' }
+                        }
                         gridElements={[
                             <div className="input-grid__title">
                                 <p>{this.props.group.getName()}</p>

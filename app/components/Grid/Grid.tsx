@@ -24,6 +24,7 @@ export interface IGridProps extends IGridElementProps {
      * The class used to target the grid for styling
      */
     className?: string;
+    style?: React.CSSProperties;
 }
 
 /**
@@ -44,7 +45,8 @@ export default class Grid extends Component<IGridProps> {
                     gridTemplateColumns: this.props.cols,
                     gridTemplateRows: this.props.rows,
                     gridTemplateAreas: this.props.templateArea,
-                    gridArea: this.props.gridAreaName
+                    gridArea: this.props.gridAreaName,
+                    ...this.props.style
                 }}
             >
                 {...this.props.gridElements}
