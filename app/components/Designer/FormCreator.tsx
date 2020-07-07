@@ -17,6 +17,7 @@ interface IProps {
 interface IState {
     rows: number;
     cols: number;
+    gridModel: Array<Array<string>>;
 }
 
 export default class FormCreator extends Component<IProps, IState> {
@@ -25,23 +26,31 @@ export default class FormCreator extends Component<IProps, IState> {
     rowRef: React.RefObject<any>;
     colRef: React.RefObject<any>;
 
-    gridModel: Array<Array<string>>;
-
     constructor(props: IProps) {
         super(props);
 
         this.state = {
             rows: 2,
-            cols: 2
+            cols: 2,
+            gridModel: this.generateGridModel(2, 2)
         };
-        this.gridModel = [
-            ['A', 'B'],
-            ['C', 'D']
-        ];
 
         this.rowRef = React.createRef();
         this.colRef = React.createRef();
     }
+
+    generateGridModel = (row: number, col: number) => {
+        const gridModel: Array<Array<string>> = [];
+        let counter = 0;
+        for (let i = 0; i < row; i++) {
+            gridModel.push([]);
+            for (let j = 0; j < col; j++) {
+                gridModel[i].push(String.fromCharCode(65 + counter));
+                counter++;
+            }
+        }
+        return gridModel;
+    };
 
     generateTemplateArea = () => {
         let templateArea = '';
@@ -49,7 +58,7 @@ export default class FormCreator extends Component<IProps, IState> {
         for (let i = 0; i < this.state.rows; i++) {
             row = "'";
             for (let j = 0; j < this.state.cols; j++) {
-                row += `r${i}c${j} `;
+                row += `${this.state.gridModel[i][j]} `;
             }
             row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
             templateArea += row;
@@ -58,6 +67,8 @@ export default class FormCreator extends Component<IProps, IState> {
     };
 
     render() {
+        console.log(this.state);
+        console.log(this.generateTemplateArea());
         return (
             <div className="form-creator">
                 <div className="form-creator__builder">
@@ -73,7 +84,7 @@ export default class FormCreator extends Component<IProps, IState> {
                                 for (let j = 0; j < this.state.cols; j++) {
                                     elements.push(
                                         <FormGridSlot
-                                            gridAreaName={`r${i}c${j}`}
+                                            gridAreaName={`${this.state.gridModel[i][j]}`}
                                             row={this.state.rows}
                                             col={this.state.cols}
                                         />
@@ -111,7 +122,14 @@ export default class FormCreator extends Component<IProps, IState> {
                                     const cols = this.colRef.current.state
                                         .value;
 
-                                    this.setState({ rows, cols });
+                                    this.setState({
+                                        rows,
+                                        cols,
+                                        gridModel: this.generateGridModel(
+                                            rows,
+                                            cols
+                                        )
+                                    });
                                 }}
                             >
                                 Update
