@@ -8,6 +8,8 @@ import HomePage from './containers/HomePage';
 import DesignerPage from './containers/DesignerPage';
 import DataStore from './classes/DataStore';
 import IpcInterface from './classes/IpcInterface';
+import { DndProvider } from 'react-dnd';
+import { HTML5Backend } from 'react-dnd-html5-backend';
 
 export default class Routes extends Component {
     private dataStore: DataStore = new DataStore();
@@ -34,7 +36,11 @@ export default class Routes extends Component {
                                 sizes.designerWindow.width,
                                 sizes.designerWindow.height
                             );
-                            return <DesignerPage dataStore={this.dataStore} />;
+                            return (
+                                <DndProvider backend={HTML5Backend}>
+                                    <DesignerPage dataStore={this.dataStore} />
+                                </DndProvider>
+                            );
                         }}
                     />
                     <Redirect from="/" to="/home" />

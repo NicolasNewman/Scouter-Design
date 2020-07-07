@@ -5,6 +5,7 @@ import { Tabs } from 'antd';
 import DataStore from 'app/classes/DataStore';
 
 import GroupCreator from './Designer/GroupCreator';
+import FormCreator from './Designer/FormCreator';
 import EventTable from './Table/EventTable';
 import StateTable from './Table/StateTable';
 
@@ -107,7 +108,7 @@ export default class Home extends Component<IProps> {
                         />
                     </TabPane>
                     <TabPane tab="Form" key="form">
-                        <p>Form Tab</p>
+                        <FormCreator groups={this.props.groups} />
                     </TabPane>
                 </Tabs>
             </div>
