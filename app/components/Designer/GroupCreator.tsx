@@ -6,10 +6,10 @@ import CheckboxGroup from 'antd/lib/checkbox/Group';
 import FormGroup from '../../classes/models/FormGroup';
 import FormButton from '../../classes/models/FormButton';
 import { toCamelCase, andBoolStrings, isEventData } from '../../utils/helper';
-import Grid from '../Grid/Grid';
 import RenderButton from '../Grid/RenderButton';
 import { EventData, StateData, ButtonType } from '../../types/types';
 import * as deepEqual from 'fast-deep-equal';
+import Group from '../Group';
 
 interface IProps {
     // redux - event
@@ -217,62 +217,35 @@ export default class GroupCreator extends Component<IProps, IState> {
                 </div>
                 <div className="group-creator__builder">
                     {this.state.targetGroup !== null ? (
-                        <Grid
-                            gridAreaName="TODO"
-                            className="input-grid__child"
-                            cols={this.colRef.current.state}
-                            rows={this.rowRef.current.state}
-                            templateArea={this.state.targetGroup.getTemplateArea()}
-                            gridElements={[
-                                <div className="input-grid__title">
-                                    <p>{this.state.targetGroup.getName()}</p>
-                                </div>,
-                                // generate each button to display in the group preview
-                                ...this.state.targetGroup
-                                    .getRenderButtons()
-                                    .map(obj => (
-                                        <RenderButton
-                                            label={obj.label}
-                                            gridAreaName={obj.gridAreaName}
-                                            disabled={false}
-                                            accuracy={
-                                                obj.accuracy
-                                                    ? obj.accuracy
-                                                    : false
-                                            }
-                                            clicked={() => {
-                                                // handle a group's preview button being pressed
-                                                this.setState({
-                                                    targetButton:
-                                                        obj.gridAreaName
-                                                });
+                        <Group
+                            group={this.state.targetGroup}
+                            onClick={obj => {
+                                // handle a group's preview button being pressed
+                                this.setState({
+                                    targetButton: obj.gridAreaName
+                                });
 
-                                                // restore the values if a slot has already been modified
-                                                if (this.labelRef.current) {
-                                                    this.labelRef.current.setState(
-                                                        { value: obj.label }
-                                                    );
-                                                }
-                                                if (obj.checkbox) {
-                                                    this.disabledRef.current.setState(
-                                                        { value: obj.checkbox }
-                                                    );
-                                                } else if (
-                                                    this.disabledRef.current
-                                                ) {
-                                                    this.disabledRef.current.setState(
-                                                        { value: [] }
-                                                    );
-                                                }
-                                                if (obj.type) {
-                                                    this.setState({
-                                                        typeVal: obj.type
-                                                    });
-                                                }
-                                            }}
-                                        />
-                                    ))
-                            ]}
+                                // restore the values if a slot has already been modified
+                                if (this.labelRef.current) {
+                                    this.labelRef.current.setState({
+                                        value: obj.label
+                                    });
+                                }
+                                if (obj.checkbox) {
+                                    this.disabledRef.current.setState({
+                                        value: obj.checkbox
+                                    });
+                                } else if (this.disabledRef.current) {
+                                    this.disabledRef.current.setState({
+                                        value: []
+                                    });
+                                }
+                                if (obj.type) {
+                                    this.setState({
+                                        typeVal: obj.type
+                                    });
+                                }
+                            }}
                         />
                     ) : (
                         <span></span>
