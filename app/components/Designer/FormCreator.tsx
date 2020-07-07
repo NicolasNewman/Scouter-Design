@@ -25,6 +25,8 @@ export default class FormCreator extends Component<IProps, IState> {
     rowRef: React.RefObject<any>;
     colRef: React.RefObject<any>;
 
+    gridModel: Array<Array<string>>;
+
     constructor(props: IProps) {
         super(props);
 
@@ -32,6 +34,10 @@ export default class FormCreator extends Component<IProps, IState> {
             rows: 2,
             cols: 2
         };
+        this.gridModel = [
+            ['A', 'B'],
+            ['C', 'D']
+        ];
 
         this.rowRef = React.createRef();
         this.colRef = React.createRef();
@@ -68,6 +74,8 @@ export default class FormCreator extends Component<IProps, IState> {
                                     elements.push(
                                         <FormGridSlot
                                             gridAreaName={`r${i}c${j}`}
+                                            row={this.state.rows}
+                                            col={this.state.cols}
                                         />
                                     );
                                 }
@@ -98,8 +106,8 @@ export default class FormCreator extends Component<IProps, IState> {
                             <Button
                                 type="primary"
                                 onClick={() => {
-                                    const rows =
-                                        this.rowRef.current.state.value + 1;
+                                    const rows = this.rowRef.current.state
+                                        .value;
                                     const cols = this.colRef.current.state
                                         .value;
 

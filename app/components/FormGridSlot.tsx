@@ -11,6 +11,8 @@ import {
 
 interface IBaseProps {
     gridAreaName: string;
+    row: number;
+    col: number;
 }
 
 interface IProps extends IBaseProps {
@@ -35,13 +37,18 @@ class FormGridSlot extends Component<IProps, IState> {
     }
 
     componentDidUpdate(prevProps: IProps) {
+        if (
+            prevProps.row !== this.props.row ||
+            prevProps.col !== this.props.col
+        ) {
+            this.setState({ inner: null });
+        }
         if (!prevProps.isOver && this.props.isOver) {
             console.log(`Entered: ${this.props.gridAreaName}`);
         }
 
         if (prevProps.isOver && !this.props.isOver) {
             console.log(`Left: ${this.props.gridAreaName}`);
-            // You can use this as leave handler
         }
     }
 
