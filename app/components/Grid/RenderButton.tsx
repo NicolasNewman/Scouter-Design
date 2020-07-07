@@ -78,7 +78,7 @@ export default class RenderButton extends Component<IProps> {
                 >
                     <Button
                         style={{
-                            backgroundColor: this.props.color,
+                            backgroundColor: '#0066b3',
                             borderColor: this.props.color
                         }}
                         onClick={this.props.clicked}

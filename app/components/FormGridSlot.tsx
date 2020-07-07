@@ -79,7 +79,7 @@ export default DropTarget(
             console.log(monitor.getItem());
             console.log(component);
             component.setState({
-                inner: <Group group={monitor.getItem().group} />
+                inner: <Group disabled={true} group={monitor.getItem().group} />
             });
             return {
                 gridAreaName: props.gridAreaName

@@ -18,6 +18,7 @@ interface IState {
     rows: number;
     cols: number;
     gridModel: Array<Array<string>>;
+    isJoiningGrid: boolean;
 }
 
 export default class FormCreator extends Component<IProps, IState> {
@@ -32,7 +33,8 @@ export default class FormCreator extends Component<IProps, IState> {
         this.state = {
             rows: 2,
             cols: 2,
-            gridModel: this.generateGridModel(2, 2)
+            gridModel: this.generateGridModel(2, 2),
+            isJoiningGrid: false
         };
 
         this.rowRef = React.createRef();
@@ -113,9 +115,10 @@ export default class FormCreator extends Component<IProps, IState> {
                                 className="w-3"
                             />
                         </div>
-                        <div className="mt-1">
+                        <div className="my-1">
                             <Button
                                 type="primary"
+                                className="mr-1"
                                 onClick={() => {
                                     const rows = this.rowRef.current.state
                                         .value;
@@ -134,11 +137,25 @@ export default class FormCreator extends Component<IProps, IState> {
                             >
                                 Update
                             </Button>
+                            <Button
+                                type="primary"
+                                onClick={() => {
+                                    this.setState({
+                                        isJoiningGrid: !this.state.isJoiningGrid
+                                    });
+                                }}
+                            >
+                                Join
+                            </Button>
                         </div>
                     </div>
                     <div className="form-creator__editor--groups">
                         {...this.props.groups.map(group => (
-                            <DraggableGroup group={group} />
+                            <DraggableGroup
+                                disabled={true}
+                                group={group}
+                                canDrag={!this.state.isJoiningGrid}
+                            />
                         ))}
                     </div>
                 </div>

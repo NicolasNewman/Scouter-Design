@@ -7,6 +7,8 @@ import { DragElementWrapper, DragSourceOptions } from 'react-dnd';
 
 export interface IProps {
     group: FormGroup;
+    disabled?: boolean;
+    canDrag?: boolean;
     onClick?: (obj: any) => void;
 
     isDragging?: boolean;
@@ -42,7 +44,7 @@ export default class Group extends Component<IProps, IState> {
                                     <RenderButton
                                         label={obj.label}
                                         gridAreaName={obj.gridAreaName}
-                                        disabled={false}
+                                        disabled={this.props.disabled}
                                         accuracy={
                                             obj.accuracy ? obj.accuracy : false
                                         }
@@ -71,7 +73,7 @@ export default class Group extends Component<IProps, IState> {
                             <RenderButton
                                 label={obj.label}
                                 gridAreaName={obj.gridAreaName}
-                                disabled={false}
+                                disabled={this.props.disabled}
                                 accuracy={obj.accuracy ? obj.accuracy : false}
                                 clicked={() => this.props.onClick(obj)}
                             />

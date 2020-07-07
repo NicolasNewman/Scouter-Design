@@ -34,9 +34,15 @@
         }
 
         &--dimensions {
-            & button {
-                margin: 0 50%;
-                transform: translateX(-50%);
+            & > div:nth-child(2n) {
+                display: flex;
+                justify-content: center;
+                flex-direction: row;
+                // margin: 0 50%;
+                // transform: translateX(-50%);
+                & > button {
+                    width: 50%;
+                }
             }
         }
 

@@ -23,7 +23,7 @@ export default DragSource(
             console.log('========== CAN DRAG ==========');
             console.log(props);
             console.log(monitor);
-            return true;
+            return props.canDrag !== null ? props.canDrag : true;
         }
     },
     (connect: DragSourceConnector, monitor: DragSourceMonitor) => ({
