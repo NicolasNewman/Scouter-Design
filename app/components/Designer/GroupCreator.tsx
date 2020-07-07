@@ -50,6 +50,7 @@ export default class GroupCreator extends Component<IProps, IState> {
 
     constructor(props) {
         super(props);
+        console.log(this.props.groups);
         this.state = {
             modalVisible: false,
             targetGroup: null,

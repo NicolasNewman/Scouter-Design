@@ -1,10 +1,12 @@
 import * as React from 'react';
 import FormButton from './FormButton';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
+import { ButtonOptions } from './FormButton';
 
 export type GroupOptions = {
     renderButtons?: Array<RenderButton>;
     formButtons?: Array<FormButton>;
+    formButtonOpt?: Array<ButtonOptions>;
     colCount?: number;
     rowCount?: number;
     templareArea?: string;
@@ -43,12 +45,15 @@ export default class FormGroup {
     private renderButtons: Array<RenderButton>;
 
     constructor(options: GroupOptions) {
-        this.formButtons = options.formButtons ? options.formButtons : [];
+        this.formButtons = options.formButtonOpt
+            ? options.formButtonOpt.map(opt => FormButton.fromJSON(opt))
+            : [];
         this.renderButtons = options.renderButtons ? options.renderButtons : [];
         this.colCount = options.colCount ? options.colCount : 2;
-        this.updateCols();
         this.rowCount = options.rowCount ? options.rowCount : 3;
+        this.updateCols();
         this.updateRows();
+
         this.templateArea = options.templareArea;
         if (!this.templateArea) {
             this.updateTemplateArea();
@@ -56,12 +61,11 @@ export default class FormGroup {
         this.gridAreaName = options.gridAreaName;
         this.name = options.name;
         console.log(this.toString());
-        console.log(this.renderButtons);
     }
 
     toJSON() {
         return {
-            formButtons: this.formButtons,
+            formButtonOpt: this.formButtons.map(button => button.toJSON()),
             renderButtons: this.renderButtons,
             colCount: this.colCount,
             rowCount: this.rowCount,
@@ -133,6 +137,7 @@ export default class FormGroup {
             row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
             templateArea += row;
         }
+
         this.templateArea = templateArea;
         this.removeUnusedRenderButtons();
     };
@@ -142,9 +147,9 @@ export default class FormGroup {
      * @param index - the locational index for the group's button, in the format r#c#
      */
     private addRenderButton = (index: string) => {
-        const detected = this.renderButtons.find(
-            button => button.gridAreaName === index
-        );
+        const detected = this.renderButtons.find(button => {
+            return button.gridAreaName === index;
+        });
         if (!detected) {
             this.renderButtons.push({ label: '+', gridAreaName: index });
         }
