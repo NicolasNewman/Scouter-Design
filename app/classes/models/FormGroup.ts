@@ -2,6 +2,10 @@ import * as React from 'react';
 import FormButton from './FormButton';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { ButtonOptions } from './FormButton';
+import {
+    generateGridColString,
+    generateGridRowString
+} from '../../utils/helper';
 
 export type GroupOptions = {
     renderButtons?: Array<RenderButton>;
@@ -83,15 +87,7 @@ export default class FormGroup {
      * Update the cols variable to match the number specified by colCount
      */
     private updateCols = () => {
-        let cols = '';
-        for (let i = 0; i < this.colCount; i++) {
-            if (i < this.colCount - 1) {
-                cols += '1fr ';
-            } else {
-                cols += '1fr';
-            }
-        }
-        this.cols = cols;
+        this.cols = generateGridColString(this.colCount);
         this.updateTemplateArea();
     };
 
@@ -101,16 +97,7 @@ export default class FormGroup {
      * 10% should be reserved for the group header and the remaining is evenly split
      */
     private updateRows = () => {
-        let rows = '10% ';
-        let percentage = `${90.0 / (this.rowCount - 1)}%`;
-        for (let i = 1; i < this.rowCount; i++) {
-            if (i < this.rowCount - 1) {
-                rows += percentage + ' ';
-            } else {
-                rows += percentage;
-            }
-        }
-        this.rows = rows;
+        this.rows = generateGridRowString(this.rowCount);
         this.updateTemplateArea();
     };
 

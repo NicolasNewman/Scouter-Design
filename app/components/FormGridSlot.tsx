@@ -9,6 +9,7 @@ import {
 } from 'react-dnd';
 
 interface IProps {
+    gridAreaName: string;
     isOver?: boolean;
     canDrop?: boolean;
     itemType?: any;
@@ -24,7 +25,9 @@ class FormGridSlot extends Component<IProps> {
     }
 
     render() {
-        return this.props.connectDropTarget(<div>SLOT</div>);
+        return this.props.connectDropTarget(
+            <div style={{ gridArea: this.props.gridAreaName }}></div>
+        );
     }
 }
 

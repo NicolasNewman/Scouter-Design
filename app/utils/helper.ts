@@ -60,3 +60,42 @@ export const andBoolStrings = (strings: Array<string>) => {
 export const isEventData = (data: EventData | StateData): data is EventData => {
     return (data as EventData).type !== undefined;
 };
+
+/**
+ * Generates a string representing the row dimensions for a grid
+ *
+ * ex 2->"10% 45% 45%"
+ *
+ * @param rowCount - the number of rows there are in the grid
+ */
+export const generateGridRowString = (rowCount: number) => {
+    let rows = '10% ';
+    let percentage = `${90.0 / (rowCount - 1)}%`;
+    for (let i = 1; i < rowCount; i++) {
+        if (i < rowCount - 1) {
+            rows += percentage + ' ';
+        } else {
+            rows += percentage;
+        }
+    }
+    return rows;
+};
+
+/**
+ * Generates a string representing the column dimensions for a grid
+ *
+ * ex 3->"1fr 1fr 1fr"
+ *
+ * @param colCount - the number of columns there are in the grid
+ */
+export const generateGridColString = (colCount: number) => {
+    let cols = '';
+    for (let i = 0; i < colCount; i++) {
+        if (i < colCount - 1) {
+            cols += '1fr ';
+        } else {
+            cols += '1fr';
+        }
+    }
+    return cols;
+};
