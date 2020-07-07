@@ -1,6 +1,7 @@
 import * as React from 'react';
 import { Component } from 'react';
 // import { GroupProps } from './Group';
+import Group from './Group';
 import {
     DropTarget,
     DropTargetMonitor,
@@ -8,25 +9,51 @@ import {
     DragElementWrapper
 } from 'react-dnd';
 
-interface IProps {
+interface IBaseProps {
     gridAreaName: string;
-    isOver?: boolean;
-    canDrop?: boolean;
-    itemType?: any;
-    dropResult?: any;
-    connectDropTarget?: DragElementWrapper<any>;
 }
 
-class FormGridSlot extends Component<IProps> {
+interface IProps extends IBaseProps {
+    // styleOverride: React.CSSProperties;
+    isOver: boolean;
+    canDrop: boolean;
+    itemType: any;
+    dropResult: any;
+    connectDropTarget: DragElementWrapper<any>;
+}
+
+interface IState {
+    inner?: React.ReactNode;
+}
+
+class FormGridSlot extends Component<IProps, IState> {
     props: IProps;
 
     constructor(props) {
         super(props);
+        this.state = {};
+    }
+
+    componentDidUpdate(prevProps: IProps) {
+        if (!prevProps.isOver && this.props.isOver) {
+            console.log(`Entered: ${this.props.gridAreaName}`);
+        }
+
+        if (prevProps.isOver && !this.props.isOver) {
+            console.log(`Left: ${this.props.gridAreaName}`);
+            // You can use this as leave handler
+        }
     }
 
     render() {
+        let style: React.CSSProperties = { gridArea: this.props.gridAreaName };
+        if (this.props.isOver) {
+            style['backgroundColor'] = 'rgba(0,255,50,0.5)';
+        }
         return this.props.connectDropTarget(
-            <div style={{ gridArea: this.props.gridAreaName }}></div>
+            <div style={style}>
+                {this.state.inner ? this.state.inner : null}
+            </div>
         );
     }
 }
@@ -34,11 +61,28 @@ class FormGridSlot extends Component<IProps> {
 export default DropTarget(
     'Group',
     {
-        drop: (props: any, monitor: DropTargetMonitor) => {
+        drop: (
+            props: IBaseProps,
+            monitor: DropTargetMonitor,
+            component: FormGridSlot
+        ) => {
             console.log('========== DROP ==========');
             console.log(props);
             console.log(monitor);
+            console.log(monitor.getItem());
+            console.log(component);
+            component.setState({
+                inner: <Group group={monitor.getItem().group} />
+            });
+            return {
+                gridAreaName: props.gridAreaName
+            };
         }
+        // hover: (props: any, monitor: DropTargetMonitor) => {
+        //     console.log('========== HOVER ==========');
+        //     console.log(props);
+        //     console.log(monitor);
+        // }
     },
     (connect: DropTargetConnector, monitor: DropTargetMonitor) => ({
         connectDropTarget: connect.dropTarget(),
