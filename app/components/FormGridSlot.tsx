@@ -2,12 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 // import { GroupProps } from './Group';
 import Group from './Group';
-import {
-    DropTarget,
-    DropTargetMonitor,
-    DropTargetConnector,
-    DragElementWrapper
-} from 'react-dnd';
+import { DropTarget, DropTargetMonitor, DropTargetConnector, DragElementWrapper } from 'react-dnd';
 
 interface IBaseProps {
     gridAreaName: string;
@@ -40,10 +35,7 @@ class FormGridSlot extends Component<IProps, IState> {
     }
 
     componentDidUpdate(prevProps: IProps) {
-        if (
-            prevProps.row !== this.props.row ||
-            prevProps.col !== this.props.col
-        ) {
+        if (prevProps.row !== this.props.row || prevProps.col !== this.props.col) {
             this.setState({ inner: null });
         }
         if (!prevProps.isOver && this.props.isOver) {
@@ -76,11 +68,7 @@ class FormGridSlot extends Component<IProps, IState> {
             <div
                 className={className}
                 style={style}
-                onClick={
-                    this.props.isJoiningGrid
-                        ? this.props.joinClickHandler
-                        : () => {}
-                }
+                onClick={this.props.isJoiningGrid ? this.props.joinClickHandler : () => {}}
             >
                 {this.state.inner ? this.state.inner : null}
             </div>
@@ -91,18 +79,20 @@ class FormGridSlot extends Component<IProps, IState> {
 export default DropTarget(
     'Group',
     {
-        drop: (
-            props: IBaseProps,
-            monitor: DropTargetMonitor,
-            component: FormGridSlot
-        ) => {
+        drop: (props: IBaseProps, monitor: DropTargetMonitor, component: FormGridSlot) => {
             console.log('========== DROP ==========');
             console.log(props);
             console.log(monitor);
             console.log(monitor.getItem());
             console.log(component);
             component.setState({
-                inner: <Group disabled={true} group={monitor.getItem().group} />
+                inner: (
+                    <Group
+                        disabled={true}
+                        group={monitor.getItem().group}
+                        clear={() => component.setState({ inner: null })}
+                    />
+                )
             });
             return {
                 gridAreaName: props.gridAreaName

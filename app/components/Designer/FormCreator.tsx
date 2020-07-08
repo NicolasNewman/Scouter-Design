@@ -5,7 +5,7 @@ import DraggableGroup from '../DraggableGroup';
 import FormGridSlot from '../FormGridSlot';
 import { Button, InputNumber, message } from 'antd';
 import Grid from '../Grid/Grid';
-import { generateGridColString, generateGridRowString, print2DArray } from '../../utils/helper';
+import { generateGridColString, generateGridRowString, print2DArray, generate2DArray } from '../../utils/helper';
 
 interface IProps {
     groups: Array<FormGroup>;
@@ -71,7 +71,6 @@ export default class FormCreator extends Component<IProps, IState> {
 
     render() {
         console.log(this.state);
-        console.log(this.generateTemplateArea());
         return (
             <div className="form-creator">
                 <div className="form-creator__builder">
@@ -101,7 +100,6 @@ export default class FormCreator extends Component<IProps, IState> {
                                                     // set to being clicked
                                                     cpy[i][j] = this.state.gridModel[i][j];
                                                 }
-                                                console.log(cpy);
                                                 this.setState({
                                                     joinModel: cpy
                                                 });
@@ -150,56 +148,63 @@ export default class FormCreator extends Component<IProps, IState> {
                                 onClick={() => {
                                     if (this.state.isJoiningGrid) {
                                         // the user wants to merge the grids
-                                        let rMin = Number.MAX_VALUE,
-                                            rMax = Number.MIN_VALUE;
-                                        let cMin = Number.MAX_VALUE,
-                                            cMax = Number.MIN_VALUE;
+                                        let rMin = Number.MAX_SAFE_INTEGER,
+                                            rMax = Number.MIN_SAFE_INTEGER;
+                                        let cMin = Number.MAX_SAFE_INTEGER,
+                                            cMax = Number.MIN_SAFE_INTEGER;
 
-                                        const m = this.state.joinModel;
-                                        print2DArray(m);
+                                        // print2DArray(m);
 
                                         // figure out the extrema in the matrix to determine if it is a rectangle
                                         for (let i = 0; i < this.state.rows; i++) {
                                             for (let j = 0; j < this.state.cols; j++) {
-                                                const notEmpty = m[i][j] !== '';
+                                                const notEmpty = this.state.joinModel[i][j] !== '';
+                                                // console.log(`[${i},${j}]`);
                                                 if (notEmpty && i < rMin) {
+                                                    // console.log(`Updating rMin=${rMin} with ${i}`);
                                                     rMin = i;
                                                 }
                                                 if (notEmpty && i > rMax) {
+                                                    // console.log(`Updating rMax=${rMax} with ${i}`);
                                                     rMax = i;
                                                 }
                                                 if (notEmpty && j < cMin) {
+                                                    // console.log(`Updating cMin=${cMin} with ${j}`);
                                                     cMin = j;
                                                 }
                                                 if (notEmpty && j > cMax) {
+                                                    // console.log(`Updating cMax=${cMax} with ${j}`);
                                                     cMax = j;
                                                 }
                                             }
                                         }
-                                        console.log(`row: [${rMin},${rMax}]`);
-                                        console.log(`col: [${cMin},${cMax}]`);
 
                                         // condition to prevent errors from not selecting anything
                                         if (rMax - rMin + 1 > 0 && cMax - cMin + 1 > 0) {
+                                            // const newMatrix = generate2DArray(rMax - rMin + 1, cMax - cMin + 1);
                                             const newMatrix = new Array(rMax - rMin + 1).fill(
                                                 new Array(cMax - cMin + 1).fill('')
                                             );
-                                            console.log(newMatrix);
                                             // build a new matrix that is homed in on the selected region
                                             for (let i = rMin; i <= rMax; i++) {
                                                 for (let j = cMin; j <= cMax; j++) {
                                                     console.log(
                                                         `newMatrix[${i - rMin}][${j - cMin}] = m[${i}][${j}] = ${
-                                                            m[i][j]
+                                                            this.state.joinModel[i][j]
                                                         }`
                                                     );
-                                                    newMatrix[i - rMin][j - cMin] = m[i][j];
+                                                    newMatrix[i - rMin][j - cMin] = this.state.joinModel[i][j];
                                                 }
                                             }
-                                            print2DArray(newMatrix);
 
                                             // if it contains any empty slots, it is not a rectangle
-                                            const emptySlot = newMatrix.includes('');
+                                            // const emptySlot = newMatrix.includes('');
+                                            let emptySlot = false;
+                                            newMatrix.forEach(row => {
+                                                if (row.includes('')) {
+                                                    emptySlot = true;
+                                                }
+                                            });
                                             if (emptySlot) {
                                                 message.error('Please make sure your selection is rectangular');
                                             } else {
@@ -224,6 +229,13 @@ export default class FormCreator extends Component<IProps, IState> {
                                                     isJoiningGrid: !this.state.isJoiningGrid
                                                 });
                                             }
+                                        } else {
+                                            this.setState({
+                                                joinModel: new Array(this.state.rows).fill(
+                                                    new Array(this.state.cols).fill('')
+                                                ),
+                                                isJoiningGrid: !this.state.isJoiningGrid
+                                            });
                                         }
                                     } else {
                                         // the user wants to select grids to merge
