@@ -13,6 +13,9 @@ interface IBaseProps {
     gridAreaName: string;
     row: number;
     col: number;
+    isJoiningGrid: boolean;
+    joinModel: string;
+    joinClickHandler: () => void;
 }
 
 interface IProps extends IBaseProps {
@@ -57,8 +60,28 @@ class FormGridSlot extends Component<IProps, IState> {
         if (this.props.isOver) {
             style['backgroundColor'] = 'rgba(0,255,50,0.5)';
         }
+
+        let className = '';
+        // console.log(
+        //     `joinModel[${this.props.row - 1}][${this.props.col - 1}] = ${
+        //         this.props.joinModel[this.props.row - 1][this.props.col - 1]
+        //     } === ${this.props.gridAreaName}`
+        // );
+        if (this.props.joinModel === this.props.gridAreaName) {
+            className = 'form-creator__dropzone--joined';
+        } else if (this.props.isJoiningGrid) {
+            className = 'form-creator__dropzone--join';
+        }
         return this.props.connectDropTarget(
-            <div style={style}>
+            <div
+                className={className}
+                style={style}
+                onClick={
+                    this.props.isJoiningGrid
+                        ? this.props.joinClickHandler
+                        : () => {}
+                }
+            >
                 {this.state.inner ? this.state.inner : null}
             </div>
         );

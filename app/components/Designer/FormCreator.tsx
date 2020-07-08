@@ -17,7 +17,10 @@ interface IProps {
 interface IState {
     rows: number;
     cols: number;
+    /** The model that contains each letter position for the drop zone grid */
     gridModel: Array<Array<string>>;
+    /** The model that contains which zones to merge on the grid */
+    joinModel: Array<Array<string>>;
     isJoiningGrid: boolean;
 }
 
@@ -34,6 +37,7 @@ export default class FormCreator extends Component<IProps, IState> {
             rows: 2,
             cols: 2,
             gridModel: this.generateGridModel(2, 2),
+            joinModel: new Array(2).fill(new Array(2).fill('')),
             isJoiningGrid: false
         };
 
@@ -47,7 +51,7 @@ export default class FormCreator extends Component<IProps, IState> {
         for (let i = 0; i < row; i++) {
             gridModel.push([]);
             for (let j = 0; j < col; j++) {
-                gridModel[i].push(String.fromCharCode(65 + counter));
+                gridModel[i].push(String.fromCharCode(65 + counter)); // ASCII: 65 = A
                 counter++;
             }
         }
@@ -89,6 +93,25 @@ export default class FormCreator extends Component<IProps, IState> {
                                             gridAreaName={`${this.state.gridModel[i][j]}`}
                                             row={this.state.rows}
                                             col={this.state.cols}
+                                            isJoiningGrid={
+                                                this.state.isJoiningGrid
+                                            }
+                                            joinModel={
+                                                this.state.joinModel[i][j]
+                                            }
+                                            joinClickHandler={() => {
+                                                console.log('Clicked!');
+                                                const cpy = this.state.joinModel.map(
+                                                    cols => cols.map(num => num)
+                                                );
+                                                cpy[i][
+                                                    j
+                                                ] = this.state.gridModel[i][j];
+                                                console.log(cpy);
+                                                this.setState({
+                                                    joinModel: cpy
+                                                });
+                                            }}
                                         />
                                     );
                                 }
@@ -131,6 +154,9 @@ export default class FormCreator extends Component<IProps, IState> {
                                         gridModel: this.generateGridModel(
                                             rows,
                                             cols
+                                        ),
+                                        joinModel: new Array(rows).fill(
+                                            new Array(cols).fill('')
                                         )
                                     });
                                 }}
@@ -140,12 +166,27 @@ export default class FormCreator extends Component<IProps, IState> {
                             <Button
                                 type="primary"
                                 onClick={() => {
-                                    this.setState({
-                                        isJoiningGrid: !this.state.isJoiningGrid
-                                    });
+                                    if (this.state.isJoiningGrid) {
+                                        this.setState({
+                                            joinModel: new Array(
+                                                this.state.rows
+                                            ).fill(
+                                                new Array(this.state.cols).fill(
+                                                    ''
+                                                )
+                                            ),
+                                            isJoiningGrid: !this.state
+                                                .isJoiningGrid
+                                        });
+                                    } else {
+                                        this.setState({
+                                            isJoiningGrid: !this.state
+                                                .isJoiningGrid
+                                        });
+                                    }
                                 }}
                             >
-                                Join
+                                {this.state.isJoiningGrid ? 'Confirm' : 'Join'}
                             </Button>
                         </div>
                     </div>
