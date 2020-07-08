@@ -7,7 +7,8 @@ import { Button, InputNumber } from 'antd';
 import Grid from '../Grid/Grid';
 import {
     generateGridColString,
-    generateGridRowString
+    generateGridRowString,
+    print2DArray
 } from '../../utils/helper';
 
 interface IProps {
@@ -100,13 +101,23 @@ export default class FormCreator extends Component<IProps, IState> {
                                                 this.state.joinModel[i][j]
                                             }
                                             joinClickHandler={() => {
-                                                console.log('Clicked!');
                                                 const cpy = this.state.joinModel.map(
                                                     cols => cols.map(num => num)
                                                 );
-                                                cpy[i][
-                                                    j
-                                                ] = this.state.gridModel[i][j];
+                                                if (
+                                                    this.state.joinModel[i][
+                                                        j
+                                                    ] ===
+                                                    this.state.gridModel[i][j]
+                                                ) {
+                                                    cpy[i][j] = '';
+                                                } else {
+                                                    cpy[i][
+                                                        j
+                                                    ] = this.state.gridModel[i][
+                                                        j
+                                                    ];
+                                                }
                                                 console.log(cpy);
                                                 this.setState({
                                                     joinModel: cpy
@@ -167,18 +178,92 @@ export default class FormCreator extends Component<IProps, IState> {
                                 type="primary"
                                 onClick={() => {
                                     if (this.state.isJoiningGrid) {
-                                        this.setState({
-                                            joinModel: new Array(
-                                                this.state.rows
+                                        // the user wants to merge the grids
+                                        let rMin = Number.MAX_VALUE,
+                                            rMax = Number.MIN_VALUE;
+                                        let cMin = Number.MAX_VALUE,
+                                            cMax = Number.MIN_VALUE;
+
+                                        const m = this.state.joinModel;
+                                        print2DArray(m);
+                                        for (
+                                            let i = 0;
+                                            i < this.state.rows;
+                                            i++
+                                        ) {
+                                            for (
+                                                let j = 0;
+                                                j < this.state.cols;
+                                                j++
+                                            ) {
+                                                const notEmpty = m[i][j] !== '';
+                                                if (notEmpty && i < rMin) {
+                                                    rMin = i;
+                                                }
+                                                if (notEmpty && i > rMax) {
+                                                    rMax = i;
+                                                }
+                                                if (notEmpty && j < cMin) {
+                                                    cMin = j;
+                                                }
+                                                if (notEmpty && j > cMax) {
+                                                    cMax = j;
+                                                }
+                                            }
+                                        }
+                                        console.log(`row: [${rMin},${rMax}]`);
+                                        console.log(`col: [${cMin},${cMax}]`);
+
+                                        if (
+                                            rMax - rMin + 1 > 0 &&
+                                            cMax - cMin + 1 > 0
+                                        ) {
+                                            const newMatrix = new Array(
+                                                rMax - rMin + 1
                                             ).fill(
-                                                new Array(this.state.cols).fill(
+                                                new Array(cMax - cMin + 1).fill(
                                                     ''
                                                 )
-                                            ),
-                                            isJoiningGrid: !this.state
-                                                .isJoiningGrid
-                                        });
+                                            );
+                                            console.log(newMatrix);
+                                            for (let i = rMin; i <= rMax; i++) {
+                                                for (
+                                                    let j = cMin;
+                                                    j <= cMax;
+                                                    j++
+                                                ) {
+                                                    console.log(
+                                                        `newMatrix[${i -
+                                                            rMin}][${j -
+                                                            cMin}] = m[${i}][${j}] = ${
+                                                            m[i][j]
+                                                        }`
+                                                    );
+                                                    newMatrix[i - rMin][
+                                                        j - cMin
+                                                    ] = m[i][j];
+                                                }
+                                            }
+                                            print2DArray(newMatrix);
+
+                                            const emptySlot = newMatrix.includes(
+                                                ''
+                                            );
+
+                                            this.setState({
+                                                joinModel: new Array(
+                                                    this.state.rows
+                                                ).fill(
+                                                    new Array(
+                                                        this.state.cols
+                                                    ).fill('')
+                                                ),
+                                                isJoiningGrid: !this.state
+                                                    .isJoiningGrid
+                                            });
+                                        }
                                     } else {
+                                        // the user wants to select grids to merge
                                         this.setState({
                                             isJoiningGrid: !this.state
                                                 .isJoiningGrid

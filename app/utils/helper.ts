@@ -99,3 +99,15 @@ export const generateGridColString = (colCount: number) => {
     }
     return cols;
 };
+
+export const print2DArray = (m: Array<Array<any>>) => {
+    let mStr = '';
+    for (let i = 0; i < m.length; i++) {
+        let rowStr = '';
+        for (let j = 0; j < m[i].length; j++) {
+            rowStr += m[i][j] === '' ? '. ' : m[i][j] + ' ';
+        }
+        mStr += `${rowStr}\n`;
+    }
+    console.log(mStr);
+};
