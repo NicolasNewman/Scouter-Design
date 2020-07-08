@@ -111,3 +111,15 @@ export const print2DArray = (m: Array<Array<any>>) => {
     }
     console.log(mStr);
 };
+
+export const generate2DArray = (r: number, c: number): Array<Array<string>> => {
+    let m = [];
+    for (let i = 0; i < r; i++) {
+        let temp = [];
+        for (let j = 0; j < c; j++) {
+            temp.push('');
+        }
+        m.push(temp);
+    }
+    return m;
+};
