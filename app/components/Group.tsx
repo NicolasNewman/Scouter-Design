@@ -26,7 +26,6 @@ export default class Group extends Component<IProps, IState> {
         super(props);
     }
     render() {
-        console.log(this.props.clear);
         return this.props.connectDragSource ? (
             this.props.connectDragSource(
                 <div>
@@ -83,10 +82,11 @@ export default class Group extends Component<IProps, IState> {
                                 clicked={() => this.props.onClick(obj)}
                             />
                         )),
+                    // if the group was created from the DraggableGroup injector, add a close button
                     this.props.clear ? (
                         <CloseCircleOutlined onClick={this.props.clear} className="btn-close" />
                     ) : (
-                        <span>A</span>
+                        <span></span>
                     )
                 ]}
             />

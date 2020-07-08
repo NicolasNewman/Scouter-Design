@@ -8,8 +8,11 @@ interface IBaseProps {
     gridAreaName: string;
     row: number;
     col: number;
+    /** flag that tracks if the user is in the process of joining grids */
     isJoiningGrid: boolean;
+    /** the corresponding letter this slot uses to be placed correctly on the grid */
     joinModel: string;
+    /** function that handles what should happen when the slot is clicked on */
     joinClickHandler: () => void;
 }
 
@@ -23,6 +26,7 @@ interface IProps extends IBaseProps {
 }
 
 interface IState {
+    /** the inner component that should be displayed in each slot */
     inner?: React.ReactNode;
 }
 
@@ -35,30 +39,29 @@ class FormGridSlot extends Component<IProps, IState> {
     }
 
     componentDidUpdate(prevProps: IProps) {
+        // If the user changes the dimension of the grid, clear the inner group
         if (prevProps.row !== this.props.row || prevProps.col !== this.props.col) {
             this.setState({ inner: null });
         }
-        if (!prevProps.isOver && this.props.isOver) {
-            console.log(`Entered: ${this.props.gridAreaName}`);
-        }
+        // if (!prevProps.isOver && this.props.isOver) {
+        //     console.log(`Entered: ${this.props.gridAreaName}`);
+        // }
 
-        if (prevProps.isOver && !this.props.isOver) {
-            console.log(`Left: ${this.props.gridAreaName}`);
-        }
+        // if (prevProps.isOver && !this.props.isOver) {
+        //     console.log(`Left: ${this.props.gridAreaName}`);
+        // }
     }
 
     render() {
         let style: React.CSSProperties = { gridArea: this.props.gridAreaName };
+
+        // change to green if the user is hovering over it
         if (this.props.isOver) {
             style['backgroundColor'] = 'rgba(0,255,50,0.5)';
         }
 
+        // permenently change to green or yellow if the user has selected this instance's slot
         let className = '';
-        // console.log(
-        //     `joinModel[${this.props.row - 1}][${this.props.col - 1}] = ${
-        //         this.props.joinModel[this.props.row - 1][this.props.col - 1]
-        //     } === ${this.props.gridAreaName}`
-        // );
         if (this.props.joinModel === this.props.gridAreaName) {
             className = 'form-creator__dropzone--joined';
         } else if (this.props.isJoiningGrid) {
@@ -89,7 +92,9 @@ export default DropTarget(
                 inner: (
                     <Group
                         disabled={true}
+                        // FormGroup instance that this group should be generated from
                         group={monitor.getItem().group}
+                        // used by the close button on a group to remove it from the slot
                         clear={() => component.setState({ inner: null })}
                     />
                 )

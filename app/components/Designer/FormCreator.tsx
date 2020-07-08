@@ -16,15 +16,18 @@ interface IState {
     cols: number;
     /** The model that contains each letter position for the drop zone grid */
     gridModel: Array<Array<string>>;
-    /** The model that contains which zones to merge on the grid */
+    /** The model that contains which zones to merge on the grid (tracks which slots the user has selected) */
     joinModel: Array<Array<string>>;
+    /** flag that tracks if the grid is being joined */
     isJoiningGrid: boolean;
 }
 
 export default class FormCreator extends Component<IProps, IState> {
     props: IProps;
 
+    /** reference to the row number field */
     rowRef: React.RefObject<any>;
+    /** reference to the col number field */
     colRef: React.RefObject<any>;
 
     constructor(props: IProps) {
@@ -42,6 +45,11 @@ export default class FormCreator extends Component<IProps, IState> {
         this.colRef = React.createRef();
     }
 
+    /**
+     * Generates a 2d string array containing the letters of the alphabet from A until it runs out of space
+     * @param row
+     * @param col
+     */
     generateGridModel = (row: number, col: number) => {
         const gridModel: Array<Array<string>> = [];
         let counter = 0;
@@ -55,6 +63,9 @@ export default class FormCreator extends Component<IProps, IState> {
         return gridModel;
     };
 
+    /**
+     * Generates the gridTemplateArea string from the gridModel
+     */
     generateTemplateArea = () => {
         let templateArea = '';
         let row = '';
@@ -80,6 +91,7 @@ export default class FormCreator extends Component<IProps, IState> {
                         cols={generateGridColString(this.state.cols)}
                         templateArea={this.generateTemplateArea()}
                         className={'form-creator__grid'}
+                        // generate each slot on the grid that can have a group dragged to
                         gridElements={(() => {
                             const elements = [];
                             for (let i = 0; i < this.state.rows; i++) {
@@ -91,6 +103,7 @@ export default class FormCreator extends Component<IProps, IState> {
                                             col={this.state.cols}
                                             isJoiningGrid={this.state.isJoiningGrid}
                                             joinModel={this.state.joinModel[i][j]}
+                                            // visually change the grid slot based on if it was clicked or not
                                             joinClickHandler={() => {
                                                 const cpy = this.state.joinModel.map(cols => cols.map(num => num));
                                                 if (this.state.joinModel[i][j] === this.state.gridModel[i][j]) {
@@ -130,6 +143,7 @@ export default class FormCreator extends Component<IProps, IState> {
                                 type="primary"
                                 className="mr-1"
                                 onClick={() => {
+                                    // update the number of rows and columns the grid is comprised of
                                     const rows = this.rowRef.current.state.value;
                                     const cols = this.colRef.current.state.value;
 
@@ -148,32 +162,26 @@ export default class FormCreator extends Component<IProps, IState> {
                                 onClick={() => {
                                     if (this.state.isJoiningGrid) {
                                         // the user wants to merge the grids
+
+                                        // figure out the extrema of the used slots in the the matrix to determine if it is a rectangle
                                         let rMin = Number.MAX_SAFE_INTEGER,
                                             rMax = Number.MIN_SAFE_INTEGER;
                                         let cMin = Number.MAX_SAFE_INTEGER,
                                             cMax = Number.MIN_SAFE_INTEGER;
 
-                                        // print2DArray(m);
-
-                                        // figure out the extrema in the matrix to determine if it is a rectangle
                                         for (let i = 0; i < this.state.rows; i++) {
                                             for (let j = 0; j < this.state.cols; j++) {
                                                 const notEmpty = this.state.joinModel[i][j] !== '';
-                                                // console.log(`[${i},${j}]`);
                                                 if (notEmpty && i < rMin) {
-                                                    // console.log(`Updating rMin=${rMin} with ${i}`);
                                                     rMin = i;
                                                 }
                                                 if (notEmpty && i > rMax) {
-                                                    // console.log(`Updating rMax=${rMax} with ${i}`);
                                                     rMax = i;
                                                 }
                                                 if (notEmpty && j < cMin) {
-                                                    // console.log(`Updating cMin=${cMin} with ${j}`);
                                                     cMin = j;
                                                 }
                                                 if (notEmpty && j > cMax) {
-                                                    // console.log(`Updating cMax=${cMax} with ${j}`);
                                                     cMax = j;
                                                 }
                                             }
@@ -181,11 +189,10 @@ export default class FormCreator extends Component<IProps, IState> {
 
                                         // condition to prevent errors from not selecting anything
                                         if (rMax - rMin + 1 > 0 && cMax - cMin + 1 > 0) {
-                                            // const newMatrix = generate2DArray(rMax - rMin + 1, cMax - cMin + 1);
+                                            // build a new matrix that is homed in on the selected region
                                             const newMatrix = new Array(rMax - rMin + 1).fill(
                                                 new Array(cMax - cMin + 1).fill('')
                                             );
-                                            // build a new matrix that is homed in on the selected region
                                             for (let i = rMin; i <= rMax; i++) {
                                                 for (let j = cMin; j <= cMax; j++) {
                                                     console.log(
@@ -198,16 +205,17 @@ export default class FormCreator extends Component<IProps, IState> {
                                             }
 
                                             // if it contains any empty slots, it is not a rectangle
-                                            // const emptySlot = newMatrix.includes('');
                                             let emptySlot = false;
                                             newMatrix.forEach(row => {
                                                 if (row.includes('')) {
                                                     emptySlot = true;
                                                 }
                                             });
+
                                             if (emptySlot) {
-                                                message.error('Please make sure your selection is rectangular');
+                                                message.error('Please make sure your selection is rectangular', 2);
                                             } else {
+                                                // the first letter that is found will be used to make the remaining slots match
                                                 let firstLetter = '';
 
                                                 const cpy = this.state.gridModel.map(cols => cols.map(str => str));
@@ -230,6 +238,7 @@ export default class FormCreator extends Component<IProps, IState> {
                                                 });
                                             }
                                         } else {
+                                            // since nothing was selected, reset to before
                                             this.setState({
                                                 joinModel: new Array(this.state.rows).fill(
                                                     new Array(this.state.cols).fill('')
