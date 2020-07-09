@@ -6,10 +6,11 @@ import DataStore from 'app/classes/DataStore';
 
 import GroupCreator from './Designer/GroupCreator';
 import FormCreator from './Designer/FormCreator';
+import General from './Designer/General';
 import EventTable from './Table/EventTable';
 import StateTable from './Table/StateTable';
 
-import { EventData, EventDataArray, StateData, StateDataArray, FileMode } from '../types/types';
+import { EventData, EventDataArray, StateData, StateDataArray, FileMode, GameProperties } from '../types/types';
 import FormGroup from '../classes/models/FormGroup';
 
 import WorkspaceParser from '../classes/WorkspaceParser';
@@ -23,6 +24,15 @@ interface IProps extends RouteComponentProps<any> {
     // redux - core
     file: string;
     mode: FileMode;
+
+    // redux - game
+    gameProperties: GameProperties;
+    setAllDurations: (
+        matchDuration: number,
+        autoDuration: number,
+        teleopDuration: number,
+        endgameDuration: number
+    ) => void;
 
     // redux - event
     events: EventDataArray;
@@ -73,7 +83,10 @@ export default class Home extends Component<IProps> {
             <div className="home">
                 <Tabs defaultActiveKey="general" onChange={this.tabChanged}>
                     <TabPane tab="General" key="general">
-                        <p>General Tab</p>
+                        <General
+                            gameProperties={this.props.gameProperties}
+                            setAllDurations={this.props.setAllDurations}
+                        />
                     </TabPane>
                     <TabPane tab="Events" key="events">
                         <EventTable

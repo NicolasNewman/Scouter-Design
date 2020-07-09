@@ -1,5 +1,12 @@
 import { GroupOptions } from '../classes/models/FormGroup';
 
+export type GameProperties = {
+    matchDuration: number;
+    autoDuration: number;
+    teleopDuration: number;
+    endgameDuration: number;
+};
+
 /* ====================
  *     Event types
  * ====================*/

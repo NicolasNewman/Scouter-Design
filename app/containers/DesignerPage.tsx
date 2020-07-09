@@ -5,11 +5,13 @@ import EventItemActions from '../actions/event';
 import StateItemActions from '../actions/state';
 import GroupActions from '../actions/group';
 import FormActions from '../actions/form';
+import GameActions from '../actions/game';
 
 function mapStateToProps(state, ownProps) {
     console.log(state);
     return {
         dataStore: ownProps.dataStore,
+        gameProperties: state.game.gameProperties,
         events: state.event,
         states: state.state,
         groups: state.group,
@@ -25,7 +27,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
             ...EventItemActions,
             ...StateItemActions,
             ...GroupActions,
-            ...FormActions
+            ...FormActions,
+            ...GameActions
         },
         dispatch
     );
