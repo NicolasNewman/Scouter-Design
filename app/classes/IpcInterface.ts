@@ -22,6 +22,10 @@ export default class IpcInterface {
                 console.log(cpy);
                 parser.getWriter().save(cpy);
             });
+            ipcRenderer.on('export', e => {
+                const state = store.getState();
+                console.log(state.form());
+            });
         }
     }
 

@@ -46,8 +46,7 @@ export default class FormButton {
     }
 
     setButtonType = (buttonType: ButtonType) => (this.buttonType = buttonType);
-    setGridAreaName = (gridAreaName: string) =>
-        (this.gridAreaName = gridAreaName);
+    setGridAreaName = (gridAreaName: string) => (this.gridAreaName = gridAreaName);
     setLabel = (label: string) => (this.label = label);
     setType = (type: string) => (this.type = type);
     setDisabled = (condition: string) => (this.disabled = condition);
@@ -74,7 +73,7 @@ export default class FormButton {
                     phase={
                         this.state.phase === "NONE" ? "AUTO" : this.state.phase
                     }
-                />,
+                />
                 `;
             case 'state':
                 return `
@@ -90,7 +89,7 @@ export default class FormButton {
                     phase={
                         this.state.phase === "NONE" ? "AUTO" : this.state.phase
                     }
-                />,
+                />
                 `;
             case 'accuracy':
                 return `
@@ -106,7 +105,7 @@ export default class FormButton {
                     phase={
                         this.state.phase === "NONE" ? "AUTO" : this.state.phase
                     }
-                />,
+                />
                 `;
             default:
                 // TODO throw error

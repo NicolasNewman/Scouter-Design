@@ -4,6 +4,7 @@ import core from './core';
 import event from './event';
 import state from './state';
 import group from './group';
+import form from './form';
 import { History } from 'history';
 
 export default function createRootReducer(history: History) {
@@ -12,6 +13,7 @@ export default function createRootReducer(history: History) {
         core,
         event,
         state,
-        group
+        group,
+        form
     });
 }

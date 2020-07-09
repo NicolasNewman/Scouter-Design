@@ -4,6 +4,7 @@ import Designer from '../components/Designer';
 import EventItemActions from '../actions/event';
 import StateItemActions from '../actions/state';
 import GroupActions from '../actions/group';
+import FormActions from '../actions/form';
 
 function mapStateToProps(state, ownProps) {
     console.log(state);
@@ -13,7 +14,8 @@ function mapStateToProps(state, ownProps) {
         states: state.state,
         groups: state.group,
         file: state.core.file,
-        mode: state.core.mode
+        mode: state.core.mode,
+        getFormJSX: state.form
     };
 }
 
@@ -22,7 +24,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
         {
             ...EventItemActions,
             ...StateItemActions,
-            ...GroupActions
+            ...GroupActions,
+            ...FormActions
         },
         dispatch
     );

@@ -3,6 +3,7 @@ import { Component } from 'react';
 // import { GroupProps } from './Group';
 import Group from './Group';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DragElementWrapper } from 'react-dnd';
+import FormGroup from '../classes/models/FormGroup';
 
 interface IBaseProps {
     gridAreaName: string;
@@ -14,6 +15,7 @@ interface IBaseProps {
     joinModel: string;
     /** function that handles what should happen when the slot is clicked on */
     joinClickHandler: () => void;
+    updateGroupList: (group: FormGroup, gridAreaName: string) => void;
 }
 
 interface IProps extends IBaseProps {
@@ -88,6 +90,7 @@ export default DropTarget(
             console.log(monitor);
             console.log(monitor.getItem());
             console.log(component);
+            component.props.updateGroupList(monitor.getItem().group, component.props.gridAreaName);
             component.setState({
                 inner: (
                     <Group

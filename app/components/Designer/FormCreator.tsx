@@ -8,7 +8,11 @@ import Grid from '../Grid/Grid';
 import { generateGridColString, generateGridRowString, print2DArray, generate2DArray } from '../../utils/helper';
 
 interface IProps {
+    // redux - group
     groups: Array<FormGroup>;
+
+    // redux - form
+    setFormJSXFunc: (func: () => string) => void;
 }
 
 interface IState {
@@ -20,6 +24,8 @@ interface IState {
     joinModel: Array<Array<string>>;
     /** flag that tracks if the grid is being joined */
     isJoiningGrid: boolean;
+    /** a list of the groups that have been dragged onto the grid */
+    groupList: Array<FormGroup>;
 }
 
 export default class FormCreator extends Component<IProps, IState> {
@@ -38,11 +44,26 @@ export default class FormCreator extends Component<IProps, IState> {
             cols: 2,
             gridModel: this.generateGridModel(2, 2),
             joinModel: new Array(2).fill(new Array(2).fill('')),
-            isJoiningGrid: false
+            isJoiningGrid: false,
+            groupList: []
         };
 
         this.rowRef = React.createRef();
         this.colRef = React.createRef();
+
+        this.props.setFormJSXFunc(
+            () => `
+            <Grid
+                rows="${generateGridColString(this.state.rows)}"
+                cols="${generateGridColString(this.state.cols)}"
+                templateArea="${this.generateTemplateArea()}"
+                className="form-creator__grid"
+                gridElements={${(() => {
+                    const joined = this.state.groupList.map(group => group.getJSX()).join(',');
+                    return joined;
+                })()}}
+            />`
+        );
     }
 
     /**
@@ -116,6 +137,14 @@ export default class FormCreator extends Component<IProps, IState> {
                                                 this.setState({
                                                     joinModel: cpy
                                                 });
+                                            }}
+                                            updateGroupList={(group: FormGroup, gridAreaName: string) => {
+                                                const newList = this.state.groupList.filter(
+                                                    listGroup => listGroup.getGridAreaName() !== group.getGridAreaName()
+                                                );
+
+                                                group.setGridAreaName(gridAreaName);
+                                                this.setState({ groupList: [...newList, group] });
                                             }}
                                         />
                                     );

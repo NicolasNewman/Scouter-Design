@@ -9,13 +9,7 @@ import FormCreator from './Designer/FormCreator';
 import EventTable from './Table/EventTable';
 import StateTable from './Table/StateTable';
 
-import {
-    EventData,
-    EventDataArray,
-    StateData,
-    StateDataArray,
-    FileMode
-} from '../types/types';
+import { EventData, EventDataArray, StateData, StateDataArray, FileMode } from '../types/types';
 import FormGroup from '../classes/models/FormGroup';
 
 import WorkspaceParser from '../classes/WorkspaceParser';
@@ -50,6 +44,9 @@ interface IProps extends RouteComponentProps<any> {
     removeGroup: (group: FormGroup) => void;
     updateGroup: (key: string, newGroup: FormGroup) => void;
     overwriteGroup: (groups: Array<FormGroup>) => void;
+
+    // redux - form
+    setFormJSXFunc: (func: () => string) => void;
 }
 
 export default class Home extends Component<IProps> {
@@ -108,7 +105,7 @@ export default class Home extends Component<IProps> {
                         />
                     </TabPane>
                     <TabPane tab="Form" key="form">
-                        <FormCreator groups={this.props.groups} />
+                        <FormCreator groups={this.props.groups} setFormJSXFunc={this.props.setFormJSXFunc} />
                     </TabPane>
                 </Tabs>
             </div>

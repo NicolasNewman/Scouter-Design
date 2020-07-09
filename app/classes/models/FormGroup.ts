@@ -2,10 +2,7 @@ import * as React from 'react';
 import FormButton from './FormButton';
 import { CheckboxValueType } from 'antd/lib/checkbox/Group';
 import { ButtonOptions } from './FormButton';
-import {
-    generateGridColString,
-    generateGridRowString
-} from '../../utils/helper';
+import { generateGridColString, generateGridRowString } from '../../utils/helper';
 
 export type GroupOptions = {
     renderButtons?: Array<RenderButton>;
@@ -49,9 +46,7 @@ export default class FormGroup {
     private renderButtons: Array<RenderButton>;
 
     constructor(options: GroupOptions) {
-        this.formButtons = options.formButtonOpt
-            ? options.formButtonOpt.map(opt => FormButton.fromJSON(opt))
-            : [];
+        this.formButtons = options.formButtonOpt ? options.formButtonOpt.map(opt => FormButton.fromJSON(opt)) : [];
         this.renderButtons = options.renderButtons ? options.renderButtons : [];
         this.colCount = options.colCount ? options.colCount : 2;
         this.rowCount = options.rowCount ? options.rowCount : 3;
@@ -205,11 +200,9 @@ export default class FormGroup {
         this.updateTemplateArea();
     };
 
-    setTemplateArea = (templateArea: string) =>
-        (this.templateArea = templateArea);
+    setTemplateArea = (templateArea: string) => (this.templateArea = templateArea);
     setName = (name: string) => (this.name = name);
-    setGridAreaName = (gridAreaName: string) =>
-        (this.gridAreaName = gridAreaName);
+    setGridAreaName = (gridAreaName: string) => (this.gridAreaName = gridAreaName);
 
     getName = () => this.name;
     getGridAreaName = () => this.gridAreaName;
@@ -228,9 +221,7 @@ export default class FormGroup {
      * @param insert - the FormButton to insert into the array
      */
     insertButton(insert: FormButton) {
-        const filtered = this.formButtons.filter(
-            button => button.getGridAreaName() !== insert.getGridAreaName()
-        );
+        const filtered = this.formButtons.filter(button => button.getGridAreaName() !== insert.getGridAreaName());
         const updated = [...filtered, insert];
         this.formButtons = updated;
 
@@ -244,13 +235,8 @@ export default class FormGroup {
         type: string,
         accuracy: boolean
     ) => {
-        const filtered = this.renderButtons.filter(
-            btn => btn.gridAreaName !== gridAreaName
-        );
-        this.renderButtons = [
-            ...filtered,
-            { gridAreaName, label, checkbox, type, accuracy }
-        ];
+        const filtered = this.renderButtons.filter(btn => btn.gridAreaName !== gridAreaName);
+        this.renderButtons = [...filtered, { gridAreaName, label, checkbox, type, accuracy }];
     };
 
     /**
@@ -269,12 +255,10 @@ export default class FormGroup {
                     <p>${this.name}</p>
                 </div>,
                 ${(() => {
-                    // insert each button's corresponding JSX into the group's grid
-                    return this.formButtons
-                        .map(button => button.getJSX())
-                        .join('');
+                    const joined = this.formButtons.map(button => button.getJSX()).join(',');
+                    return joined;
                 })()}
             ]}
-        />,`;
+        />`;
     }
 }
