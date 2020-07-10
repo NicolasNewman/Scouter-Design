@@ -2,6 +2,7 @@ import * as React from 'react';
 import { Component } from 'react';
 import { Button, InputNumber, message } from 'antd';
 import { GameProperties } from '../../types/types';
+import * as deepEqual from 'fast-deep-equal';
 
 interface IProps {
     // redux - game
@@ -14,21 +15,40 @@ interface IProps {
     ) => void;
 }
 
-export default class General extends Component<IProps> {
-    props: IProps;
+interface IState {
+    matchDuration: number;
+    autoDuration: number;
+    teleopDuration: number;
+    endgameDuration: number;
+}
 
-    matchRef: React.RefObject<any>;
-    autoRef: React.RefObject<any>;
-    teleopRef: React.RefObject<any>;
-    endgameRef: React.RefObject<any>;
+export default class General extends Component<IProps, IState> {
+    props: IProps;
 
     constructor(props, history) {
         super(props);
+        console.log(props);
 
-        this.matchRef = React.createRef();
-        this.autoRef = React.createRef();
-        this.teleopRef = React.createRef();
-        this.endgameRef = React.createRef();
+        this.state = {
+            matchDuration: this.props.gameProperties.matchDuration,
+            autoDuration: this.props.gameProperties.autoDuration,
+            teleopDuration: this.props.gameProperties.teleopDuration,
+            endgameDuration: this.props.gameProperties.endgameDuration
+        };
+    }
+
+    componentDidUpdate(prevProps: IProps) {
+        console.log('Prev props: ');
+        console.log(prevProps);
+        console.log(this.props);
+        if (!deepEqual(prevProps.gameProperties, this.props.gameProperties)) {
+            this.setState({
+                matchDuration: this.props.gameProperties.matchDuration,
+                autoDuration: this.props.gameProperties.autoDuration,
+                teleopDuration: this.props.gameProperties.teleopDuration,
+                endgameDuration: this.props.gameProperties.endgameDuration
+            });
+        }
     }
 
     render() {
@@ -37,27 +57,39 @@ export default class General extends Component<IProps> {
                 <h3>Game Properties</h3>
                 <div>
                     <span>Match Duration:</span>
-                    <InputNumber defaultValue={this.props.gameProperties.matchDuration} ref={this.matchRef} />
+                    <InputNumber
+                        onChange={value => this.setState({ matchDuration: parseInt(value.toString()) })}
+                        value={this.state.matchDuration}
+                    />
                 </div>
                 <div>
                     <span>Autonomous Duration:</span>
-                    <InputNumber defaultValue={this.props.gameProperties.autoDuration} ref={this.autoRef} />
+                    <InputNumber
+                        onChange={value => this.setState({ autoDuration: parseInt(value.toString()) })}
+                        value={this.state.autoDuration}
+                    />
                 </div>
                 <div>
                     <span>Teleoperation Duration:</span>
-                    <InputNumber defaultValue={this.props.gameProperties.teleopDuration} ref={this.teleopRef} />
+                    <InputNumber
+                        onChange={value => this.setState({ teleopDuration: parseInt(value.toString()) })}
+                        value={this.state.teleopDuration}
+                    />
                 </div>
                 <div>
                     <span>Endgame Duration:</span>
-                    <InputNumber defaultValue={this.props.gameProperties.endgameDuration} ref={this.endgameRef} />
+                    <InputNumber
+                        onChange={value => this.setState({ endgameDuration: parseInt(value.toString()) })}
+                        value={this.state.endgameDuration}
+                    />
                 </div>
                 <Button
                     className="mt-1"
                     onClick={() => {
-                        const matchDuration = this.matchRef.current.state.value;
-                        const autoDuration = this.autoRef.current.state.value;
-                        const teleopDuration = this.teleopRef.current.state.value;
-                        const endgameDuration = this.endgameRef.current.state.value;
+                        const matchDuration = this.state.matchDuration;
+                        const autoDuration = this.state.autoDuration;
+                        const teleopDuration = this.state.teleopDuration;
+                        const endgameDuration = this.state.endgameDuration;
                         const phaseSum = autoDuration + teleopDuration;
                         if (matchDuration === phaseSum) {
                             this.props.setAllDurations(matchDuration, autoDuration, teleopDuration, endgameDuration);

@@ -1,9 +1,12 @@
+import { IInitialState as GameState } from '../reducers/game';
+
 export enum GameTypeKeys {
     SET_MATCH_DURATION = 'SET_MATCH_DURATION',
     SET_AUTO_DURATION = 'SET_AUTO_DURATION',
     SET_TELEOP_DURATION = 'SET_TELEOP_DURATION',
     SET_ENDGAME_DURATION = 'SET_ENDGAME_DURATION',
-    SET_ALL_DURATIONS = 'SET_ALL_DURATIONS'
+    SET_ALL_DURATIONS = 'SET_ALL_DURATIONS',
+    OVERWRITE = 'OVERWRITE'
 }
 
 interface SetMatchDuration {
@@ -34,7 +37,18 @@ interface SetAllDurations {
     endgameDuration: number;
 }
 
-export type GameTypes = SetMatchDuration | SetAutoDuration | SetTeleopDuration | SetEndgameDuration | SetAllDurations;
+interface OverwriteGameState {
+    type: GameTypeKeys.OVERWRITE;
+    state: GameState;
+}
+
+export type GameTypes =
+    | SetMatchDuration
+    | SetAutoDuration
+    | SetTeleopDuration
+    | SetEndgameDuration
+    | SetAllDurations
+    | OverwriteGameState;
 
 export function setMatchDuration(duration: number) {
     return {
@@ -79,4 +93,18 @@ export function setAllDurations(
     };
 }
 
-export default { setMatchDuration, setAutoDuration, setTeleopDuration, setEndgameDuration, setAllDurations };
+export function overwriteGameState(state: GameState) {
+    return {
+        type: GameTypeKeys.OVERWRITE,
+        state
+    };
+}
+
+export default {
+    setMatchDuration,
+    setAutoDuration,
+    setTeleopDuration,
+    setEndgameDuration,
+    setAllDurations,
+    overwriteGameState
+};

@@ -1,7 +1,7 @@
 import { GameTypeKeys, GameTypes } from '../actions/game';
 import { GameProperties } from '../types/types';
 
-interface IInitialState {
+export interface IInitialState {
     gameProperties: GameProperties;
 }
 
@@ -61,6 +61,8 @@ export default function file(state: IInitialState = initialState, action: GameTy
                     endgameDuration: action.endgameDuration
                 }
             };
+        case GameTypeKeys.OVERWRITE:
+            return action.state;
         default:
             return state;
     }

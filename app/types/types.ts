@@ -1,4 +1,5 @@
 import { GroupOptions } from '../classes/models/FormGroup';
+import { IInitialState as GameState } from '../reducers/game';
 
 export type GameProperties = {
     matchDuration: number;
@@ -37,6 +38,7 @@ export type FileMode = 'r' | 'w';
 export type ButtonType = 'event' | 'state' | 'accuracy';
 
 export type WorkspaceType = {
+    game: GameState;
     event: EventDataArray;
     state: StateDataArray;
     group: Array<GroupOptions>;

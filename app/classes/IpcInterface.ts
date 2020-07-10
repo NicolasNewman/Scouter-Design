@@ -14,6 +14,7 @@ export default class IpcInterface {
                 console.log('Obtained state: ');
                 console.log(state);
                 const cpy: WorkspaceType = {
+                    game: state.game,
                     event: [...state.event],
                     state: [...state.state],
                     group: [...state.group.map(group => group.toJSON())]

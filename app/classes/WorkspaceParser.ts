@@ -1,4 +1,5 @@
 import { FileMode, WorkspaceType } from 'app/types/types';
+import { overwriteGameState } from '../actions/game';
 import { overwriteEventItem } from '../actions/event';
 import { overwriteStateItem } from '../actions/state';
 import { overwriteGroup } from '../actions/group';
@@ -20,10 +21,9 @@ class WorkspaceReader {
         console.log(`Decoded: ${decoded}`);
         const state: WorkspaceType = JSON.parse(decoded);
         console.log(state);
-        const groupButtons = state.group.map(group =>
-            FormGroup.fromJSON(group)
-        );
+        const groupButtons = state.group.map(group => FormGroup.fromJSON(group));
         console.log(state);
+        store.dispatch(overwriteGameState(state.game));
         store.dispatch(overwriteEventItem(state.event));
         store.dispatch(overwriteStateItem(state.state));
         store.dispatch(overwriteGroup(groupButtons));
