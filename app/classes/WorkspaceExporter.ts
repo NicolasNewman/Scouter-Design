@@ -198,6 +198,66 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
     `;
 };
 
+const accuracyResolverGenerator = (events: EventDataArray) => {
+    const conditions = '';
+    events.forEach(event => {
+        if (event.accuracy) {
+            conditions = conditions + `\ncase "${event.name}": return true;`;
+        }
+    });
+    return `
+    import { Event } from "./gameTypes";
+    const resolveAccuracy = (event: Event): boolean => {
+        switch (event) {
+            ${conditions}
+            default:
+                return false;
+        }
+    }
+
+    export default resolveAccuracy;
+    `;
+};
+
+// TODO
+const scoreResolverGenerator = (events: EventDataArray) => {
+    const generateBranch = (name: string, score: number) => {
+        return `
+        case "${name}":
+            switch (phase) {
+                case "AUTO":
+                    return ${score};
+                case "TELEOP":
+                    return ${score};
+                case "ENDGAME":
+                    return ${score};
+                default:
+                    return 0;
+            }
+        `;
+    };
+    const switchBranches = '';
+    events.forEach(event => {
+        if (event.score !== 0) {
+            switchBranches = switchBranches + '\n' + generateBranch(event.name, event.score);
+        }
+    });
+
+    return `
+    import { Phase, Event } from "./gameTypes";
+
+    const resolveScore = (event: Event, phase: Phase): number => {
+        switch (event) {
+            ${switchBranches}
+            default:
+                return 0;
+        }
+    };
+
+    export default resolveScore
+    `;
+};
+
 export default class WorkspaceExporter {
     private path: string;
     constructor(path?: string) {
@@ -211,7 +271,11 @@ export default class WorkspaceExporter {
     generateAndWrite(state: WorkspaceType, formGenerator: () => string) {
         const formCode = formGenerator();
         console.log(formCode);
+
         const gameTypeCode = gameTypeGenerator(state.event, state.state, state.game.gameProperties);
         console.log(gameTypeCode);
+
+        const accuracyResolverCode = accuracyResolverGenerator(state.event);
+        console.log(accuracyResolverCode);
     }
 }
