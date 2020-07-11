@@ -136,9 +136,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                             className="w-7"
                             // Function that handles when the selected group is changed
                             onChange={val => {
-                                const targetGroup = this.props.groups.find(
-                                    group => group.getName() === val
-                                );
+                                const targetGroup = this.props.groups.find(group => group.getName() === val);
                                 this.setState({
                                     targetGroup
                                 });
@@ -163,45 +161,26 @@ export default class GroupCreator extends Component<IProps, IState> {
                             })}
                         />
                     </div>
-                    <div
-                        className="group-creator__groups--modify mt-2"
-                        hidden={this.state.targetGroup === null}
-                    >
+                    <div className="group-creator__groups--modify mt-2" hidden={this.state.targetGroup === null}>
                         <div>
-                            <p>
-                                {this.state.targetGroup !== null
-                                    ? this.state.targetGroup.getName()
-                                    : ''}
-                            </p>
+                            <p>{this.state.targetGroup !== null ? this.state.targetGroup.getName() : ''}</p>
                         </div>
                         <div>
                             <span>Rows: </span>
-                            <InputNumber
-                                ref={this.rowRef}
-                                min={1}
-                                className="w-3 mr-1"
-                            />
+                            <InputNumber ref={this.rowRef} min={1} className="w-3 mr-1" />
                             <span>Cols: </span>
-                            <InputNumber
-                                ref={this.colRef}
-                                min={1}
-                                className="w-3"
-                            />
+                            <InputNumber ref={this.colRef} min={1} className="w-3" />
                         </div>
                         <div className="mt-1">
                             <Button
                                 // Function to handle updating a group's data
                                 onClick={e => {
                                     // add 1 to include the group header
-                                    const rows =
-                                        this.rowRef.current.state.value + 1;
-                                    const cols = this.colRef.current.state
-                                        .value;
+                                    const rows = this.rowRef.current.state.value + 1;
+                                    const cols = this.colRef.current.state.value;
                                     this.state.targetGroup.setRowCount(rows);
                                     this.state.targetGroup.setColCount(cols);
-                                    console.log(
-                                        this.state.targetGroup.toString()
-                                    );
+                                    console.log(this.state.targetGroup.toString());
 
                                     this.props.updateGroup(
                                         this.state.targetGroup.getGridAreaName(),
@@ -304,8 +283,7 @@ export default class GroupCreator extends Component<IProps, IState> {
 
                                         // get the EventData or StateData equivilent from the type label
                                         const typeMatch = this.typeOptions.find(
-                                            type =>
-                                                type.name === this.state.typeVal
+                                            type => type.name === this.state.typeVal
                                         );
 
                                         // determine the type of button that should be generated for Scouter
@@ -321,18 +299,14 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         // determine the correct type that the event / state should belong to (types come from Scouter/global)
                                         let type = '';
                                         if (isEventData(typeMatch)) {
-                                            if (
-                                                typeMatch.type === 'robot_event'
-                                            ) {
-                                                if (typeMatch.score > 0) {
+                                            if (typeMatch.type === 'robot_event') {
+                                                if (typeMatch.score !== [0, 0, 0]) {
                                                     type = `EScorableRobotEvents.${this.state.typeVal}`;
                                                 } else {
                                                     type = `ERobotEvents.${this.state.typeVal}`;
                                                 }
-                                            } else if (
-                                                typeMatch.type === 'team_event'
-                                            ) {
-                                                if (typeMatch.score > 0) {
+                                            } else if (typeMatch.type === 'team_event') {
+                                                if (typeMatch.score !== [0, 0, 0]) {
                                                     type = `EScorableTeamEvents.${this.state.typeVal}`;
                                                 } else {
                                                     type = `ETeamEvents.${this.state.typeVal}`;
@@ -344,33 +318,24 @@ export default class GroupCreator extends Component<IProps, IState> {
 
                                         // create a new button with the found information
                                         const btn = new FormButton({
-                                            gridAreaName: this.state
-                                                .targetButton,
-                                            label: this.labelRef.current.state
-                                                .value,
+                                            gridAreaName: this.state.targetButton,
+                                            label: this.labelRef.current.state.value,
                                             disabled: andBoolStrings(
-                                                this.disabledRef.current.state.value.map(
-                                                    value => value.toString()
-                                                )
+                                                this.disabledRef.current.state.value.map(value => value.toString())
                                             ),
                                             buttonType: btnType,
                                             type
                                         });
 
-                                        this.state.targetGroup.insertButton(
-                                            btn
-                                        );
+                                        this.state.targetGroup.insertButton(btn);
 
                                         // update the corresponding render button so the data can be recovered after selecting a new button
                                         this.state.targetGroup.updateRenderButton(
                                             this.state.targetButton,
                                             this.labelRef.current.state.value,
-                                            this.disabledRef.current.state
-                                                .value,
+                                            this.disabledRef.current.state.value,
                                             this.state.typeVal,
-                                            btnType === 'accuracy'
-                                                ? true
-                                                : false
+                                            btnType === 'accuracy' ? true : false
                                         );
 
                                         this.props.updateGroup(

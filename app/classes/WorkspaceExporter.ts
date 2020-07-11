@@ -13,14 +13,14 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
     events.forEach(event => {
         switch (event.type) {
             case 'robot_event':
-                if (event.score !== 0) {
+                if (event.score !== [0, 0, 0]) {
                     EScorableRobotEvents = appendEnum(EScorableRobotEvents, event.name);
                 } else {
                     ERobotEvents = appendEnum(ERobotEvents, event.name);
                 }
                 break;
             case 'team_event':
-                if (event.score !== 0) {
+                if (event.score !== [0, 0, 0]) {
                     EScorableTeamEvents = appendEnum(EScorableTeamEvents, event.name);
                 } else {
                     ETeamEvents = appendEnum(ETeamEvents, event.name);
@@ -222,16 +222,16 @@ const accuracyResolverGenerator = (events: EventDataArray) => {
 
 // TODO
 const scoreResolverGenerator = (events: EventDataArray) => {
-    const generateBranch = (name: string, score: number) => {
+    const generateBranch = (name: string, score: Array<number>) => {
         return `
         case "${name}":
             switch (phase) {
                 case "AUTO":
-                    return ${score};
+                    return ${score[0]};
                 case "TELEOP":
-                    return ${score};
+                    return ${score[1]};
                 case "ENDGAME":
-                    return ${score};
+                    return ${score[2]};
                 default:
                     return 0;
             }
@@ -239,7 +239,7 @@ const scoreResolverGenerator = (events: EventDataArray) => {
     };
     let switchBranches = '';
     events.forEach(event => {
-        if (event.score !== 0) {
+        if (event.score !== [0, 0, 0]) {
             switchBranches = switchBranches + '\n' + generateBranch(event.name, event.score);
         }
     });

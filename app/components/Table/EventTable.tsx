@@ -6,6 +6,7 @@ import { ColumnProps } from 'antd/es/table';
 import { FormInstance } from 'antd/lib/form';
 import { EventType, EventDataArray, EventData } from '../../types/types';
 import { formatEventName } from '../../utils/helper';
+import ScoreFieldRenderer from './ScoreFieldRenderer';
 
 const { Option } = Select;
 
@@ -17,7 +18,7 @@ interface Item {
     name: string;
     type: EventType;
     accuracy: boolean;
-    score: number;
+    score: Array<number>;
     editable?: boolean;
     inputType?: 'number' | 'text';
     dataIndex?: string;
@@ -31,7 +32,7 @@ const originData: Item[] = [
         name: 'a',
         type: 'robot_event',
         accuracy: true,
-        score: 5
+        score: [0, 0, 0]
     }
 ];
 
@@ -134,17 +135,28 @@ export default class EventTable extends Component<IProps, IState> {
                 // editable: true
                 render: (val, record: Item, index) => {
                     return (
-                        <InputNumber
-                            disabled={!(this.state.editingKey === record.key)}
-                            onChange={(score: number) => {
-                                const cpy = this.state.data.map(obj => ({
-                                    ...obj
-                                }));
+                        // <InputNumber
+                        //     disabled={!(this.state.editingKey === record.key)}
+                        //     onChange={(score: number) => {
+                        //         const cpy = this.state.data.map(obj => ({
+                        //             ...obj
+                        //         }));
+                        //         cpy[index].score = score;
+                        //         this.setState({ data: cpy });
+                        //     }}
+                        //     defaultValue={record.score}
+                        //     value={this.state.data[index].score}
+                        // />
+                        <ScoreFieldRenderer
+                            editing={!(this.state.editingKey === record.key)}
+                            score={record.score}
+                            changeHandler={(score: Array<number>) => {
+                                console.log('In change handler');
+                                console.log(score);
+                                const cpy = this.state.data.map(obj => ({ ...obj }));
                                 cpy[index].score = score;
                                 this.setState({ data: cpy });
                             }}
-                            defaultValue={record.score}
-                            value={this.state.data[index].score}
                         />
                     );
                 }
@@ -156,30 +168,18 @@ export default class EventTable extends Component<IProps, IState> {
                     const editable = this.isEditing(record);
                     return editable ? (
                         <span>
-                            <a
-                                onClick={() => this.save(record.key)}
-                                style={{ marginRight: 8 }}
-                            >
+                            <a onClick={() => this.save(record.key)} style={{ marginRight: 8 }}>
                                 Save
                             </a>
-                            <Popconfirm
-                                title="Sure to cancel?"
-                                onConfirm={this.cancel}
-                            >
+                            <Popconfirm title="Sure to cancel?" onConfirm={this.cancel}>
                                 <a style={{ marginRight: 8 }}>Cancel</a>
                             </Popconfirm>
-                            <Popconfirm
-                                title="Sure to delete?"
-                                onConfirm={() => this.delete(record)}
-                            >
+                            <Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record)}>
                                 <a>Delete</a>
                             </Popconfirm>
                         </span>
                     ) : (
-                        <a
-                            hidden={this.state.editingKey !== ''}
-                            onClick={() => this.edit(record)}
-                        >
+                        <a hidden={this.state.editingKey !== ''} onClick={() => this.edit(record)}>
                             Edit
                         </a>
                     );
@@ -216,9 +216,7 @@ export default class EventTable extends Component<IProps, IState> {
         let copy = [...this.state.data];
         copy = copy.filter(item => item.key !== record.key);
 
-        const toDelete = this.state.data.find(
-            item => item.name === record.name
-        );
+        const toDelete = this.state.data.find(item => item.name === record.name);
         this.props.removeEventItem(this.itemToEventData(toDelete));
 
         this.setState({ data: copy, editingKey: '' });
@@ -244,7 +242,7 @@ export default class EventTable extends Component<IProps, IState> {
                 key: this.getNextKey(),
                 accuracy: false,
                 type: 'robot_event',
-                score: 0,
+                score: [0, 0, 0],
                 name
             };
             this.props.addEventItem(this.itemToEventData(newRow));
@@ -314,18 +312,10 @@ export default class EventTable extends Component<IProps, IState> {
                     onOk={this.add}
                     onCancel={() => this.setState({ modalVisible: false })}
                 >
-                    <Input
-                        addonBefore="EVENT_"
-                        placeholder="Event name"
-                        ref={this.input}
-                    ></Input>
+                    <Input addonBefore="EVENT_" placeholder="Event name" ref={this.input}></Input>
                 </Modal>
                 <Form ref={this.form}>
-                    <Button
-                        className="mb-1 ml-1"
-                        onClick={() => this.setState({ modalVisible: true })}
-                        type="primary"
-                    >
+                    <Button className="mb-1 ml-1" onClick={() => this.setState({ modalVisible: true })} type="primary">
                         Add Event
                     </Button>
                     <Table

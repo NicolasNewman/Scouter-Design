@@ -18,7 +18,7 @@ export type EventData = {
     name: string;
     type: EventType;
     accuracy: boolean;
-    score: number;
+    score: Array<number>;
 };
 
 export type EventDataArray = Array<EventData>;
