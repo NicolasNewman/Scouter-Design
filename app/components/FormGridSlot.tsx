@@ -42,6 +42,7 @@ class FormGridSlot extends Component<IProps, IState> {
     constructor(props) {
         super(props);
         if (this.props.inner) {
+            // if a component has been pre-specified (ie from a loaded save), generate a group for it
             this.state = {
                 inner: (
                     <Group
@@ -113,6 +114,8 @@ export default DropTarget(
             console.log(component);
 
             let group: FormGroup = monitor.getItem().group;
+
+            // create a deep-copy of the instance
             const clone = FormGroup.fromJSON(group.toJSON());
             component.props.updateGroupList(clone, component.props.gridAreaName);
             component.setState({

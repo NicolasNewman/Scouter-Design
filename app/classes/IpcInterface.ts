@@ -14,7 +14,9 @@ export default class IpcInterface {
                 console.log('Obtained state: ');
                 console.log(state);
 
+                // extract the needed information to save from the form state
                 const formLayout = state.form.formLayout;
+                // convert the form state's FormGroups to their JSON equivilent
                 const convertedGroupList = state.form.formLayout.groupList.map(group => group.toJSON());
                 const savableFormLayout = {
                     rows: formLayout.rows,
@@ -35,6 +37,7 @@ export default class IpcInterface {
                 console.log(cpy);
                 parser.getWriter().save(cpy);
             });
+
             ipcRenderer.on('export', e => {
                 const state = store.getState();
                 console.log(state.form.generateForm());

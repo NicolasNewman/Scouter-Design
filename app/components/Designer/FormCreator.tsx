@@ -58,6 +58,7 @@ export default class FormCreator extends Component<IProps, IState> {
         this.rowRef = React.createRef();
         this.colRef = React.createRef();
 
+        // create the function that generates the code for the form
         this.props.setFormJSXFunc(
             () => `
             <Grid
@@ -74,21 +75,12 @@ export default class FormCreator extends Component<IProps, IState> {
     }
 
     componentDidUpdate(prevProps: IProps, prevState: IState) {
-        // if (!deepEquals(prevProps.formLayout, this.props.formLayout)) {
-        //     this.setState({
-        //         rows: this.props.formLayout.rows,
-        //         cols: this.props.formLayout.cols,
-        //         gridModel: this.props.formLayout.gridModel,
-        //         joinModel: new Array(rows).fill(new Array(cols).fill(''))
-        //     });
-        // }
-        console.log(this.state.groupList);
-        console.log(prevState.groupList);
-        console.log(this.props.formLayout.groupList);
+        // If the groupList has been changed within the component, update the internal state
         if (!deepEquals(this.props.formLayout.groupList, this.state.groupList)) {
-            console.log('GroupList is not equal');
             this.props.overwriteFormGroup(this.state.groupList);
         }
+
+        // If a dimensional property has been changed within the component, update the internal state
         if (
             this.props.formLayout.rows !== this.state.rows ||
             this.props.formLayout.cols !== this.state.cols ||
@@ -138,7 +130,6 @@ export default class FormCreator extends Component<IProps, IState> {
         return (
             <div className="form-creator">
                 <div className="form-creator__builder">
-                    {/* <FormGridSlot /> */}
                     <Grid
                         rows={generateGridColString(this.state.rows)}
                         cols={generateGridColString(this.state.cols)}
@@ -149,6 +140,7 @@ export default class FormCreator extends Component<IProps, IState> {
                             const elements = [];
                             for (let i = 0; i < this.state.rows; i++) {
                                 for (let j = 0; j < this.state.cols; j++) {
+                                    // check if a group already exists for that slot (ie its been loaded from the save file)
                                     const groupToDisplay = this.state.groupList.filter(
                                         group => group.getGridAreaName() === this.state.gridModel[i][j]
                                     );
@@ -175,25 +167,17 @@ export default class FormCreator extends Component<IProps, IState> {
                                                 });
                                             }}
                                             updateGroupList={(group: FormGroup, gridAreaName: string) => {
-                                                console.log('===== UPDATE GROUP LIST =====');
-                                                console.log(this.state.groupList);
                                                 const newList = this.state.groupList.filter(
                                                     listGroup => listGroup.getGridAreaName() !== group.getGridAreaName()
                                                 );
 
-                                                console.log(group);
                                                 group.setGridAreaName(gridAreaName);
-                                                console.log('Adding: ');
-                                                console.log(group);
-                                                console.log(newList);
-                                                // this.props.addFormGroup(group);
                                                 this.setState({ groupList: [...newList, group] });
                                             }}
                                             removeGroupList={(group: FormGroup) => {
                                                 const filtered = this.state.groupList.filter(
                                                     listGroup => listGroup.getGridAreaName() !== group.getGridAreaName()
                                                 );
-                                                // this.props.removeFormGroup(group);
                                                 this.setState({ groupList: filtered });
                                             }}
                                         />
@@ -226,14 +210,6 @@ export default class FormCreator extends Component<IProps, IState> {
                                     const rows = this.rowRef.current.state.value;
                                     const cols = this.colRef.current.state.value;
 
-                                    // this.props.setFormDimensions(rows, cols, this.generateGridModel(rows, cols));
-
-                                    // this.setState({
-                                    //     rows: this.props.formLayout.rows,
-                                    //     cols: this.props.formLayout.cols,
-                                    //     gridModel: this.props.formLayout.gridModel,
-                                    //     joinModel: new Array(rows).fill(new Array(cols).fill(''))
-                                    // });
                                     this.setState({
                                         rows,
                                         cols,
