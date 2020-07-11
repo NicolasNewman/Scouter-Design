@@ -149,6 +149,9 @@ export default class FormCreator extends Component<IProps, IState> {
                             const elements = [];
                             for (let i = 0; i < this.state.rows; i++) {
                                 for (let j = 0; j < this.state.cols; j++) {
+                                    const groupToDisplay = this.state.groupList.filter(
+                                        group => group.getGridAreaName() === this.state.gridModel[i][j]
+                                    );
                                     elements.push(
                                         <FormGridSlot
                                             gridAreaName={`${this.state.gridModel[i][j]}`}
@@ -156,6 +159,7 @@ export default class FormCreator extends Component<IProps, IState> {
                                             col={this.state.cols}
                                             isJoiningGrid={this.state.isJoiningGrid}
                                             joinModel={this.state.joinModel[i][j]}
+                                            inner={groupToDisplay[0] ? groupToDisplay[0] : null}
                                             // visually change the grid slot based on if it was clicked or not
                                             joinClickHandler={() => {
                                                 const cpy = this.state.joinModel.map(cols => cols.map(num => num));

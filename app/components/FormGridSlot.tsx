@@ -13,6 +13,8 @@ interface IBaseProps {
     isJoiningGrid: boolean;
     /** the corresponding letter this slot uses to be placed correctly on the grid */
     joinModel: string;
+    /** the default component to display on the slot (if there is one) */
+    inner?: FormGroup;
     /** function that handles what should happen when the slot is clicked on */
     joinClickHandler: () => void;
     /** function that allows access to the groupList within the FormCreator */
@@ -39,7 +41,24 @@ class FormGridSlot extends Component<IProps, IState> {
 
     constructor(props) {
         super(props);
-        this.state = {};
+        if (this.props.inner) {
+            this.state = {
+                inner: (
+                    <Group
+                        disabled={true}
+                        // FormGroup instance that this group should be generated from
+                        group={this.props.inner}
+                        // used by the close button on a group to remove it from the slot
+                        clear={() => {
+                            this.props.removeGroupList(this.props.inner);
+                            this.setState({ inner: null });
+                        }}
+                    />
+                )
+            };
+        } else {
+            this.state = {};
+        }
     }
 
     componentDidUpdate(prevProps: IProps) {
