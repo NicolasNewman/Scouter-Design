@@ -1,4 +1,5 @@
 import { EventData, EventDataArray, StateData, StateDataArray, GameProperties, WorkspaceType } from '../types/types';
+import * as fs from 'fs';
 
 const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game: GameProperties) => {
     const appendEnum = (str: string, name: string): string => {
@@ -199,7 +200,7 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
 };
 
 const accuracyResolverGenerator = (events: EventDataArray) => {
-    const conditions = '';
+    let conditions = '';
     events.forEach(event => {
         if (event.accuracy) {
             conditions = conditions + `\ncase "${event.name}": return true;`;
@@ -236,7 +237,7 @@ const scoreResolverGenerator = (events: EventDataArray) => {
             }
         `;
     };
-    const switchBranches = '';
+    let switchBranches = '';
     events.forEach(event => {
         if (event.score !== 0) {
             switchBranches = switchBranches + '\n' + generateBranch(event.name, event.score);
@@ -268,6 +269,10 @@ export default class WorkspaceExporter {
         this.path = path;
     }
 
+    private encode(source: string) {
+        return Buffer.from(source).toString('base64');
+    }
+
     generateAndWrite(state: WorkspaceType, formGenerator: () => string) {
         const formCode = formGenerator();
         console.log(formCode);
@@ -277,5 +282,25 @@ export default class WorkspaceExporter {
 
         const accuracyResolverCode = accuracyResolverGenerator(state.event);
         console.log(accuracyResolverCode);
+
+        const scoreResolverCode = scoreResolverGenerator(state.event);
+        console.log(scoreResolverCode);
+
+        if (this.path) {
+            const formEncoded = this.encode(formCode);
+            console.log(formEncoded);
+            const gameTypeEncoded = this.encode(gameTypeCode);
+            console.log(gameTypeEncoded);
+            const accuracyResolverEncoded = this.encode(accuracyResolverCode);
+            console.log(accuracyResolverEncoded);
+            const scoreResolverEncoded = this.encode(scoreResolverCode);
+            console.log(scoreResolverEncoded);
+
+            const toWrite = `${formEncoded}$#$${gameTypeEncoded}$#$${accuracyResolverEncoded}$#$${scoreResolverEncoded}`;
+            console.log(toWrite);
+            fs.writeFile(this.path, toWrite, err => {
+                if (err) throw err;
+            });
+        }
     }
 }

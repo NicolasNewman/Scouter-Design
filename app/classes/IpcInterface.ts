@@ -3,6 +3,8 @@ import WorkspaceParser from './WorkspaceParser';
 import { WorkspaceType } from '../types/types';
 import store from '../index';
 import WorkspaceExporter from './WorkspaceExporter';
+import { remote } from 'electron';
+import { EXTENSION_SDC } from '../constants/constants';
 
 export default class IpcInterface {
     constructor(parser?: WorkspaceParser, exporter?: WorkspaceExporter) {
@@ -17,9 +19,22 @@ export default class IpcInterface {
         }
         if (exporter) {
             ipcRenderer.on('export', e => {
-                const state = store.getState();
-                // console.log(state.form.generateForm());
-                exporter.generateAndWrite(this.buildWorkspace(), state.form.generateForm);
+                remote.dialog.showSaveDialog(
+                    {
+                        title: 'Test'
+                    },
+                    filename => {
+                        if (filename) {
+                            let fName = filename;
+                            if (!fName.endsWith(EXTENSION_SDC)) {
+                                fName = fName + EXTENSION_SDC;
+                            }
+                            exporter.setPath(fName);
+                            const state = store.getState();
+                            exporter.generateAndWrite(this.buildWorkspace(), state.form.generateForm);
+                        }
+                    }
+                );
             });
         }
     }

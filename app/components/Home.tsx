@@ -4,7 +4,7 @@ import { RouteComponentProps } from 'react-router';
 import DataStore from 'app/classes/DataStore';
 import { Button } from 'antd';
 import routes from '../constants/routes';
-import { EXTENSION } from '../constants/constants';
+import { EXTENSION_SDW } from '../constants/constants';
 import { remote } from 'electron';
 import { FileMode } from '../types/types';
 
@@ -40,8 +40,8 @@ export default class Home extends Component<IProps> {
                                 // this.props.ipcInterface.newFile(filename);
                                 if (filename) {
                                     let fName = filename;
-                                    if (!fName.endsWith(EXTENSION)) {
-                                        fName = fName + EXTENSION;
+                                    if (!fName.endsWith(EXTENSION_SDW)) {
+                                        fName = fName + EXTENSION_SDW;
                                     }
                                     this.props.setProjectFile(fName, 'w');
                                     this.toPage(routes.DESIGNER);
