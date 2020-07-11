@@ -22,7 +22,10 @@ import {
 import FormGroup from '../classes/models/FormGroup';
 
 import WorkspaceParser from '../classes/WorkspaceParser';
+import WorkspaceExporter from '../classes/WorkspaceExporter';
 import IpcInterface from '../classes/IpcInterface';
+
+import { generateGridColString, generateGridRowString } from '../utils/helper';
 
 const { TabPane } = Tabs;
 
@@ -84,7 +87,36 @@ export default class Home extends Component<IProps> {
         if (this.props.mode === 'r') {
             this.parser.getReader().load();
         }
-        this.ipcInterface = new IpcInterface(this.parser);
+        this.ipcInterface = new IpcInterface(this.parser, new WorkspaceExporter());
+
+        // if the form layout has been loaded from the save, initialize the form code generator in advanced
+        if (this.props.formLayout.groupList) {
+            this.props.setFormJSXFunc(
+                () => `
+                <Grid
+                    rows="${generateGridColString(this.props.formLayout.rows)}"
+                    cols="${generateGridColString(this.props.formLayout.cols)}"
+                    templateArea="${(() => {
+                        let templateArea = '';
+                        let row = '';
+                        for (let i = 0; i < this.props.formLayout.rows; i++) {
+                            row = "'";
+                            for (let j = 0; j < this.props.formLayout.cols; j++) {
+                                row += `${this.props.formLayout.gridModel[i][j]} `;
+                            }
+                            row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
+                            templateArea += row;
+                        }
+                        return templateArea;
+                    })()}"
+                    className="form-creator__grid"
+                    gridElements={${(() => {
+                        const joined = this.props.formLayout.groupList.map(group => group.getJSX()).join(',');
+                        return joined;
+                    })()}}
+                />`
+            );
+        }
     }
 
     tabChanged = key => {
