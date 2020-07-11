@@ -37,31 +37,31 @@ export default function file(state: IInitialState = initialState, action: FormTy
                     groupList: state.formLayout.groupList
                 }
             };
-        case FormTypeKeys.ADD_FORM_GROUP:
-            console.log(state);
-            return {
-                generateForm: state.generateForm,
-                formLayout: {
-                    rows: state.formLayout.rows,
-                    cols: state.formLayout.cols,
-                    gridModel: state.formLayout.gridModel,
-                    groupList: state.formLayout.groupList.push(action.group)
-                }
-            };
-        case FormTypeKeys.REMOVE_FORM_GROUP:
-            let cpy = [...state.formLayout.groupList];
-            cpy = cpy.filter(group => {
-                return action.group.getGridAreaName() !== group.getGridAreaName();
-            });
-            return {
-                generateForm: state.generateForm,
-                formLayout: {
-                    rows: state.formLayout.rows,
-                    cols: state.formLayout.cols,
-                    gridModel: state.formLayout.gridModel,
-                    groupList: cpy
-                }
-            };
+        // case FormTypeKeys.ADD_FORM_GROUP:
+        //     console.log(state);
+        //     return {
+        //         generateForm: state.generateForm,
+        //         formLayout: {
+        //             rows: state.formLayout.rows,
+        //             cols: state.formLayout.cols,
+        //             gridModel: state.formLayout.gridModel,
+        //             groupList: state.formLayout.groupList.push(action.group)
+        //         }
+        //     };
+        // case FormTypeKeys.REMOVE_FORM_GROUP:
+        //     let cpy = [...state.formLayout.groupList];
+        //     cpy = cpy.filter(group => {
+        //         return action.group.getGridAreaName() !== group.getGridAreaName();
+        //     });
+        //     return {
+        //         generateForm: state.generateForm,
+        //         formLayout: {
+        //             rows: state.formLayout.rows,
+        //             cols: state.formLayout.cols,
+        //             gridModel: state.formLayout.gridModel,
+        //             groupList: cpy
+        //         }
+        //     };
         case FormTypeKeys.OVERWRITE_FORM_GROUP:
             return {
                 generateForm: state.generateForm,
@@ -71,6 +71,11 @@ export default function file(state: IInitialState = initialState, action: FormTy
                     gridModel: state.formLayout.gridModel,
                     groupList: action.groups
                 }
+            };
+        case FormTypeKeys.OVERWRITE_FORM_LAYOUT:
+            return {
+                generateForm: state.generateForm,
+                formLayout: action.layout
             };
         default:
             return state;

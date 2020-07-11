@@ -43,6 +43,12 @@ export type WorkspaceType = {
     event: EventDataArray;
     state: StateDataArray;
     group: Array<GroupOptions>;
+    form: {
+        rows: number;
+        cols: number;
+        gridModel: Array<Array<string>>;
+        groupList: Array<GroupOptions>;
+    };
 };
 
 export type FormLayoutType = {

@@ -17,8 +17,8 @@ interface IProps {
     formLayout: FormLayoutType;
     setFormJSXFunc: (func: () => string) => void;
     setFormDimensions: (rows: number, cols: number, gridModel: Array<Array<string>>) => void;
-    addFormGroup: (group: FormGroup) => void;
-    removeFormGroup: (group: FormGroup) => void;
+    // addFormGroup: (group: FormGroup) => void;
+    // removeFormGroup: (group: FormGroup) => void;
     overwriteFormGroup: (groups: Array<FormGroup>) => void;
 }
 
@@ -50,7 +50,7 @@ export default class FormCreator extends Component<IProps, IState> {
             rows: this.props.formLayout.rows,
             cols: this.props.formLayout.cols,
             gridModel: this.props.formLayout.gridModel,
-            joinModel: new Array(2).fill(new Array(2).fill('')),
+            joinModel: new Array(this.props.formLayout.rows).fill(new Array(this.props.formLayout.cols).fill('')),
             isJoiningGrid: false,
             groupList: this.props.formLayout.groupList
         };

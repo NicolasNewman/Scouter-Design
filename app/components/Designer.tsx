@@ -67,8 +67,8 @@ interface IProps extends RouteComponentProps<any> {
     formLayout: FormLayoutType;
     setFormJSXFunc: (func: () => string) => void;
     setFormDimensions: (rows: number, cols: number, gridModel: Array<Array<string>>) => void;
-    addFormGroup: (group: FormGroup) => void;
-    removeFormGroup: (group: FormGroup) => void;
+    // addFormGroup: (group: FormGroup) => void;
+    // removeFormGroup: (group: FormGroup) => void;
     overwriteFormGroup: (groups: Array<FormGroup>) => void;
 }
 
@@ -136,8 +136,8 @@ export default class Home extends Component<IProps> {
                             formLayout={this.props.formLayout}
                             setFormJSXFunc={this.props.setFormJSXFunc}
                             setFormDimensions={this.props.setFormDimensions}
-                            addFormGroup={this.props.addFormGroup}
-                            removeFormGroup={this.props.removeFormGroup}
+                            // addFormGroup={this.props.addFormGroup}
+                            // removeFormGroup={this.props.removeFormGroup}
                             overwriteFormGroup={this.props.overwriteFormGroup}
                         />
                     </TabPane>
