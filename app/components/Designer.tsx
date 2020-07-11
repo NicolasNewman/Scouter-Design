@@ -10,7 +10,15 @@ import General from './Designer/General';
 import EventTable from './Table/EventTable';
 import StateTable from './Table/StateTable';
 
-import { EventData, EventDataArray, StateData, StateDataArray, FileMode, GameProperties } from '../types/types';
+import {
+    EventData,
+    EventDataArray,
+    StateData,
+    StateDataArray,
+    FileMode,
+    GameProperties,
+    FormLayoutType
+} from '../types/types';
 import FormGroup from '../classes/models/FormGroup';
 
 import WorkspaceParser from '../classes/WorkspaceParser';
@@ -56,7 +64,12 @@ interface IProps extends RouteComponentProps<any> {
     overwriteGroup: (groups: Array<FormGroup>) => void;
 
     // redux - form
+    formLayout: FormLayoutType;
     setFormJSXFunc: (func: () => string) => void;
+    setFormDimensions: (rows: number, cols: number, gridModel: Array<Array<string>>) => void;
+    addFormGroup: (group: FormGroup) => void;
+    removeFormGroup: (group: FormGroup) => void;
+    overwriteFormGroup: (groups: Array<FormGroup>) => void;
 }
 
 export default class Home extends Component<IProps> {
@@ -118,7 +131,15 @@ export default class Home extends Component<IProps> {
                         />
                     </TabPane>
                     <TabPane tab="Form" key="form">
-                        <FormCreator groups={this.props.groups} setFormJSXFunc={this.props.setFormJSXFunc} />
+                        <FormCreator
+                            groups={this.props.groups}
+                            formLayout={this.props.formLayout}
+                            setFormJSXFunc={this.props.setFormJSXFunc}
+                            setFormDimensions={this.props.setFormDimensions}
+                            addFormGroup={this.props.addFormGroup}
+                            removeFormGroup={this.props.removeFormGroup}
+                            overwriteFormGroup={this.props.overwriteFormGroup}
+                        />
                     </TabPane>
                 </Tabs>
             </div>

@@ -25,7 +25,7 @@ export default class IpcInterface {
             });
             ipcRenderer.on('export', e => {
                 const state = store.getState();
-                console.log(state.form());
+                console.log(state.form.generateForm());
             });
         }
     }

@@ -15,7 +15,9 @@ interface IBaseProps {
     joinModel: string;
     /** function that handles what should happen when the slot is clicked on */
     joinClickHandler: () => void;
+    /** function that allows access to the groupList within the FormCreator */
     updateGroupList: (group: FormGroup, gridAreaName: string) => void;
+    removeGroupList: (group: FormGroup) => void;
 }
 
 interface IProps extends IBaseProps {
@@ -90,15 +92,21 @@ export default DropTarget(
             console.log(monitor);
             console.log(monitor.getItem());
             console.log(component);
-            component.props.updateGroupList(monitor.getItem().group, component.props.gridAreaName);
+
+            let group: FormGroup = monitor.getItem().group;
+            const clone = FormGroup.fromJSON(group.toJSON());
+            component.props.updateGroupList(clone, component.props.gridAreaName);
             component.setState({
                 inner: (
                     <Group
                         disabled={true}
                         // FormGroup instance that this group should be generated from
-                        group={monitor.getItem().group}
+                        group={clone}
                         // used by the close button on a group to remove it from the slot
-                        clear={() => component.setState({ inner: null })}
+                        clear={() => {
+                            component.props.removeGroupList(clone);
+                            component.setState({ inner: null });
+                        }}
                     />
                 )
             });

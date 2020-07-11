@@ -17,7 +17,7 @@ function mapStateToProps(state, ownProps) {
         groups: state.group,
         file: state.core.file,
         mode: state.core.mode,
-        getFormJSX: state.form
+        formLayout: state.form.formLayout
     };
 }
 

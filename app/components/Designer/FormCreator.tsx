@@ -5,14 +5,21 @@ import DraggableGroup from '../DraggableGroup';
 import FormGridSlot from '../FormGridSlot';
 import { Button, InputNumber, message } from 'antd';
 import Grid from '../Grid/Grid';
+import { FormLayoutType } from '../../types/types';
 import { generateGridColString, generateGridRowString, print2DArray, generate2DArray } from '../../utils/helper';
+import * as deepEquals from 'fast-deep-equal';
 
 interface IProps {
     // redux - group
     groups: Array<FormGroup>;
 
     // redux - form
+    formLayout: FormLayoutType;
     setFormJSXFunc: (func: () => string) => void;
+    setFormDimensions: (rows: number, cols: number, gridModel: Array<Array<string>>) => void;
+    addFormGroup: (group: FormGroup) => void;
+    removeFormGroup: (group: FormGroup) => void;
+    overwriteFormGroup: (groups: Array<FormGroup>) => void;
 }
 
 interface IState {
@@ -40,12 +47,12 @@ export default class FormCreator extends Component<IProps, IState> {
         super(props);
 
         this.state = {
-            rows: 2,
-            cols: 2,
-            gridModel: this.generateGridModel(2, 2),
+            rows: this.props.formLayout.rows,
+            cols: this.props.formLayout.cols,
+            gridModel: this.props.formLayout.gridModel,
             joinModel: new Array(2).fill(new Array(2).fill('')),
             isJoiningGrid: false,
-            groupList: []
+            groupList: this.props.formLayout.groupList
         };
 
         this.rowRef = React.createRef();
@@ -64,6 +71,31 @@ export default class FormCreator extends Component<IProps, IState> {
                 })()}}
             />`
         );
+    }
+
+    componentDidUpdate(prevProps: IProps, prevState: IState) {
+        // if (!deepEquals(prevProps.formLayout, this.props.formLayout)) {
+        //     this.setState({
+        //         rows: this.props.formLayout.rows,
+        //         cols: this.props.formLayout.cols,
+        //         gridModel: this.props.formLayout.gridModel,
+        //         joinModel: new Array(rows).fill(new Array(cols).fill(''))
+        //     });
+        // }
+        console.log(this.state.groupList);
+        console.log(prevState.groupList);
+        console.log(this.props.formLayout.groupList);
+        if (!deepEquals(this.props.formLayout.groupList, this.state.groupList)) {
+            console.log('GroupList is not equal');
+            this.props.overwriteFormGroup(this.state.groupList);
+        }
+        if (
+            this.props.formLayout.rows !== this.state.rows ||
+            this.props.formLayout.cols !== this.state.cols ||
+            this.props.formLayout.gridModel !== this.state.gridModel
+        ) {
+            this.props.setFormDimensions(this.state.rows, this.state.cols, this.state.gridModel);
+        }
     }
 
     /**
@@ -139,12 +171,26 @@ export default class FormCreator extends Component<IProps, IState> {
                                                 });
                                             }}
                                             updateGroupList={(group: FormGroup, gridAreaName: string) => {
+                                                console.log('===== UPDATE GROUP LIST =====');
+                                                console.log(this.state.groupList);
                                                 const newList = this.state.groupList.filter(
                                                     listGroup => listGroup.getGridAreaName() !== group.getGridAreaName()
                                                 );
 
+                                                console.log(group);
                                                 group.setGridAreaName(gridAreaName);
+                                                console.log('Adding: ');
+                                                console.log(group);
+                                                console.log(newList);
+                                                // this.props.addFormGroup(group);
                                                 this.setState({ groupList: [...newList, group] });
+                                            }}
+                                            removeGroupList={(group: FormGroup) => {
+                                                const filtered = this.state.groupList.filter(
+                                                    listGroup => listGroup.getGridAreaName() !== group.getGridAreaName()
+                                                );
+                                                // this.props.removeFormGroup(group);
+                                                this.setState({ groupList: filtered });
                                             }}
                                         />
                                     );
@@ -176,11 +222,20 @@ export default class FormCreator extends Component<IProps, IState> {
                                     const rows = this.rowRef.current.state.value;
                                     const cols = this.colRef.current.state.value;
 
+                                    // this.props.setFormDimensions(rows, cols, this.generateGridModel(rows, cols));
+
+                                    // this.setState({
+                                    //     rows: this.props.formLayout.rows,
+                                    //     cols: this.props.formLayout.cols,
+                                    //     gridModel: this.props.formLayout.gridModel,
+                                    //     joinModel: new Array(rows).fill(new Array(cols).fill(''))
+                                    // });
                                     this.setState({
                                         rows,
                                         cols,
                                         gridModel: this.generateGridModel(rows, cols),
-                                        joinModel: new Array(rows).fill(new Array(cols).fill(''))
+                                        joinModel: new Array(rows).fill(new Array(cols).fill('')),
+                                        groupList: []
                                     });
                                 }}
                             >
@@ -258,6 +313,8 @@ export default class FormCreator extends Component<IProps, IState> {
                                                         }
                                                     }
                                                 }
+
+                                                // this.props.setFormDimensions(this.state.rows, this.state.cols, cpy);
                                                 this.setState({
                                                     joinModel: new Array(this.state.rows).fill(
                                                         new Array(this.state.cols).fill('')
