@@ -315,7 +315,7 @@ export default class EventTable extends Component<IProps, IState> {
                     <Input addonBefore="EVENT_" placeholder="Event name" ref={this.input}></Input>
                 </Modal>
                 <Form ref={this.form}>
-                    <Button className="mb-1 ml-1" onClick={() => this.setState({ modalVisible: true })} type="primary">
+                    <Button className="m-1" onClick={() => this.setState({ modalVisible: true })} type="primary">
                         Add Event
                     </Button>
                     <Table

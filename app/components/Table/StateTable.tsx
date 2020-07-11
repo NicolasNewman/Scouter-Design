@@ -80,30 +80,18 @@ export default class StateTable extends Component<IProps, IState> {
                     const editable = this.isEditing(record);
                     return editable ? (
                         <span>
-                            <a
-                                onClick={() => this.save(record.key)}
-                                style={{ marginRight: 8 }}
-                            >
+                            <a onClick={() => this.save(record.key)} style={{ marginRight: 8 }}>
                                 Save
                             </a>
-                            <Popconfirm
-                                title="Sure to cancel?"
-                                onConfirm={this.cancel}
-                            >
+                            <Popconfirm title="Sure to cancel?" onConfirm={this.cancel}>
                                 <a style={{ marginRight: 8 }}>Cancel</a>
                             </Popconfirm>
-                            <Popconfirm
-                                title="Sure to delete?"
-                                onConfirm={() => this.delete(record)}
-                            >
+                            <Popconfirm title="Sure to delete?" onConfirm={() => this.delete(record)}>
                                 <a>Delete</a>
                             </Popconfirm>
                         </span>
                     ) : (
-                        <a
-                            hidden={this.state.editingKey !== ''}
-                            onClick={() => this.edit(record)}
-                        >
+                        <a hidden={this.state.editingKey !== ''} onClick={() => this.edit(record)}>
                             Edit
                         </a>
                     );
@@ -139,9 +127,7 @@ export default class StateTable extends Component<IProps, IState> {
         let copy = [...this.state.data];
         copy = copy.filter(item => item.key !== record.key);
 
-        const toDelete = this.state.data.find(
-            item => item.name === record.name
-        );
+        const toDelete = this.state.data.find(item => item.name === record.name);
         this.props.removeStateItem(this.itemToStateData(toDelete));
 
         this.setState({ data: copy, editingKey: '' });
@@ -231,18 +217,10 @@ export default class StateTable extends Component<IProps, IState> {
                     onOk={this.add}
                     onCancel={() => this.setState({ modalVisible: false })}
                 >
-                    <Input
-                        addonBefore="STATE_"
-                        placeholder="State name"
-                        ref={this.input}
-                    ></Input>
+                    <Input addonBefore="STATE_" placeholder="State name" ref={this.input}></Input>
                 </Modal>
                 <Form ref={this.form}>
-                    <Button
-                        className="mb-1 ml-1"
-                        onClick={() => this.setState({ modalVisible: true })}
-                        type="primary"
-                    >
+                    <Button className="m-1" onClick={() => this.setState({ modalVisible: true })} type="primary">
                         Add State
                     </Button>
                     <Table

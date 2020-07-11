@@ -43,7 +43,7 @@ export default class ScoreFieldRenderer extends Component<IProps, IState> {
                     <InputNumber
                         defaultValue={this.props.score[0]}
                         onChange={(key: string) => {
-                            this.setState({ autoScore: parseInt(key) });
+                            this.setState({ autoScore: parseInt(key) ? parseInt(key) : 0 });
                         }}
                         key="auto"
                     />
@@ -53,7 +53,7 @@ export default class ScoreFieldRenderer extends Component<IProps, IState> {
                     <InputNumber
                         defaultValue={this.props.score[1]}
                         onChange={(key: string) => {
-                            this.setState({ teleopScore: parseInt(key) });
+                            this.setState({ teleopScore: parseInt(key) ? parseInt(key) : 0 });
                         }}
                         key="teleop"
                     />
@@ -63,7 +63,7 @@ export default class ScoreFieldRenderer extends Component<IProps, IState> {
                     <InputNumber
                         defaultValue={this.props.score[2]}
                         onChange={(key: string) => {
-                            this.setState({ endgameScore: parseInt(key) });
+                            this.setState({ endgameScore: parseInt(key) ? parseInt(key) : 0 });
                         }}
                         key="endgame"
                     />
