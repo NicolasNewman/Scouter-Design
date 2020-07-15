@@ -258,15 +258,15 @@ export default class GroupCreator extends Component<IProps, IState> {
                                     options={[
                                         {
                                             label: 'auto',
-                                            value: 'autoButtonsDisabled'
+                                            value: 'this.state.autoButtonsDisabled'
                                         },
                                         {
                                             label: 'teleop',
-                                            value: 'teleopButtonsDisabled'
+                                            value: 'this.state.teleopButtonsDisabled'
                                         },
                                         {
                                             label: 'endgame',
-                                            value: 'endgameButtonsDisabled'
+                                            value: 'this.state.endgameButtonsDisabled'
                                         }
                                     ]}
                                 />
@@ -301,20 +301,22 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         if (isEventData(typeMatch)) {
                                             if (typeMatch.type === 'robot_event') {
                                                 if (deepEqual(typeMatch.score, [0, 0, 0])) {
-                                                    type = `EScorableRobotEvents.${this.state.typeVal}`;
-                                                } else {
                                                     type = `ERobotEvents.${this.state.typeVal}`;
+                                                } else {
+                                                    type = `EScorableRobotEvents.${this.state.typeVal}`;
                                                 }
                                             } else if (typeMatch.type === 'team_event') {
                                                 if (deepEqual(typeMatch.score, [0, 0, 0])) {
-                                                    type = `EScorableTeamEvents.${this.state.typeVal}`;
-                                                } else {
                                                     type = `ETeamEvents.${this.state.typeVal}`;
+                                                } else {
+                                                    type = `EScorableTeamEvents.${this.state.typeVal}`;
                                                 }
                                             } else {
                                                 type = `EFoulEvents.${this.state.typeVal}`;
                                             }
                                         } else {
+                                            console.log('IS ROBOT STATE!');
+                                            console.log(this.state);
                                             type = `ERobotStates.${this.state.typeVal}`;
                                         }
 

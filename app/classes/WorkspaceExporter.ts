@@ -7,9 +7,9 @@ const fullFormGenerator = (form: string): string => {
     import { Component } from "react";
 
     import {
-    ScoutingTargets,
-    SocketController,
-    emitableEvents,
+        ScoutingTargets,
+        SocketController,
+        emitableEvents,
     } from "../../../classes/socketController";
 
     import Grid from "../../Grid/Grid";
@@ -20,9 +20,12 @@ const fullFormGenerator = (form: string): string => {
     import RobotEventButton from "./DataInputFormComponents/RobotEventButton";
     import AccuracyEventButton from "./DataInputFormComponents/AccuracyEventButton";
     import {
-    EScorableRobotEvents,
-    EFoulEvents,
-    ERobotStates,
+        ERobotEvents,
+        EScorableRobotEvents,
+        ETeamEvents,
+        EScorableTeamEvents,
+        EFoulEvents,
+        ERobotStates,
     } from "../../../global/gameTypes";
 
     interface IProps {
@@ -159,20 +162,20 @@ const fullFormGenerator = (form: string): string => {
             return (
                 <div className="scouting">
                     <Grid
-                    className="dashboard"
-                    templateArea="
-                    'time phase'
-                    'match team'"
-                    rows="1fr 1fr"
-                    cols="1fr 1fr"
-                    gridElements={[
-                        <h1 style={{ gridArea: "time" }}>Time: {this.state.matchTime}s</h1>,
-                        <h1 style={{ gridArea: "phase" }}>Phase: {this.state.phase}</h1>,
-                        <h2 style={{ gridArea: "match" }}>
-                        Match: {this.props.matchNumber}
-                        </h2>,
-                        <h2 style={{ gridArea: "team" }}>Team: {scoutingTargets}</h2>,
-                    ]}
+                        className="dashboard"
+                        templateArea="
+                        'time phase'
+                        'match team'"
+                        rows="1fr 1fr"
+                        cols="1fr 1fr"
+                        gridElements={[
+                            <h1 style={{ gridArea: "time" }}>Time: {this.state.matchTime}s</h1>,
+                            <h1 style={{ gridArea: "phase" }}>Phase: {this.state.phase}</h1>,
+                            <h2 style={{ gridArea: "match" }}>
+                            Match: {this.props.matchNumber}
+                            </h2>,
+                            <h2 style={{ gridArea: "team" }}>Team: {scoutingTargets}</h2>,
+                        ]}
                     />
                     ${form}
                 </div>

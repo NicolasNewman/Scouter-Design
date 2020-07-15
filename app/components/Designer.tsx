@@ -110,10 +110,10 @@ export default class Home extends Component<IProps> {
                         return templateArea;
                     })()}"
                     className="form-creator__grid"
-                    gridElements={${(() => {
+                    gridElements={[${(() => {
                         const joined = this.props.formLayout.groupList.map(group => group.getJSX()).join(',');
                         return joined;
-                    })()}}
+                    })()}]}
                 />`
             );
         }
