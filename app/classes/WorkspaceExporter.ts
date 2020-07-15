@@ -1,6 +1,186 @@
 import { EventData, EventDataArray, StateData, StateDataArray, GameProperties, WorkspaceType } from '../types/types';
 import * as fs from 'fs';
 
+const fullFormGenerator = (form: string): string => {
+    return `
+    import * as React from "react";
+    import { Component } from "react";
+
+    import {
+    ScoutingTargets,
+    SocketController,
+    emitableEvents,
+    } from "../../../classes/socketController";
+
+    import Grid from "../../Grid/Grid";
+
+    import StateButton from "./DataInputFormComponents/StateButton";
+
+    import RequestHandler from "../../../classes/RequestHandler";
+    import RobotEventButton from "./DataInputFormComponents/RobotEventButton";
+    import AccuracyEventButton from "./DataInputFormComponents/AccuracyEventButton";
+    import {
+    EScorableRobotEvents,
+    EFoulEvents,
+    ERobotStates,
+    } from "../../../global/gameTypes";
+
+    interface IProps {
+        scoutingTargets: ScoutingTargets;
+        matchNumber: number;
+        socket: SocketController;
+        requestHandler: RequestHandler;
+        removeScoutingTarget: (target: string) => void;
+        setMatchData: () => void;
+    }
+
+    /**
+     * Stores constants that are needed by the event and state buttons
+     */
+    export interface IConstantProps {
+        handler: RequestHandler;
+        getTime: () => number;
+        matchNumber: number;
+        teamNumber: number;
+    }
+
+    interface IState {
+        matchTime: number;
+        phase: "NONE" | "AUTO" | "TELEOP" | "ENDGAME";
+        autoButtonsDisabled: boolean;
+        teleopButtonsDisabled: boolean;
+        endgameButtonsDisabled: boolean;
+        globalDisabled: boolean;
+    }
+
+    export default class Home extends Component<IProps, IState> {
+        props: IProps;
+        // Stores constants that are needed by the event and state buttons
+        constantProps: IConstantProps;
+        interval: NodeJS.Timeout;
+
+        constructor(props: IProps) {
+            super(props);
+
+            if (this.props.scoutingTargets.length <= 0) {
+            this.state = {
+                matchTime: 0,
+                phase: "NONE",
+                autoButtonsDisabled: true,
+                teleopButtonsDisabled: true,
+                endgameButtonsDisabled: true,
+                globalDisabled: true,
+            };
+            this.constantProps = {
+                handler: this.props.requestHandler,
+                getTime: this.getTime,
+                matchNumber: this.props.matchNumber,
+                teamNumber: -1,
+            };
+            } else {
+            this.state = {
+                matchTime: 0,
+                phase: "NONE",
+                autoButtonsDisabled: true,
+                teleopButtonsDisabled: true,
+                endgameButtonsDisabled: true,
+                globalDisabled: false,
+            };
+            this.constantProps = {
+                handler: this.props.requestHandler,
+                getTime: this.getTime,
+                matchNumber: this.props.matchNumber,
+                teamNumber: parseInt(this.props.scoutingTargets[0].team),
+            };
+            }
+
+            this.componentDidUpdate = () => {
+            if (
+                this.constantProps.teamNumber === -1 &&
+                this.props.scoutingTargets.length > 0
+            ) {
+                this.constantProps.teamNumber = parseInt(
+                this.props.scoutingTargets[0].team
+                );
+            }
+            };
+
+            // Initialize an interval to query the match time from the server
+            if (this.props.scoutingTargets.length > 0) {
+            this.interval = setInterval(() => {
+                this.props.socket.emit(
+                emitableEvents.getRemainingTime,
+                undefined,
+                (remainingTime: number, phase: "AUTO" | "TELEOP" | "ENDGAME") => {
+                    if (remainingTime < 0) {
+                    clearInterval(this.interval);
+                    this.setState({
+                        matchTime: 0,
+                        phase: "NONE",
+                        autoButtonsDisabled: true,
+                        teleopButtonsDisabled: true,
+                        endgameButtonsDisabled: true,
+                        globalDisabled: true,
+                    });
+
+                    const identifier = \`\${
+                        this.props.scoutingTargets[0].alliance === "red" ? "r" : "b"
+                    }-\${this.props.scoutingTargets[0].seed}-scout\`;
+
+                    this.props.socket.emit(
+                        emitableEvents.scoutingFormSubmited,
+                        identifier
+                    );
+                    } else {
+                    this.setState({
+                        matchTime: remainingTime,
+                        phase,
+                        autoButtonsDisabled: phase === "AUTO" ? false : true,
+                        teleopButtonsDisabled: phase === "TELEOP" ? false : true,
+                        endgameButtonsDisabled: phase === "ENDGAME" ? false : true,
+                    });
+                    }
+                }
+                );
+            }, 500);
+            }
+        }
+
+        getTime = (): number => {
+            return this.state.matchTime;
+        };
+
+        render() {
+            const scoutingTargets = this.props.scoutingTargets
+            .map((obj) => {
+                return obj.team;
+            })
+            .join(", ");
+            return (
+                <div className="scouting">
+                    <Grid
+                    className="dashboard"
+                    templateArea="
+                    'time phase'
+                    'match team'"
+                    rows="1fr 1fr"
+                    cols="1fr 1fr"
+                    gridElements={[
+                        <h1 style={{ gridArea: "time" }}>Time: {this.state.matchTime}s</h1>,
+                        <h1 style={{ gridArea: "phase" }}>Phase: {this.state.phase}</h1>,
+                        <h2 style={{ gridArea: "match" }}>
+                        Match: {this.props.matchNumber}
+                        </h2>,
+                        <h2 style={{ gridArea: "team" }}>Team: {scoutingTargets}</h2>,
+                    ]}
+                    />
+                    ${form}
+                </div>
+            );
+        }
+    }`;
+};
+
 const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game: GameProperties) => {
     const appendEnum = (str: string, name: string): string => {
         return str + `${name} = "${name}",\n`;
@@ -37,6 +217,8 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
     states.forEach(state => {
         ERobotStates = appendEnum(ERobotStates, state.name);
     });
+
+    const cycleKey = `ERobotStates.${states[0].name}`;
 
     const IGameProperties = `
         matchDuration: ${game.matchDuration},
@@ -188,7 +370,7 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
     };
 
     // TODO
-    export const cycleDeterminer = ERobotStates.GATHERING;
+    export const cycleDeterminer = ${cycleKey};
     `;
 };
 
@@ -267,7 +449,7 @@ export default class WorkspaceExporter {
     }
 
     generateAndWrite(state: WorkspaceType, formGenerator: () => string) {
-        const formCode = formGenerator();
+        const formCode = fullFormGenerator(formGenerator());
         console.log(formCode);
 
         const gameTypeCode = gameTypeGenerator(state.event, state.state, state.game.gameProperties);
