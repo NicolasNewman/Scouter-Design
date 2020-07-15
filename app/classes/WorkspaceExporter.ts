@@ -49,8 +49,6 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
         game.teleopDuration}}`;
 
     return `
-    import { ECustomEvents, ECustomStates } from "./customTypes";
-
     /*==============================
     ||     General Properties     ||
     ==============================*/
@@ -111,8 +109,7 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
     export type RobotEvent =
         | ERobotEvents
         | EScorableRobotEvents
-        | EFoulEvents
-        | ECustomEvents;
+        | EFoulEvents;
 
     export type TeamEvent = ETeamEvents | EScorableTeamEvents;
 
@@ -122,11 +119,10 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
         | ERobotEvents
         | EScorableRobotEvents
         | EFoulEvents
-        | ECustomEvents
         | ETeamEvents
         | EScorableTeamEvents;
 
-    export type State = ERobotStates | ECustomStates;
+    export type State = ERobotStates;
 
     /*==============================
     ||     DB Model Interfaces    ||
@@ -158,8 +154,7 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
     export const RobotEventList = [
         ...Object.values(ERobotEvents),
         ...Object.values(EScorableRobotEvents),
-        ...Object.values(EFoulEvents),
-        ...Object.values(ECustomEvents)
+        ...Object.values(EFoulEvents)
     ];
 
     export const TeamEventList = [
@@ -176,14 +171,12 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
         ...Object.values(ERobotEvents),
         ...Object.values(EScorableRobotEvents),
         ...Object.values(EFoulEvents),
-        ...Object.values(ECustomEvents),
         ...Object.values(ETeamEvents),
         ...Object.values(EScorableTeamEvents)
     ];
 
     export const StateList = [
-        ...Object.values(ERobotStates),
-        ...Object.values(ECustomStates)
+        ...Object.values(ERobotStates)
     ];
 
     /*==============================
