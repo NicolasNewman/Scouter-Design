@@ -300,13 +300,13 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         let type = '';
                                         if (isEventData(typeMatch)) {
                                             if (typeMatch.type === 'robot_event') {
-                                                if (typeMatch.score !== [0, 0, 0]) {
+                                                if (deepEqual(typeMatch.score, [0, 0, 0])) {
                                                     type = `EScorableRobotEvents.${this.state.typeVal}`;
                                                 } else {
                                                     type = `ERobotEvents.${this.state.typeVal}`;
                                                 }
                                             } else if (typeMatch.type === 'team_event') {
-                                                if (typeMatch.score !== [0, 0, 0]) {
+                                                if (deepEqual(typeMatch.score, [0, 0, 0])) {
                                                     type = `EScorableTeamEvents.${this.state.typeVal}`;
                                                 } else {
                                                     type = `ETeamEvents.${this.state.typeVal}`;
@@ -314,6 +314,8 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             } else {
                                                 type = `EFoulEvents.${this.state.typeVal}`;
                                             }
+                                        } else {
+                                            type = `ERobotStates.${this.state.typeVal}`;
                                         }
 
                                         // create a new button with the found information
