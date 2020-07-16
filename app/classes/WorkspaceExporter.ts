@@ -19,6 +19,7 @@ const fullFormGenerator = (form: string): string => {
 
     import RequestHandler from "../../../classes/RequestHandler";
     import RobotEventButton from "./DataInputFormComponents/RobotEventButton";
+    import TeamEventButton from "./DataInputFormComponents/TeamEventButton";
     import AccuracyEventButton from "./DataInputFormComponents/AccuracyEventButton";
     import {
         ERobotEvents,
