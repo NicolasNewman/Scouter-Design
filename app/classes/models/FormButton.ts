@@ -75,6 +75,22 @@ export default class FormButton {
                     }
                 />
                 `;
+            case 'team':
+                return `
+                <TeamEventButton
+                    gridAreaName="${this.gridAreaName}"
+                    constants={this.constantProps}
+                    label="${this.label}"
+                    type={${this.type}}
+                    disabled={
+                        this.state.globalDisabled ||
+                        (${this.disabled})
+                    }
+                    phase={
+                        this.state.phase === "NONE" ? "AUTO" : this.state.phase
+                    }
+                />
+                `;
             case 'state':
                 return `
                 <StateButton

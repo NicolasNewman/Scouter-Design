@@ -291,8 +291,10 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         if (isEventData(typeMatch)) {
                                             if (typeMatch.accuracy) {
                                                 btnType = 'accuracy';
-                                            } else {
+                                            } else if (typeMatch.type === 'robot_event') {
                                                 btnType = 'event';
+                                            } else {
+                                                btnType = 'team';
                                             }
                                         }
 
