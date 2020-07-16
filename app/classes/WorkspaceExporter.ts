@@ -1,5 +1,6 @@
 import { EventData, EventDataArray, StateData, StateDataArray, GameProperties, WorkspaceType } from '../types/types';
 import * as fs from 'fs';
+import * as deepEqual from 'fast-deep-equal';
 
 const fullFormGenerator = (form: string): string => {
     return `
@@ -196,17 +197,17 @@ const gameTypeGenerator = (events: EventDataArray, states: StateDataArray, game:
     events.forEach(event => {
         switch (event.type) {
             case 'robot_event':
-                if (event.score !== [0, 0, 0]) {
-                    EScorableRobotEvents = appendEnum(EScorableRobotEvents, event.name);
-                } else {
+                if (deepEqual(event.score, [0, 0, 0])) {
                     ERobotEvents = appendEnum(ERobotEvents, event.name);
+                } else {
+                    EScorableRobotEvents = appendEnum(EScorableRobotEvents, event.name);
                 }
                 break;
             case 'team_event':
-                if (event.score !== [0, 0, 0]) {
-                    EScorableTeamEvents = appendEnum(EScorableTeamEvents, event.name);
-                } else {
+                if (deepEqual(event.score, [0, 0, 0])) {
                     ETeamEvents = appendEnum(ETeamEvents, event.name);
+                } else {
+                    EScorableTeamEvents = appendEnum(EScorableTeamEvents, event.name);
                 }
                 break;
 
