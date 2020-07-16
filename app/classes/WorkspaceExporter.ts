@@ -46,6 +46,7 @@ const fullFormGenerator = (form: string): string => {
         getTime: () => number;
         matchNumber: number;
         teamNumber: number;
+        alliance: 'red' | 'blue' | null;
     }
 
     interface IState {
@@ -80,6 +81,7 @@ const fullFormGenerator = (form: string): string => {
                 getTime: this.getTime,
                 matchNumber: this.props.matchNumber,
                 teamNumber: -1,
+                alliance: null
             };
             } else {
             this.state = {
@@ -95,6 +97,7 @@ const fullFormGenerator = (form: string): string => {
                 getTime: this.getTime,
                 matchNumber: this.props.matchNumber,
                 teamNumber: parseInt(this.props.scoutingTargets[0].team),
+                alliance: this.props.scoutingTargets[0].alliance
             };
             }
 
