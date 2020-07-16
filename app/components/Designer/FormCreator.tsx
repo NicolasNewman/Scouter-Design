@@ -66,10 +66,10 @@ export default class FormCreator extends Component<IProps, IState> {
                 cols="${generateGridColString(this.state.cols)}"
                 templateArea="${this.generateTemplateArea()}"
                 className="form-creator__grid"
-                gridElements={${(() => {
+                gridElements={[${(() => {
                     const joined = this.state.groupList.map(group => group.getJSX()).join(',');
                     return joined;
-                })()}}
+                })()}]}
             />`
         );
     }
