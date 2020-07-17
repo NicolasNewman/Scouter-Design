@@ -3,10 +3,7 @@ import { EventData, EventDataArray } from '../types/types';
 
 const initialState: EventDataArray = [];
 
-export default function event(
-    state: EventDataArray = initialState,
-    action: EventActionTypes
-) {
+export default function event(state: EventDataArray = initialState, action: EventActionTypes) {
     switch (action.type) {
         case EventActionTypeKeys.ADD_EVENT_ITEM:
             return [...state, action.event];
@@ -15,6 +12,7 @@ export default function event(
                 return !(data.name === action.event.name);
             });
         case EventActionTypeKeys.UPDATE_EVENT_ITEM:
+            //TODO dispatch event to update group render buttons
             const filteredData = state.filter(data => {
                 return !(data.name === action.name);
             });
