@@ -205,6 +205,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                 });
 
                                 // restore the values if a slot has already been modified
+                                // if (this.state.targetButton) { TODO restore bug
                                 if (this.labelRef.current) {
                                     this.labelRef.current.setState({
                                         value: obj.label
@@ -224,6 +225,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         typeVal: obj.type
                                     });
                                 }
+                                // }
                             }}
                         />
                     ) : (
@@ -231,7 +233,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                     )}
                 </div>
                 <div className="group-creator__editor">
-                    {this.state.targetButton !== null ? (
+                    {this.state.targetGroup !== null ? (
                         <React.Fragment>
                             <div>
                                 <span>Type:</span>
@@ -249,6 +251,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         };
                                     })}
                                     value={this.state.typeVal}
+                                    disabled={this.state.targetButton === null}
                                 />
                             </div>
                             <div className="mt-1">
@@ -269,6 +272,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                             value: 'this.state.endgameButtonsDisabled'
                                         }
                                     ]}
+                                    disabled={this.state.targetButton === null}
                                 />
                             </div>
                             <div className="mt-1">
@@ -278,6 +282,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                             <div className="mt-1">
                                 <Button
                                     type="primary"
+                                    disabled={this.state.targetButton === null}
                                     onClick={() => {
                                         // internally update or create a FormButton based on the given data
 
