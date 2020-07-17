@@ -205,7 +205,6 @@ export default class GroupCreator extends Component<IProps, IState> {
                                 });
 
                                 // restore the values if a slot has already been modified
-                                // if (this.state.targetButton) { TODO restore bug
                                 if (this.labelRef.current) {
                                     this.labelRef.current.setState({
                                         value: obj.label
@@ -225,7 +224,6 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         typeVal: obj.type
                                     });
                                 }
-                                // }
                             }}
                         />
                     ) : (
@@ -238,7 +236,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                             <div>
                                 <span>Type:</span>
                                 <Select
-                                    className="w-9 ml-1"
+                                    className="w-11 ml-1"
                                     onChange={val => {
                                         this.setState({
                                             typeVal: val.toString()
