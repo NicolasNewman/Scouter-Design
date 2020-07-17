@@ -42,6 +42,7 @@ interface IProps {
     removeEventItem: (event: EventData) => void;
     updateEventItem: (name: string, newData: EventData) => void;
     overwriteEventItem: (events: EventDataArray) => void;
+    updateEventAndDependents: (name: string, newData: EventData) => void;
 }
 
 interface IState {
@@ -226,7 +227,8 @@ export default class EventTable extends Component<IProps, IState> {
         const index = this.state.data.findIndex(item => key === item.key);
         const item = this.state.data[index];
 
-        this.props.updateEventItem(item.name, this.itemToEventData(item));
+        // this.props.updateEventItem(item.name, this.itemToEventData(item));
+        this.props.updateEventAndDependents(item.name, this.itemToEventData(item));
         this.setState({ editingKey: '' });
     };
 

@@ -1,5 +1,7 @@
 import { GroupOptions } from '../classes/models/FormGroup';
 import { IInitialState as GameState } from '../reducers/game';
+import { IInitialState as FormState } from '../reducers/form';
+import { IInitialState as CoreState } from '../reducers/core';
 import FormGroup from '../classes/models/FormGroup';
 
 export type GameProperties = {
@@ -8,6 +10,18 @@ export type GameProperties = {
     teleopDuration: number;
     endgameDuration: number;
 };
+
+/* ====================
+ *     Redux types
+ * ====================*/
+export interface IStore {
+    event: EventDataArray;
+    state: StateDataArray;
+    form: FormState;
+    game: GameState;
+    group: Array<FormGroup>;
+    core: CoreState;
+}
 
 /* ====================
  *     Event types

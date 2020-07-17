@@ -2,7 +2,7 @@ import { FormTypeKeys, FormTypes } from '../actions/form';
 import FormGroup from '../classes/models/FormGroup';
 import { FormLayoutType } from '../types/types';
 
-interface IInitialState {
+export interface IInitialState {
     generateForm: () => string;
     formLayout: FormLayoutType;
 }

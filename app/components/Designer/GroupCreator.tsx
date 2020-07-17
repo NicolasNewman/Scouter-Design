@@ -82,7 +82,7 @@ export default class GroupCreator extends Component<IProps, IState> {
     shouldComponentUpdate(nextProps: IProps) {
         // makes sure the component re-renders if the events or states change
         const conA = deepEqual(this.props.events, nextProps.events);
-        const conB = deepEqual(this.props.states, this.props.events);
+        const conB = deepEqual(this.props.states, nextProps.states);
         if (!(conA && conB)) {
             this.typeOptions = [];
             nextProps.events.forEach(event => {
@@ -94,6 +94,11 @@ export default class GroupCreator extends Component<IProps, IState> {
         }
 
         return true;
+    }
+
+    componentDidUpdate(prevProps: IProps, prevState: IState) {
+        const prevRenderButtons = prevProps.groups.map(group => group.getRenderButtons());
+        const currentRenderButtons = this.props.groups.map(group => group.getRenderButtons());
     }
 
     addGroup = () => {

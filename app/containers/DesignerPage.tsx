@@ -6,6 +6,7 @@ import StateItemActions from '../actions/state';
 import GroupActions from '../actions/group';
 import FormActions from '../actions/form';
 import GameActions from '../actions/game';
+import ThunkActions from '../actions/thunk';
 
 function mapStateToProps(state, ownProps) {
     console.log(state);
@@ -28,7 +29,8 @@ function mapDispatchToProps(dispatch: Dispatch) {
             ...StateItemActions,
             ...GroupActions,
             ...FormActions,
-            ...GameActions
+            ...GameActions,
+            ...ThunkActions
         },
         dispatch
     );

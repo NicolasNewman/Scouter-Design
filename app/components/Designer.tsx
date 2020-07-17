@@ -70,9 +70,10 @@ interface IProps extends RouteComponentProps<any> {
     formLayout: FormLayoutType;
     setFormJSXFunc: (func: () => string) => void;
     setFormDimensions: (rows: number, cols: number, gridModel: Array<Array<string>>) => void;
-    // addFormGroup: (group: FormGroup) => void;
-    // removeFormGroup: (group: FormGroup) => void;
     overwriteFormGroup: (groups: Array<FormGroup>) => void;
+
+    // redux - thunk
+    updateEventAndDependents: (name: string, newData: EventData) => void;
 }
 
 export default class Home extends Component<IProps> {
@@ -140,6 +141,7 @@ export default class Home extends Component<IProps> {
                             removeEventItem={this.props.removeEventItem}
                             updateEventItem={this.props.updateEventItem}
                             overwriteEventItem={this.props.overwriteEventItem}
+                            updateEventAndDependents={this.props.updateEventAndDependents}
                         />
                     </TabPane>
                     <TabPane tab="States" key="states">
