@@ -138,12 +138,21 @@ export default class FormCreator extends Component<IProps, IState> {
                         // generate each slot on the grid that can have a group dragged to
                         gridElements={(() => {
                             const elements = [];
+                            // prevents groupToDisplay from doubling up on a group
+                            const usedLetters = [];
                             for (let i = 0; i < this.state.rows; i++) {
                                 for (let j = 0; j < this.state.cols; j++) {
                                     // check if a group already exists for that slot (ie its been loaded from the save file)
-                                    const groupToDisplay = this.state.groupList.filter(
-                                        group => group.getGridAreaName() === this.state.gridModel[i][j]
-                                    );
+                                    const groupToDisplay = this.state.groupList.filter(group => {
+                                        if (
+                                            !usedLetters.includes(group.getGridAreaName()) &&
+                                            group.getGridAreaName() === this.state.gridModel[i][j]
+                                        ) {
+                                            usedLetters.push(group.getGridAreaName());
+                                            return true;
+                                        }
+                                        return false;
+                                    });
                                     elements.push(
                                         <FormGridSlot
                                             gridAreaName={`${this.state.gridModel[i][j]}`}
