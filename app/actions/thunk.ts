@@ -14,18 +14,20 @@ export const updateEventAndDependents = (
 ): ThunkAction<Promise<void>, IStore, {}, AnyAction> => {
     return async (dispatch: ThunkDispatch<IStore, {}, AnyAction>, getState): Promise<void> => {
         const processGroup = (group: FormGroup) => {
+            console.log(`Processing group`);
             const cpy = FormGroup.fromJSON(group.toJSON());
 
             // loop through each renderButton of the group
             let changed = false;
             cpy.getRenderButtons().forEach(renderButton => {
+                console.log(renderButton);
                 // If the renderButton's type is equal to the name of the previous type
                 if (renderButton.type === name) {
                     cpy.updateRenderButton(
                         renderButton.gridAreaName,
                         renderButton.label,
                         renderButton.checkbox,
-                        newData.type,
+                        newData.name,
                         newData.accuracy
                     );
                     changed = true;
@@ -41,7 +43,8 @@ export const updateEventAndDependents = (
             // loop through each group
             console.log('========== Inside of thunk ==========');
             console.log(`Name is: ${name}`);
-            console.log(`New data is: ${newData}`);
+            console.log(`New data is:`);
+            console.log(newData);
             console.log('The current state is: ');
             console.log(state);
             state.group.forEach(async group => {

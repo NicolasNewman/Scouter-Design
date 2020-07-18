@@ -99,6 +99,10 @@ export default class GroupCreator extends Component<IProps, IState> {
     componentDidUpdate(prevProps: IProps, prevState: IState) {
         const prevRenderButtons = prevProps.groups.map(group => group.getRenderButtons());
         const currentRenderButtons = this.props.groups.map(group => group.getRenderButtons());
+        if (this.state.targetGroup && !deepEqual(prevRenderButtons, currentRenderButtons)) {
+            const updatedGroup = this.props.groups.find(group => this.state.targetGroup.getName() === group.getName());
+            this.setState({ targetGroup: updatedGroup });
+        }
     }
 
     addGroup = () => {
