@@ -2,8 +2,10 @@ import * as React from 'react';
 import { Component } from 'react';
 // import { GroupProps } from './Group';
 import Group from './Group';
+import { IProps as IGroupProps } from './Group';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DragElementWrapper } from 'react-dnd';
 import FormGroup from '../classes/models/FormGroup';
+import * as deepEquals from 'fast-deep-equal';
 
 interface IBaseProps {
     gridAreaName: string;
@@ -33,7 +35,8 @@ interface IProps extends IBaseProps {
 
 interface IState {
     /** the inner component that should be displayed in each slot */
-    inner?: React.ReactNode;
+    inner?: React.ReactElement<IGroupProps>;
+    // inner?: React.Component<IGroupProps>;
 }
 
 class FormGridSlot extends Component<IProps, IState> {
@@ -44,28 +47,40 @@ class FormGridSlot extends Component<IProps, IState> {
         if (this.props.inner) {
             // if a component has been pre-specified (ie from a loaded save), generate a group for it
             this.state = {
-                inner: (
-                    <Group
-                        disabled={true}
-                        // FormGroup instance that this group should be generated from
-                        group={this.props.inner}
-                        // used by the close button on a group to remove it from the slot
-                        clear={() => {
-                            this.props.removeGroupList(this.props.inner);
-                            this.setState({ inner: null });
-                        }}
-                    />
-                )
+                inner: this.createInner()
             };
         } else {
             this.state = {};
         }
     }
 
+    createInner = () => {
+        return (
+            <Group
+                disabled={true}
+                // FormGroup instance that this group should be generated from
+                group={this.props.inner}
+                // used by the close button on a group to remove it from the slot
+                clear={() => {
+                    this.props.removeGroupList(this.props.inner);
+                    this.setState({ inner: null });
+                }}
+            />
+        );
+    };
+
     componentDidUpdate(prevProps: IProps) {
         // If the user changes the dimension of the grid, clear the inner group
         if (prevProps.row !== this.props.row || prevProps.col !== this.props.col) {
             this.setState({ inner: null });
+        }
+
+        // Update the slots inner group if there was a change in the prop's render button
+        if (
+            this.state.inner &&
+            !deepEquals(this.props.inner.getRenderButtons(), this.state.inner.props.group.getRenderButtons())
+        ) {
+            this.setState({ inner: this.createInner() });
         }
         // if (!prevProps.isOver && this.props.isOver) {
         //     console.log(`Entered: ${this.props.gridAreaName}`);

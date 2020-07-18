@@ -88,6 +88,13 @@ export default class FormCreator extends Component<IProps, IState> {
         ) {
             this.props.setFormDimensions(this.state.rows, this.state.cols, this.state.gridModel);
         }
+
+        // If the render buttons in redux changed, update to reflect their changes in the FormCreator
+        const prevRenderButtons = prevProps.formLayout.groupList.map(group => group.getRenderButtons());
+        const currentRenderButtons = this.props.formLayout.groupList.map(group => group.getRenderButtons());
+        if (!deepEquals(prevRenderButtons, currentRenderButtons)) {
+            this.setState({ groupList: this.props.formLayout.groupList });
+        }
     }
 
     /**
