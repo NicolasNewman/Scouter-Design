@@ -57,7 +57,7 @@ export default class FormGroup {
         if (!this.templateArea) {
             this.updateTemplateArea();
         }
-        this.gridAreaName = options.gridAreaName;
+        this.gridAreaName = options.gridAreaName ? options.gridAreaName : '';
         this.name = options.name;
         console.log(this.toString());
     }

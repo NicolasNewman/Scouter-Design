@@ -6,6 +6,7 @@ import { IProps as IGroupProps } from './Group';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DragElementWrapper } from 'react-dnd';
 import FormGroup from '../classes/models/FormGroup';
 import * as deepEquals from 'fast-deep-equal';
+import { toCamelCase } from '../utils/helper';
 
 interface IBaseProps {
     gridAreaName: string;
@@ -20,7 +21,7 @@ interface IBaseProps {
     /** function that handles what should happen when the slot is clicked on */
     joinClickHandler: () => void;
     /** function that allows access to the groupList within the FormCreator */
-    updateGroupList: (group: FormGroup, gridAreaName: string) => void;
+    updateGroup: (key: string, newGroup: FormGroup) => void;
     removeGroupList: (group: FormGroup) => void;
 }
 
@@ -69,17 +70,16 @@ class FormGridSlot extends Component<IProps, IState> {
         );
     };
 
-    componentDidUpdate(prevProps: IProps) {
+    componentDidUpdate(prevProps: IProps, prevState: IState) {
+        console.log(prevState);
+        console.log(this.state);
         // If the user changes the dimension of the grid, clear the inner group
         if (prevProps.row !== this.props.row || prevProps.col !== this.props.col) {
             this.setState({ inner: null });
         }
 
         // Update the slots inner group if there was a change in the prop's render button
-        if (
-            this.state.inner &&
-            !deepEquals(this.props.inner.getRenderButtons(), this.state.inner.props.group.getRenderButtons())
-        ) {
+        if (!this.state.inner && this.props.inner) {
             this.setState({ inner: this.createInner() });
         }
         // if (!prevProps.isOver && this.props.isOver) {
@@ -95,8 +95,10 @@ class FormGridSlot extends Component<IProps, IState> {
         let style: React.CSSProperties = { gridArea: this.props.gridAreaName };
 
         // change to green if the user is hovering over it
-        if (this.props.isOver) {
+        if (this.props.isOver && this.props.inner === null) {
             style['backgroundColor'] = 'rgba(0,255,50,0.5)';
+        } else if (this.props.isOver && this.props.inner !== null) {
+            style['backgroundColor'] = 'rgb(220, 53, 69, 0.5)';
         }
 
         // permenently change to green or yellow if the user has selected this instance's slot
@@ -132,7 +134,8 @@ export default DropTarget(
 
             // create a deep-copy of the instance
             const clone = FormGroup.fromJSON(group.toJSON());
-            component.props.updateGroupList(clone, component.props.gridAreaName);
+            clone.setGridAreaName(component.props.gridAreaName);
+            component.props.updateGroup(clone.getName(), clone);
             component.setState({
                 inner: (
                     <Group
@@ -141,7 +144,8 @@ export default DropTarget(
                         group={clone}
                         // used by the close button on a group to remove it from the slot
                         clear={() => {
-                            component.props.removeGroupList(clone);
+                            clone.setGridAreaName(toCamelCase(clone.getName()));
+                            component.props.updateGroup(clone.getName(), clone);
                             component.setState({ inner: null });
                         }}
                     />
@@ -150,6 +154,9 @@ export default DropTarget(
             return {
                 gridAreaName: props.gridAreaName
             };
+        },
+        canDrop: (props: IBaseProps, monitor: DropTargetMonitor) => {
+            return props.inner === null;
         }
         // hover: (props: any, monitor: DropTargetMonitor) => {
         //     console.log('========== HOVER ==========');

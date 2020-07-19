@@ -3,11 +3,7 @@ import { FormLayoutType } from '../types/types';
 
 export enum FormTypeKeys {
     SET_FORM_JSX_FUNC = 'SET_FORM_JSX_FUNC',
-    SET_FORM_DIMENSIONS = 'SET_FORM_DIMENSIONS',
-    ADD_FORM_GROUP = 'ADD_FORM_GROUP',
-    REMOVE_FORM_GROUP = 'REMOVE_FORM_GROUP',
-    OVERWRITE_FORM_GROUP = 'OVERWRITE_FORM_GROUP',
-    OVERWRITE_FORM_LAYOUT = 'OVERWRITE_FORM_LAYOUT'
+    UPDATE_FORM_LAYOUT = 'UPDATE_FORM_LAYOUT'
 }
 
 interface SetFormJSXFuncAction {
@@ -15,40 +11,12 @@ interface SetFormJSXFuncAction {
     func: () => string;
 }
 
-interface SetFormDimensions {
-    type: FormTypeKeys.SET_FORM_DIMENSIONS;
-    rows: number;
-    cols: number;
-    gridModel: Array<Array<string>>;
+interface UpdateFormLayout {
+    type: FormTypeKeys.UPDATE_FORM_LAYOUT;
+    options: Partial<FormLayoutType>;
 }
 
-interface AddFormGroup {
-    type: FormTypeKeys.ADD_FORM_GROUP;
-    group: FormGroup;
-}
-
-interface RemoveFormGroup {
-    type: FormTypeKeys.REMOVE_FORM_GROUP;
-    group: FormGroup;
-}
-
-interface OverwriteFormGroup {
-    type: FormTypeKeys.OVERWRITE_FORM_GROUP;
-    groups: Array<FormGroup>;
-}
-
-interface OverwriteFormLayout {
-    type: FormTypeKeys.OVERWRITE_FORM_LAYOUT;
-    layout: FormLayoutType;
-}
-
-export type FormTypes =
-    | SetFormJSXFuncAction
-    | SetFormDimensions
-    | AddFormGroup
-    | RemoveFormGroup
-    | OverwriteFormGroup
-    | OverwriteFormLayout;
+export type FormTypes = SetFormJSXFuncAction | UpdateFormLayout;
 
 export function setFormJSXFunc(func: () => string) {
     return {
@@ -57,48 +25,14 @@ export function setFormJSXFunc(func: () => string) {
     };
 }
 
-export function setFormDimensions(rows: number, cols: number, gridModel: Array<Array<string>>) {
+export function updateFormLayout(options: Partial<FormLayoutType>) {
     return {
-        type: FormTypeKeys.SET_FORM_DIMENSIONS,
-        rows,
-        cols,
-        gridModel
-    };
-}
-
-export function addFormGroup(group: FormGroup) {
-    return {
-        type: FormTypeKeys.ADD_FORM_GROUP,
-        group
-    };
-}
-
-export function removeFormGroup(group: FormGroup) {
-    return {
-        type: FormTypeKeys.REMOVE_FORM_GROUP,
-        group
-    };
-}
-
-export function overwriteFormGroup(groups: Array<FormGroup>) {
-    return {
-        type: FormTypeKeys.OVERWRITE_FORM_GROUP,
-        groups
-    };
-}
-
-export function overwriteFormLayout(layout: FormLayoutType) {
-    return {
-        type: FormTypeKeys.OVERWRITE_FORM_LAYOUT,
-        layout
+        type: FormTypeKeys.UPDATE_FORM_LAYOUT,
+        options
     };
 }
 
 export default {
     setFormJSXFunc,
-    setFormDimensions,
-    addFormGroup,
-    removeFormGroup,
-    overwriteFormGroup,
-    overwriteFormLayout
+    updateFormLayout
 };

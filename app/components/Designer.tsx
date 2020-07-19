@@ -69,8 +69,7 @@ interface IProps extends RouteComponentProps<any> {
     // redux - form
     formLayout: FormLayoutType;
     setFormJSXFunc: (func: () => string) => void;
-    setFormDimensions: (rows: number, cols: number, gridModel: Array<Array<string>>) => void;
-    overwriteFormGroup: (groups: Array<FormGroup>) => void;
+    updateFormLayout: (options: Partial<FormLayoutType>) => void;
 
     // redux - thunk
     updateEventAndDependents: (name: string, newData: EventData) => void;
@@ -91,7 +90,7 @@ export default class Home extends Component<IProps> {
         this.ipcInterface = new IpcInterface(this.parser, new WorkspaceExporter());
 
         // if the form layout has been loaded from the save, initialize the form code generator in advanced
-        if (this.props.formLayout.groupList) {
+        if (this.props.groups) {
             this.props.setFormJSXFunc(
                 () => `
                 <Grid
@@ -112,7 +111,9 @@ export default class Home extends Component<IProps> {
                     })()}"
                     className="form-creator__grid"
                     gridElements={[${(() => {
-                        const joined = this.props.formLayout.groupList.map(group => group.getJSX()).join(',');
+                        const joined = this.props.groups
+                            .map(group => (group.getGridAreaName() !== '' ? group.getJSX() : ''))
+                            .join(',');
                         return joined;
                     })()}]}
                 />`
@@ -169,10 +170,8 @@ export default class Home extends Component<IProps> {
                             groups={this.props.groups}
                             formLayout={this.props.formLayout}
                             setFormJSXFunc={this.props.setFormJSXFunc}
-                            setFormDimensions={this.props.setFormDimensions}
-                            // addFormGroup={this.props.addFormGroup}
-                            // removeFormGroup={this.props.removeFormGroup}
-                            overwriteFormGroup={this.props.overwriteFormGroup}
+                            updateGroup={this.props.updateGroup}
+                            updateFormLayout={this.props.updateFormLayout}
                         />
                     </TabPane>
                 </Tabs>

@@ -6,7 +6,6 @@ import FormGroup from '../classes/models/FormGroup';
 
 import { updateGroup } from './group';
 import { updateEventItem } from './event';
-import { overwriteFormGroup } from './form';
 
 export const updateEventAndDependents = (
     name: string,
@@ -50,20 +49,20 @@ export const updateEventAndDependents = (
             state.group.forEach(async group => {
                 const cpy = processGroup(group);
                 if (cpy) {
-                    await dispatch(updateGroup(cpy.getGridAreaName(), cpy));
+                    await dispatch(updateGroup(cpy.getName(), cpy));
                 }
             });
 
-            const newFormGroups: FormGroup[] = [];
-            state.form.formLayout.groupList.forEach(async group => {
-                const cpy = processGroup(group);
-                if (cpy) {
-                    newFormGroups.push(cpy);
-                } else {
-                    newFormGroups.push(group);
-                }
-            });
-            await dispatch(overwriteFormGroup(newFormGroups));
+            // const newFormGroups: FormGroup[] = [];
+            // state.form.formLayout.groupList.forEach(async group => {
+            //     const cpy = processGroup(group);
+            //     if (cpy) {
+            //         newFormGroups.push(cpy);
+            //     } else {
+            //         newFormGroups.push(group);
+            //     }
+            // });
+            // await dispatch(overwriteFormGroup(newFormGroups));
 
             res();
             // await dispatch(updateGroup());

@@ -123,3 +123,7 @@ export const generate2DArray = (r: number, c: number): Array<Array<string>> => {
     }
     return m;
 };
+
+export const includes2d = (data: string[][], value: string): boolean => {
+    return data.some(arr => arr.includes(value));
+};

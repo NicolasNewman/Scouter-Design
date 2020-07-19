@@ -191,10 +191,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                     this.state.targetGroup.setColCount(cols);
                                     console.log(this.state.targetGroup.toString());
 
-                                    this.props.updateGroup(
-                                        this.state.targetGroup.getGridAreaName(),
-                                        this.state.targetGroup
-                                    );
+                                    this.props.updateGroup(this.state.targetGroup.getName(), this.state.targetGroup);
                                 }}
                                 type="primary"
                             >
@@ -357,7 +354,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         );
 
                                         this.props.updateGroup(
-                                            this.state.targetGroup.getGridAreaName(),
+                                            this.state.targetGroup.getName(),
                                             this.state.targetGroup
                                         );
 
