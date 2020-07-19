@@ -79,6 +79,13 @@ class FormGridSlot extends Component<IProps, IState> {
         }
 
         // Update the slots inner group if there was a change in the prop's render button
+        if (
+            this.state.inner &&
+            !deepEquals(this.props.inner.getRenderButtons(), this.state.inner.props.group.getRenderButtons())
+        ) {
+            this.setState({ inner: this.createInner() });
+        }
+        // update the inner slot if the props changed
         if (!this.state.inner && this.props.inner) {
             this.setState({ inner: this.createInner() });
         }
