@@ -49,7 +49,7 @@ export const updateEventAndDependents = (
             state.group.forEach(async group => {
                 const cpy = processGroup(group);
                 if (cpy) {
-                    await dispatch(updateGroup(cpy.getGridAreaName(), cpy));
+                    await dispatch(updateGroup(cpy.getName(), cpy));
                 }
             });
 

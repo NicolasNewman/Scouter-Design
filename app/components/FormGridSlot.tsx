@@ -6,6 +6,7 @@ import { IProps as IGroupProps } from './Group';
 import { DropTarget, DropTargetMonitor, DropTargetConnector, DragElementWrapper } from 'react-dnd';
 import FormGroup from '../classes/models/FormGroup';
 import * as deepEquals from 'fast-deep-equal';
+import { toCamelCase } from '../utils/helper';
 
 interface IBaseProps {
     gridAreaName: string;
@@ -142,7 +143,7 @@ export default DropTarget(
                         group={clone}
                         // used by the close button on a group to remove it from the slot
                         clear={() => {
-                            clone.setGridAreaName('');
+                            clone.setGridAreaName(toCamelCase(clone.getName()));
                             component.props.updateGroup(clone.getName(), clone);
                             component.setState({ inner: null });
                         }}

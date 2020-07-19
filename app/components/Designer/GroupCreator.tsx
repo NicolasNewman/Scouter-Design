@@ -107,8 +107,8 @@ export default class GroupCreator extends Component<IProps, IState> {
 
     addGroup = () => {
         const name = this.input.current.state.value;
-        // const camalized = toCamelCase(name);
-        const group = new FormGroup({ name });
+        const camalized = toCamelCase(name);
+        const group = new FormGroup({ name, gridAreaName: camalized });
         this.props.addGroup(group);
         this.setState({
             modalVisible: false

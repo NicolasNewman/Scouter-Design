@@ -6,7 +6,14 @@ import FormGridSlot from '../FormGridSlot';
 import { Button, InputNumber, message } from 'antd';
 import Grid from '../Grid/Grid';
 import { FormLayoutType } from '../../types/types';
-import { generateGridColString, generateGridRowString, print2DArray, generate2DArray } from '../../utils/helper';
+import {
+    generateGridColString,
+    generateGridRowString,
+    print2DArray,
+    generate2DArray,
+    toCamelCase,
+    includes2d
+} from '../../utils/helper';
 import * as deepEquals from 'fast-deep-equal';
 
 interface IProps {
@@ -180,7 +187,7 @@ export default class FormCreator extends Component<IProps, IState> {
                                             }}
                                             updateGroup={this.props.updateGroup}
                                             removeGroupList={(group: FormGroup) => {
-                                                group.setGridAreaName('');
+                                                group.setGridAreaName(toCamelCase(group.getName()));
                                                 this.props.updateGroup(group.getName(), group);
                                             }}
                                         />
@@ -343,7 +350,7 @@ export default class FormCreator extends Component<IProps, IState> {
                     </div>
                     <div className="form-creator__editor--groups">
                         {...this.props.groups.map(group =>
-                            group.getGridAreaName() === '' ? (
+                            !includes2d(this.props.formLayout.gridModel, group.getGridAreaName()) ? (
                                 <DraggableGroup disabled={true} group={group} canDrag={!this.state.isJoiningGrid} />
                             ) : (
                                 <span></span>
