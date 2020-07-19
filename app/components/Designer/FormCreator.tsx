@@ -106,10 +106,19 @@ export default class FormCreator extends Component<IProps, IState> {
     generateGridModel = (row: number, col: number) => {
         const gridModel: string[][] = [];
         let counter = 0;
+        let duplicator = 0;
         for (let i = 0; i < row; i++) {
             gridModel.push([]);
             for (let j = 0; j < col; j++) {
-                gridModel[i].push(String.fromCharCode(65 + counter)); // ASCII: 65 = A
+                if (counter > 25) {
+                    counter = 0;
+                    duplicator++;
+                }
+                let name = '';
+                for (let i = 0; i <= duplicator; i++) {
+                    name += String.fromCharCode(65 + counter);
+                }
+                gridModel[i].push(name); // ASCII: 65 = A
                 counter++;
             }
         }
@@ -225,20 +234,15 @@ export default class FormCreator extends Component<IProps, IState> {
                                     const rows = this.rowRef.current.state.value;
                                     const cols = this.colRef.current.state.value;
 
-                                    // FIXED
                                     this.props.updateFormLayout({
                                         rows,
                                         cols,
                                         gridModel: this.generateGridModel(rows, cols)
                                     });
 
-                                    // this.setState({
-                                    //     rows,
-                                    //     cols,
-                                    //     gridModel: this.generateGridModel(rows, cols),
-                                    //     joinModel: new Array(rows).fill(new Array(cols).fill('')),
-                                    //     groupList: []
-                                    // });
+                                    this.setState({
+                                        joinModel: new Array(rows).fill(new Array(cols).fill(''))
+                                    });
                                 }}
                             >
                                 Update

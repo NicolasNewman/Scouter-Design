@@ -96,8 +96,10 @@ class FormGridSlot extends Component<IProps, IState> {
         let style: React.CSSProperties = { gridArea: this.props.gridAreaName };
 
         // change to green if the user is hovering over it
-        if (this.props.isOver) {
+        if (this.props.isOver && this.props.inner === null) {
             style['backgroundColor'] = 'rgba(0,255,50,0.5)';
+        } else if (this.props.isOver && this.props.inner !== null) {
+            style['backgroundColor'] = 'rgb(220, 53, 69, 0.5)';
         }
 
         // permenently change to green or yellow if the user has selected this instance's slot
@@ -153,6 +155,9 @@ export default DropTarget(
             return {
                 gridAreaName: props.gridAreaName
             };
+        },
+        canDrop: (props: IBaseProps, monitor: DropTargetMonitor) => {
+            return props.inner === null;
         }
         // hover: (props: any, monitor: DropTargetMonitor) => {
         //     console.log('========== HOVER ==========');
