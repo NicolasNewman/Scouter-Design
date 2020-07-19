@@ -3,7 +3,7 @@ import { overwriteGameState } from '../actions/game';
 import { overwriteEventItem } from '../actions/event';
 import { overwriteStateItem } from '../actions/state';
 import { overwriteGroup } from '../actions/group';
-import { overwriteFormLayout } from '../actions/form';
+import { updateFormLayout } from '../actions/form';
 import FormGroup from './models/FormGroup';
 import store from '../index';
 import FormButton from './models/FormButton';
@@ -26,20 +26,13 @@ class WorkspaceReader {
         // Convert the JSON version of the form group (used by the group builder) back to an instance of FormGroup
         const groupButtons = state.group.map(group => FormGroup.fromJSON(group));
 
-        // Convert the JSON version of the form group (used by the form builder) back to an instance of FormGroup
-        const formGroup = state.form.groupList.map(group => FormGroup.fromJSON(group));
-        const layout: FormLayoutType = {
-            rows: state.form.rows,
-            cols: state.form.cols,
-            gridModel: state.form.gridModel,
-            groupList: formGroup
-        };
-        console.log(state);
         store.dispatch(overwriteGameState(state.game));
         store.dispatch(overwriteEventItem(state.event));
         store.dispatch(overwriteStateItem(state.state));
         store.dispatch(overwriteGroup(groupButtons));
-        store.dispatch(overwriteFormLayout(layout));
+        store.dispatch(
+            updateFormLayout({ rows: state.form.rows, cols: state.form.cols, gridModel: state.form.gridModel })
+        );
     }
 }
 

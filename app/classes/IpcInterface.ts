@@ -44,13 +44,11 @@ export default class IpcInterface {
 
         // extract the needed information to save from the form state
         const formLayout = state.form.formLayout;
-        // convert the form state's FormGroups to their JSON equivilent
-        const convertedGroupList = state.form.formLayout.groupList.map(group => group.toJSON());
+
         const savableFormLayout = {
             rows: formLayout.rows,
             cols: formLayout.cols,
-            gridModel: formLayout.gridModel,
-            groupList: convertedGroupList
+            gridModel: formLayout.gridModel
         };
 
         const cpy: WorkspaceType = {

@@ -29,11 +29,7 @@ interface OverwriteGroupAction {
     groups: Array<FormGroup>;
 }
 
-export type GroupActionTypes =
-    | AddGroupAction
-    | RemoveGroupAction
-    | UpdateGroupAction
-    | OverwriteGroupAction;
+export type GroupActionTypes = AddGroupAction | RemoveGroupAction | UpdateGroupAction | OverwriteGroupAction;
 
 export function addGroup(group: FormGroup) {
     return {

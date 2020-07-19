@@ -20,7 +20,7 @@ interface IBaseProps {
     /** function that handles what should happen when the slot is clicked on */
     joinClickHandler: () => void;
     /** function that allows access to the groupList within the FormCreator */
-    updateGroupList: (group: FormGroup, gridAreaName: string) => void;
+    updateGroup: (key: string, newGroup: FormGroup) => void;
     removeGroupList: (group: FormGroup) => void;
 }
 
@@ -132,7 +132,8 @@ export default DropTarget(
 
             // create a deep-copy of the instance
             const clone = FormGroup.fromJSON(group.toJSON());
-            component.props.updateGroupList(clone, component.props.gridAreaName);
+            clone.setGridAreaName(component.props.gridAreaName);
+            component.props.updateGroup(clone.getName(), clone);
             component.setState({
                 inner: (
                     <Group
@@ -141,7 +142,8 @@ export default DropTarget(
                         group={clone}
                         // used by the close button on a group to remove it from the slot
                         clear={() => {
-                            component.props.removeGroupList(clone);
+                            clone.setGridAreaName('');
+                            component.props.updateGroup(clone.getName(), clone);
                             component.setState({ inner: null });
                         }}
                     />

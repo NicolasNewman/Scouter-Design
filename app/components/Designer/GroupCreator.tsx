@@ -107,8 +107,8 @@ export default class GroupCreator extends Component<IProps, IState> {
 
     addGroup = () => {
         const name = this.input.current.state.value;
-        const camalized = toCamelCase(name);
-        const group = new FormGroup({ name, gridAreaName: camalized });
+        // const camalized = toCamelCase(name);
+        const group = new FormGroup({ name });
         this.props.addGroup(group);
         this.setState({
             modalVisible: false
@@ -191,10 +191,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                     this.state.targetGroup.setColCount(cols);
                                     console.log(this.state.targetGroup.toString());
 
-                                    this.props.updateGroup(
-                                        this.state.targetGroup.getGridAreaName(),
-                                        this.state.targetGroup
-                                    );
+                                    this.props.updateGroup(this.state.targetGroup.getName(), this.state.targetGroup);
                                 }}
                                 type="primary"
                             >
@@ -357,7 +354,7 @@ export default class GroupCreator extends Component<IProps, IState> {
                                         );
 
                                         this.props.updateGroup(
-                                            this.state.targetGroup.getGridAreaName(),
+                                            this.state.targetGroup.getName(),
                                             this.state.targetGroup
                                         );
 

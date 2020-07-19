@@ -60,14 +60,12 @@ export type WorkspaceType = {
     form: {
         rows: number;
         cols: number;
-        gridModel: Array<Array<string>>;
-        groupList: Array<GroupOptions>;
+        gridModel: string[][];
     };
 };
 
 export type FormLayoutType = {
     rows: number;
     cols: number;
-    gridModel: Array<Array<string>>;
-    groupList: Array<FormGroup>;
+    gridModel: string[][];
 };

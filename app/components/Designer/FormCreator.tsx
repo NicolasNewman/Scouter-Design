@@ -16,23 +16,19 @@ interface IProps {
     // redux - form
     formLayout: FormLayoutType;
     setFormJSXFunc: (func: () => string) => void;
-    setFormDimensions: (rows: number, cols: number, gridModel: Array<Array<string>>) => void;
-    // addFormGroup: (group: FormGroup) => void;
-    // removeFormGroup: (group: FormGroup) => void;
-    overwriteFormGroup: (groups: Array<FormGroup>) => void;
+    updateGroup: (key: string, newGroup: FormGroup) => void;
+    updateFormLayout: (options: Partial<FormLayoutType>) => void;
 }
 
 interface IState {
-    rows: number;
-    cols: number;
     /** The model that contains each letter position for the drop zone grid */
-    gridModel: Array<Array<string>>;
+    // gridModel: Array<Array<string>>;
     /** The model that contains which zones to merge on the grid (tracks which slots the user has selected) */
     joinModel: Array<Array<string>>;
     /** flag that tracks if the grid is being joined */
     isJoiningGrid: boolean;
     /** a list of the groups that have been dragged onto the grid */
-    groupList: Array<FormGroup>;
+    // groupList: Array<FormGroup>;
 }
 
 export default class FormCreator extends Component<IProps, IState> {
@@ -47,12 +43,10 @@ export default class FormCreator extends Component<IProps, IState> {
         super(props);
 
         this.state = {
-            rows: this.props.formLayout.rows,
-            cols: this.props.formLayout.cols,
-            gridModel: this.props.formLayout.gridModel,
+            // gridModel: this.props.formLayout.gridModel,
             joinModel: new Array(this.props.formLayout.rows).fill(new Array(this.props.formLayout.cols).fill('')),
-            isJoiningGrid: false,
-            groupList: this.props.formLayout.groupList
+            isJoiningGrid: false
+            // groupList: this.props.formLayout.groupList
         };
 
         this.rowRef = React.createRef();
@@ -62,12 +56,14 @@ export default class FormCreator extends Component<IProps, IState> {
         this.props.setFormJSXFunc(
             () => `
             <Grid
-                rows="${generateGridColString(this.state.rows)}"
-                cols="${generateGridColString(this.state.cols)}"
+                rows="${generateGridColString(this.props.formLayout.rows)}"
+                cols="${generateGridColString(this.props.formLayout.cols)}"
                 templateArea="${this.generateTemplateArea()}"
                 className="form-creator__grid"
                 gridElements={[${(() => {
-                    const joined = this.state.groupList.map(group => group.getJSX()).join(',');
+                    const joined = this.props.groups
+                        .map(group => (group.getGridAreaName() !== '' ? group.getJSX() : ''))
+                        .join(',');
                     return joined;
                 })()}]}
             />`
@@ -76,25 +72,23 @@ export default class FormCreator extends Component<IProps, IState> {
 
     componentDidUpdate(prevProps: IProps, prevState: IState) {
         // If the groupList has been changed within the component, update the internal state
-        if (!deepEquals(this.props.formLayout.groupList, this.state.groupList)) {
-            this.props.overwriteFormGroup(this.state.groupList);
-        }
-
+        // if (!deepEquals(this.props.formLayout.groupList, this.state.groupList)) {
+        //     this.props.overwriteFormGroup(this.state.groupList);
+        // }
         // If a dimensional property has been changed within the component, update the internal state
-        if (
-            this.props.formLayout.rows !== this.state.rows ||
-            this.props.formLayout.cols !== this.state.cols ||
-            this.props.formLayout.gridModel !== this.state.gridModel
-        ) {
-            this.props.setFormDimensions(this.state.rows, this.state.cols, this.state.gridModel);
-        }
-
+        // if (
+        //     this.props.formLayout.rows !== this.state.rows ||
+        //     this.props.formLayout.cols !== this.state.cols ||
+        //     this.props.formLayout.gridModel !== this.state.gridModel
+        // ) {
+        //     this.props.setFormDimensions(this.state.rows, this.state.cols, this.state.gridModel);
+        // }
         // If the render buttons in redux changed, update to reflect their changes in the FormCreator
-        const prevRenderButtons = prevProps.formLayout.groupList.map(group => group.getRenderButtons());
-        const currentRenderButtons = this.props.formLayout.groupList.map(group => group.getRenderButtons());
-        if (!deepEquals(prevRenderButtons, currentRenderButtons)) {
-            this.setState({ groupList: this.props.formLayout.groupList });
-        }
+        // const prevRenderButtons = prevProps.formLayout.groupList.map(group => group.getRenderButtons());
+        // const currentRenderButtons = this.props.formLayout.groupList.map(group => group.getRenderButtons());
+        // if (!deepEquals(prevRenderButtons, currentRenderButtons)) {
+        //     this.setState({ groupList: this.props.formLayout.groupList });
+        // }
     }
 
     /**
@@ -103,7 +97,7 @@ export default class FormCreator extends Component<IProps, IState> {
      * @param col
      */
     generateGridModel = (row: number, col: number) => {
-        const gridModel: Array<Array<string>> = [];
+        const gridModel: string[][] = [];
         let counter = 0;
         for (let i = 0; i < row; i++) {
             gridModel.push([]);
@@ -121,10 +115,10 @@ export default class FormCreator extends Component<IProps, IState> {
     generateTemplateArea = () => {
         let templateArea = '';
         let row = '';
-        for (let i = 0; i < this.state.rows; i++) {
+        for (let i = 0; i < this.props.formLayout.rows; i++) {
             row = "'";
-            for (let j = 0; j < this.state.cols; j++) {
-                row += `${this.state.gridModel[i][j]} `;
+            for (let j = 0; j < this.props.formLayout.cols; j++) {
+                row += `${this.props.formLayout.gridModel[i][j]} `;
             }
             row = row.replace(/\s+(?=\S*$)/g, "'\n"); // replace last space
             templateArea += row;
@@ -138,8 +132,8 @@ export default class FormCreator extends Component<IProps, IState> {
             <div className="form-creator">
                 <div className="form-creator__builder">
                     <Grid
-                        rows={generateGridColString(this.state.rows)}
-                        cols={generateGridColString(this.state.cols)}
+                        rows={generateGridColString(this.props.formLayout.rows)}
+                        cols={generateGridColString(this.props.formLayout.cols)}
                         templateArea={this.generateTemplateArea()}
                         className={'form-creator__grid'}
                         // generate each slot on the grid that can have a group dragged to
@@ -147,13 +141,13 @@ export default class FormCreator extends Component<IProps, IState> {
                             const elements = [];
                             // prevents groupToDisplay from doubling up on a group
                             const usedLetters = [];
-                            for (let i = 0; i < this.state.rows; i++) {
-                                for (let j = 0; j < this.state.cols; j++) {
+                            for (let i = 0; i < this.props.formLayout.rows; i++) {
+                                for (let j = 0; j < this.props.formLayout.cols; j++) {
                                     // check if a group already exists for that slot (ie its been loaded from the save file)
-                                    const groupToDisplay = this.state.groupList.filter(group => {
+                                    const groupToDisplay = this.props.groups.filter(group => {
                                         if (
                                             !usedLetters.includes(group.getGridAreaName()) &&
-                                            group.getGridAreaName() === this.state.gridModel[i][j]
+                                            group.getGridAreaName() === this.props.formLayout.gridModel[i][j]
                                         ) {
                                             usedLetters.push(group.getGridAreaName());
                                             return true;
@@ -162,39 +156,32 @@ export default class FormCreator extends Component<IProps, IState> {
                                     });
                                     elements.push(
                                         <FormGridSlot
-                                            gridAreaName={`${this.state.gridModel[i][j]}`}
-                                            row={this.state.rows}
-                                            col={this.state.cols}
+                                            gridAreaName={`${this.props.formLayout.gridModel[i][j]}`}
+                                            row={this.props.formLayout.rows}
+                                            col={this.props.formLayout.cols}
                                             isJoiningGrid={this.state.isJoiningGrid}
                                             joinModel={this.state.joinModel[i][j]}
                                             inner={groupToDisplay[0] ? groupToDisplay[0] : null}
                                             // visually change the grid slot based on if it was clicked or not
                                             joinClickHandler={() => {
                                                 const cpy = this.state.joinModel.map(cols => cols.map(num => num));
-                                                if (this.state.joinModel[i][j] === this.state.gridModel[i][j]) {
+                                                if (
+                                                    this.state.joinModel[i][j] === this.props.formLayout.gridModel[i][j]
+                                                ) {
                                                     // reset back to being unclicked
                                                     cpy[i][j] = '';
                                                 } else {
                                                     // set to being clicked
-                                                    cpy[i][j] = this.state.gridModel[i][j];
+                                                    cpy[i][j] = this.props.formLayout.gridModel[i][j];
                                                 }
                                                 this.setState({
                                                     joinModel: cpy
                                                 });
                                             }}
-                                            updateGroupList={(group: FormGroup, gridAreaName: string) => {
-                                                const newList = this.state.groupList.filter(
-                                                    listGroup => listGroup.getGridAreaName() !== group.getGridAreaName()
-                                                );
-
-                                                group.setGridAreaName(gridAreaName);
-                                                this.setState({ groupList: [...newList, group] });
-                                            }}
+                                            updateGroup={this.props.updateGroup}
                                             removeGroupList={(group: FormGroup) => {
-                                                const filtered = this.state.groupList.filter(
-                                                    listGroup => listGroup.getGridAreaName() !== group.getGridAreaName()
-                                                );
-                                                this.setState({ groupList: filtered });
+                                                group.setGridAreaName('');
+                                                this.props.updateGroup(group.getName(), group);
                                             }}
                                         />
                                     );
@@ -211,11 +198,16 @@ export default class FormCreator extends Component<IProps, IState> {
                             <InputNumber
                                 ref={this.rowRef}
                                 min={1}
-                                defaultValue={this.state.rows}
+                                defaultValue={this.props.formLayout.rows}
                                 className="w-3 mr-1"
                             />
                             <span>Cols: </span>
-                            <InputNumber ref={this.colRef} min={1} defaultValue={this.state.cols} className="w-3" />
+                            <InputNumber
+                                ref={this.colRef}
+                                min={1}
+                                defaultValue={this.props.formLayout.cols}
+                                className="w-3"
+                            />
                         </div>
                         <div className="my-1">
                             <Button
@@ -226,13 +218,20 @@ export default class FormCreator extends Component<IProps, IState> {
                                     const rows = this.rowRef.current.state.value;
                                     const cols = this.colRef.current.state.value;
 
-                                    this.setState({
+                                    // FIXED
+                                    this.props.updateFormLayout({
                                         rows,
                                         cols,
-                                        gridModel: this.generateGridModel(rows, cols),
-                                        joinModel: new Array(rows).fill(new Array(cols).fill('')),
-                                        groupList: []
+                                        gridModel: this.generateGridModel(rows, cols)
                                     });
+
+                                    // this.setState({
+                                    //     rows,
+                                    //     cols,
+                                    //     gridModel: this.generateGridModel(rows, cols),
+                                    //     joinModel: new Array(rows).fill(new Array(cols).fill('')),
+                                    //     groupList: []
+                                    // });
                                 }}
                             >
                                 Update
@@ -249,8 +248,8 @@ export default class FormCreator extends Component<IProps, IState> {
                                         let cMin = Number.MAX_SAFE_INTEGER,
                                             cMax = Number.MIN_SAFE_INTEGER;
 
-                                        for (let i = 0; i < this.state.rows; i++) {
-                                            for (let j = 0; j < this.state.cols; j++) {
+                                        for (let i = 0; i < this.props.formLayout.rows; i++) {
+                                            for (let j = 0; j < this.props.formLayout.cols; j++) {
                                                 const notEmpty = this.state.joinModel[i][j] !== '';
                                                 if (notEmpty && i < rMin) {
                                                     rMin = i;
@@ -298,9 +297,11 @@ export default class FormCreator extends Component<IProps, IState> {
                                                 // the first letter that is found will be used to make the remaining slots match
                                                 let firstLetter = '';
 
-                                                const cpy = this.state.gridModel.map(cols => cols.map(str => str));
-                                                for (let i = 0; i < this.state.rows; i++) {
-                                                    for (let j = 0; j < this.state.cols; j++) {
+                                                const cpy = this.props.formLayout.gridModel.map(cols =>
+                                                    cols.map(str => str)
+                                                );
+                                                for (let i = 0; i < this.props.formLayout.rows; i++) {
+                                                    for (let j = 0; j < this.props.formLayout.cols; j++) {
                                                         if (this.state.joinModel[i][j] !== '') {
                                                             if (firstLetter === '') {
                                                                 firstLetter = this.state.joinModel[i][j];
@@ -312,18 +313,18 @@ export default class FormCreator extends Component<IProps, IState> {
 
                                                 // this.props.setFormDimensions(this.state.rows, this.state.cols, cpy);
                                                 this.setState({
-                                                    joinModel: new Array(this.state.rows).fill(
-                                                        new Array(this.state.cols).fill('')
+                                                    joinModel: new Array(this.props.formLayout.rows).fill(
+                                                        new Array(this.props.formLayout.cols).fill('')
                                                     ),
-                                                    gridModel: cpy,
                                                     isJoiningGrid: !this.state.isJoiningGrid
                                                 });
+                                                this.props.updateFormLayout({ gridModel: cpy });
                                             }
                                         } else {
                                             // since nothing was selected, reset to before
                                             this.setState({
-                                                joinModel: new Array(this.state.rows).fill(
-                                                    new Array(this.state.cols).fill('')
+                                                joinModel: new Array(this.props.formLayout.rows).fill(
+                                                    new Array(this.props.formLayout.cols).fill('')
                                                 ),
                                                 isJoiningGrid: !this.state.isJoiningGrid
                                             });
@@ -341,9 +342,13 @@ export default class FormCreator extends Component<IProps, IState> {
                         </div>
                     </div>
                     <div className="form-creator__editor--groups">
-                        {...this.props.groups.map(group => (
-                            <DraggableGroup disabled={true} group={group} canDrag={!this.state.isJoiningGrid} />
-                        ))}
+                        {...this.props.groups.map(group =>
+                            group.getGridAreaName() === '' ? (
+                                <DraggableGroup disabled={true} group={group} canDrag={!this.state.isJoiningGrid} />
+                            ) : (
+                                <span></span>
+                            )
+                        )}
                     </div>
                 </div>
             </div>
