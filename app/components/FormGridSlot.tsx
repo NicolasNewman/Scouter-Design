@@ -70,17 +70,16 @@ class FormGridSlot extends Component<IProps, IState> {
         );
     };
 
-    componentDidUpdate(prevProps: IProps) {
+    componentDidUpdate(prevProps: IProps, prevState: IState) {
+        console.log(prevState);
+        console.log(this.state);
         // If the user changes the dimension of the grid, clear the inner group
         if (prevProps.row !== this.props.row || prevProps.col !== this.props.col) {
             this.setState({ inner: null });
         }
 
         // Update the slots inner group if there was a change in the prop's render button
-        if (
-            this.state.inner &&
-            !deepEquals(this.props.inner.getRenderButtons(), this.state.inner.props.group.getRenderButtons())
-        ) {
+        if (!this.state.inner && this.props.inner) {
             this.setState({ inner: this.createInner() });
         }
         // if (!prevProps.isOver && this.props.isOver) {

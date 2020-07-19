@@ -170,6 +170,7 @@ export default class FormCreator extends Component<IProps, IState> {
                                         }
                                         return false;
                                     });
+                                    console.log(groupToDisplay);
                                     elements.push(
                                         <FormGridSlot
                                             gridAreaName={`${this.props.formLayout.gridModel[i][j]}`}
