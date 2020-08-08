@@ -34,68 +34,16 @@ interface IProps extends IBaseProps {
     connectDropTarget: DragElementWrapper<any>;
 }
 
-interface IState {
-    /** the inner component that should be displayed in each slot */
-    inner?: React.ReactElement<IGroupProps>;
-    // inner?: React.Component<IGroupProps>;
-}
+// interface IState {
+//     /** the inner component that should be displayed in each slot */
+//     // inner?: React.ReactElement<IGroupProps>;
+// }
 
-class FormGridSlot extends Component<IProps, IState> {
+class FormGridSlot extends Component<IProps> {
     props: IProps;
 
     constructor(props) {
         super(props);
-        if (this.props.inner) {
-            // if a component has been pre-specified (ie from a loaded save), generate a group for it
-            this.state = {
-                inner: this.createInner()
-            };
-        } else {
-            this.state = {};
-        }
-    }
-
-    createInner = () => {
-        return (
-            <Group
-                disabled={true}
-                // FormGroup instance that this group should be generated from
-                group={this.props.inner}
-                // used by the close button on a group to remove it from the slot
-                clear={() => {
-                    this.props.removeGroupList(this.props.inner);
-                    this.setState({ inner: null });
-                }}
-            />
-        );
-    };
-
-    componentDidUpdate(prevProps: IProps, prevState: IState) {
-        console.log(prevState);
-        console.log(this.state);
-        // If the user changes the dimension of the grid, clear the inner group
-        if (prevProps.row !== this.props.row || prevProps.col !== this.props.col) {
-            this.setState({ inner: null });
-        }
-
-        // Update the slots inner group if there was a change in the prop's render button
-        if (
-            this.state.inner &&
-            !deepEquals(this.props.inner.getRenderButtons(), this.state.inner.props.group.getRenderButtons())
-        ) {
-            this.setState({ inner: this.createInner() });
-        }
-        // update the inner slot if the props changed
-        if (!this.state.inner && this.props.inner) {
-            this.setState({ inner: this.createInner() });
-        }
-        // if (!prevProps.isOver && this.props.isOver) {
-        //     console.log(`Entered: ${this.props.gridAreaName}`);
-        // }
-
-        // if (prevProps.isOver && !this.props.isOver) {
-        //     console.log(`Left: ${this.props.gridAreaName}`);
-        // }
     }
 
     render() {
@@ -121,7 +69,17 @@ class FormGridSlot extends Component<IProps, IState> {
                 style={style}
                 onClick={this.props.isJoiningGrid ? this.props.joinClickHandler : () => {}}
             >
-                {this.state.inner ? this.state.inner : null}
+                {this.props.inner ? (
+                    <Group
+                        disabled={true}
+                        // FormGroup instance that this group should be generated from
+                        group={this.props.inner}
+                        // used by the close button on a group to remove it from the slot
+                        clear={() => {
+                            this.props.removeGroupList(this.props.inner);
+                        }}
+                    />
+                ) : null}
             </div>
         );
     }
@@ -143,21 +101,7 @@ export default DropTarget(
             const clone = FormGroup.fromJSON(group.toJSON());
             clone.setGridAreaName(component.props.gridAreaName);
             component.props.updateGroup(clone.getName(), clone);
-            component.setState({
-                inner: (
-                    <Group
-                        disabled={true}
-                        // FormGroup instance that this group should be generated from
-                        group={clone}
-                        // used by the close button on a group to remove it from the slot
-                        clear={() => {
-                            clone.setGridAreaName(toCamelCase(clone.getName()));
-                            component.props.updateGroup(clone.getName(), clone);
-                            component.setState({ inner: null });
-                        }}
-                    />
-                )
-            });
+
             return {
                 gridAreaName: props.gridAreaName
             };
