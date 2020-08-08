@@ -76,6 +76,7 @@
         "connected-react-router": "^6.3.2",
         "core-js": "2",
         "custom-electron-titlebar": "^3.1.0",
+        "dayjs": "^1.8.32",
         "devtron": "^1.4.0",
         "electron-debug": "^2.1.0",
         "electron-log": "^3.0.4",
@@ -83,6 +84,7 @@
         "electron-updater": "^4.0.6",
         "fast-deep-equal": "^3.1.3",
         "history": "^4.9.0",
+        "immutable": "^4.0.0-rc.12",
         "react": "^16.13.1",
         "react-dnd": "^11.1.3",
         "react-dnd-html5-backend": "^11.1.3",
@@ -93,6 +95,7 @@
         "react-router-dom": "^5.2.0",
         "redux": "^4.0.5",
         "redux-thunk": "^2.3.0",
+        "seamless-immutable": "^7.1.4",
         "source-map-support": "^0.5.11"
     },
     "devDependencies": {
